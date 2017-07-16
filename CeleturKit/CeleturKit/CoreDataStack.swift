@@ -7,10 +7,13 @@ public class CoreDataStack {
   public let model:NSManagedObjectModel
   public let store:NSPersistentStore?
   
-  public init(_ dbName:String) {
+  public convenience init(_ dbName:String) {
+    self.init(dbName, using:Bundle.main)
+  }
+  
+  public init(_ dbName:String, using bundle:Bundle) {
     let modelName = dbName
     let databaseName = dbName+".sqlite"
-    let bundle = Bundle.main
     let modelURL = bundle.url(forResource: modelName, withExtension: "momd")
     
     model = NSManagedObjectModel(contentsOf: modelURL!)!

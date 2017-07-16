@@ -13,6 +13,7 @@
 		85EEE22E1F1B4F0C002CE85E /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EEE22B1F1B4F0C002CE85E /* CoreDataStack.swift */; };
 		85EEE22F1F1B4F0C002CE85E /* CeleturUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EEE22C1F1B4F0C002CE85E /* CeleturUtil.swift */; };
 		85EEE23A1F1B52DE002CE85E /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EEE2391F1B52DE002CE85E /* Logger.swift */; };
+		85EEE23E1F1B67CE002CE85E /* CeleturKit.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 85EEE23C1F1B67CE002CE85E /* CeleturKit.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,6 +36,7 @@
 		85EEE22B1F1B4F0C002CE85E /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		85EEE22C1F1B4F0C002CE85E /* CeleturUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CeleturUtil.swift; sourceTree = "<group>"; };
 		85EEE2391F1B52DE002CE85E /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		85EEE23D1F1B67CE002CE85E /* CeleturKit.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CeleturKit.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +84,7 @@
 				85EEE2391F1B52DE002CE85E /* Logger.swift */,
 				85EEE2131F1B4E4B002CE85E /* CeleturKit.h */,
 				85EEE2141F1B4E4B002CE85E /* Info.plist */,
+				85EEE23C1F1B67CE002CE85E /* CeleturKit.xcdatamodeld */,
 			);
 			path = CeleturKit;
 			sourceTree = "<group>";
@@ -207,6 +210,7 @@
 				85EEE22E1F1B4F0C002CE85E /* CoreDataStack.swift in Sources */,
 				85EEE23A1F1B52DE002CE85E /* Logger.swift in Sources */,
 				85EEE22F1F1B4F0C002CE85E /* CeleturUtil.swift in Sources */,
+				85EEE23E1F1B67CE002CE85E /* CeleturKit.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -440,6 +444,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		85EEE23C1F1B67CE002CE85E /* CeleturKit.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				85EEE23D1F1B67CE002CE85E /* CeleturKit.xcdatamodel */,
+			);
+			currentVersion = 85EEE23D1F1B67CE002CE85E /* CeleturKit.xcdatamodel */;
+			path = CeleturKit.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 85EEE2071F1B4E4B002CE85E /* Project object */;
 }

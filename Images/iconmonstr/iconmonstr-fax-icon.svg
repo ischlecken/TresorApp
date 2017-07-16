@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- License Agreement at http://iconmonstr.com/license/ -->
+
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="512px" height="512px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<path id="fax-icon" d="M307.483,277.693c-3.42,1.811-15.44,8.197-15.927,8.432c-43.017,21.24-116.444-116.227-74.601-139.747
+	c0.134-0.075,12.506-6.681,16.06-8.566l22.431,42.146l-15.893,8.466c-12.607,7.326,16.714,62.363,29.639,55.591
+	c0.369-0.168,12.456-6.622,15.876-8.416L307.483,277.693z M462,238.833v206.001H50V238.833h68.667V67.166h177.3
+	c26.403,0,97.367,83.285,97.367,103.537v68.13H462z M359,180.526c0-22.975-39.162-25.649-55.791-21.089
+	c7.777-13.948,5.23-57.938-18.576-57.938H153v223.166h206V180.526z"/>
+</svg>

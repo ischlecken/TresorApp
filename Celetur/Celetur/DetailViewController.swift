@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import CeleturLibrary
+import CeleturKit
 
 class DetailViewController: UIViewController {
 

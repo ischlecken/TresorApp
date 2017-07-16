@@ -8,7 +8,7 @@
 
 import UIKit
 import CoreData
-import CeleturLibrary
+import CeleturKit
 
 class MasterViewController: UITableViewController, NSFetchedResultsControllerDelegate {
 

@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		85EEE1FF1F1A68A9002CE85E /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85EEE1FE1F1A68A9002CE85E /* CloudKit.framework */; };
+		85EEE2011F1A68E1002CE85E /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85EEE2001F1A68E1002CE85E /* StoreKit.framework */; };
+		85EEE2031F1A68EF002CE85E /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85EEE2021F1A68EF002CE85E /* MapKit.framework */; };
+		85EEE23B1F1B53B7002CE85E /* CeleturKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85EEE2361F1B5215002CE85E /* CeleturKit.framework */; };
 		85F9080E1F12D9E30062BD63 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F9080D1F12D9E30062BD63 /* AppDelegate.swift */; };
 		85F908111F12D9E30062BD63 /* Celetur.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 85F9080F1F12D9E30062BD63 /* Celetur.xcdatamodeld */; };
 		85F908131F12D9E30062BD63 /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F908121F12D9E30062BD63 /* MasterViewController.swift */; };
@@ -15,10 +19,23 @@
 		85F9081A1F12D9E30062BD63 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 85F908191F12D9E30062BD63 /* Assets.xcassets */; };
 		85F9081D1F12D9E30062BD63 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 85F9081B1F12D9E30062BD63 /* LaunchScreen.storyboard */; };
 		85F908281F12D9E30062BD63 /* CeleturTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F908271F12D9E30062BD63 /* CeleturTests.swift */; };
-		85F908581F12DD4F0062BD63 /* CeleturLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85F908551F12DD1C0062BD63 /* CeleturLibrary.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		85EEE2351F1B5215002CE85E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 85EEE2301F1B5215002CE85E /* CeleturKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 85EEE2101F1B4E4B002CE85E;
+			remoteInfo = CeleturKit;
+		};
+		85EEE2371F1B5215002CE85E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 85EEE2301F1B5215002CE85E /* CeleturKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 85EEE2191F1B4E4B002CE85E;
+			remoteInfo = CeleturKitTests;
+		};
 		85F908241F12D9E30062BD63 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 85F908021F12D9E30062BD63 /* Project object */;
@@ -26,23 +43,14 @@
 			remoteGlobalIDString = 85F908091F12D9E30062BD63;
 			remoteInfo = Celetur;
 		};
-		85F908541F12DD1C0062BD63 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 85F9084F1F12DD1B0062BD63 /* CeleturLibrary.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 85F907E71F12D8360062BD63;
-			remoteInfo = CeleturLibrary;
-		};
-		85F908561F12DD1C0062BD63 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 85F9084F1F12DD1B0062BD63 /* CeleturLibrary.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 85F907F01F12D8360062BD63;
-			remoteInfo = CeleturLibraryTests;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		85EEE1FD1F1A68A2002CE85E /* Celetur.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Celetur.entitlements; sourceTree = "<group>"; };
+		85EEE1FE1F1A68A9002CE85E /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		85EEE2001F1A68E1002CE85E /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		85EEE2021F1A68EF002CE85E /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		85EEE2301F1B5215002CE85E /* CeleturKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CeleturKit.xcodeproj; path = ../CeleturKit/CeleturKit.xcodeproj; sourceTree = "<group>"; };
 		85F9080A1F12D9E30062BD63 /* Celetur.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Celetur.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		85F9080D1F12D9E30062BD63 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		85F908101F12D9E30062BD63 /* Celetur.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Celetur.xcdatamodel; sourceTree = "<group>"; };
@@ -55,7 +63,6 @@
 		85F908231F12D9E30062BD63 /* CeleturTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CeleturTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		85F908271F12D9E30062BD63 /* CeleturTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CeleturTests.swift; sourceTree = "<group>"; };
 		85F908291F12D9E30062BD63 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		85F9084F1F12DD1B0062BD63 /* CeleturLibrary.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CeleturLibrary.xcodeproj; path = ../CeleturLibrary/CeleturLibrary.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,7 +70,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				85F908581F12DD4F0062BD63 /* CeleturLibrary.framework in Frameworks */,
+				85EEE23B1F1B53B7002CE85E /* CeleturKit.framework in Frameworks */,
+				85EEE2011F1A68E1002CE85E /* StoreKit.framework in Frameworks */,
+				85EEE2031F1A68EF002CE85E /* MapKit.framework in Frameworks */,
+				85EEE1FF1F1A68A9002CE85E /* CloudKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -77,6 +87,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		85EEE2311F1B5215002CE85E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				85EEE2361F1B5215002CE85E /* CeleturKit.framework */,
+				85EEE2381F1B5215002CE85E /* CeleturKitTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		85F908011F12D9E30062BD63 = {
 			isa = PBXGroup;
 			children = (
@@ -99,6 +118,7 @@
 		85F9080C1F12D9E30062BD63 /* Celetur */ = {
 			isa = PBXGroup;
 			children = (
+				85EEE1FD1F1A68A2002CE85E /* Celetur.entitlements */,
 				85F9080D1F12D9E30062BD63 /* AppDelegate.swift */,
 				85F908121F12D9E30062BD63 /* MasterViewController.swift */,
 				85F908141F12D9E30062BD63 /* DetailViewController.swift */,
@@ -123,18 +143,12 @@
 		85F908321F12DAD00062BD63 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				85F9084F1F12DD1B0062BD63 /* CeleturLibrary.xcodeproj */,
+				85EEE2301F1B5215002CE85E /* CeleturKit.xcodeproj */,
+				85EEE2021F1A68EF002CE85E /* MapKit.framework */,
+				85EEE2001F1A68E1002CE85E /* StoreKit.framework */,
+				85EEE1FE1F1A68A9002CE85E /* CloudKit.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		85F908501F12DD1B0062BD63 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				85F908551F12DD1C0062BD63 /* CeleturLibrary.framework */,
-				85F908571F12DD1C0062BD63 /* CeleturLibraryTests.xctest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -187,6 +201,36 @@
 				TargetAttributes = {
 					85F908091F12D9E30062BD63 = {
 						CreatedOnToolsVersion = 9.0;
+						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+							com.apple.BackgroundModes = {
+								enabled = 0;
+							};
+							com.apple.DataProtection = {
+								enabled = 1;
+							};
+							com.apple.InAppPurchase = {
+								enabled = 1;
+							};
+							com.apple.Keychain = {
+								enabled = 1;
+							};
+							com.apple.Maps.iOS = {
+								enabled = 1;
+							};
+							com.apple.Push = {
+								enabled = 1;
+							};
+							com.apple.SafariKeychain = {
+								enabled = 1;
+							};
+							com.apple.iCloud = {
+								enabled = 1;
+							};
+						};
 					};
 					85F908221F12D9E30062BD63 = {
 						CreatedOnToolsVersion = 9.0;
@@ -207,8 +251,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 85F908501F12DD1B0062BD63 /* Products */;
-					ProjectRef = 85F9084F1F12DD1B0062BD63 /* CeleturLibrary.xcodeproj */;
+					ProductGroup = 85EEE2311F1B5215002CE85E /* Products */;
+					ProjectRef = 85EEE2301F1B5215002CE85E /* CeleturKit.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -220,18 +264,18 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		85F908551F12DD1C0062BD63 /* CeleturLibrary.framework */ = {
+		85EEE2361F1B5215002CE85E /* CeleturKit.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
-			path = CeleturLibrary.framework;
-			remoteRef = 85F908541F12DD1C0062BD63 /* PBXContainerItemProxy */;
+			path = CeleturKit.framework;
+			remoteRef = 85EEE2351F1B5215002CE85E /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		85F908571F12DD1C0062BD63 /* CeleturLibraryTests.xctest */ = {
+		85EEE2381F1B5215002CE85E /* CeleturKitTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
-			path = CeleturLibraryTests.xctest;
-			remoteRef = 85F908561F12DD1C0062BD63 /* PBXContainerItemProxy */;
+			path = CeleturKitTests.xctest;
+			remoteRef = 85EEE2371F1B5215002CE85E /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -413,11 +457,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Celetur/Celetur.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 4V27BGKSLA;
 				INFOPLIST_FILE = Celetur/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = net.ischlecken.Celetur;
+				PRODUCT_BUNDLE_IDENTIFIER = net.prisnoc.Celetur;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -427,11 +475,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Celetur/Celetur.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 4V27BGKSLA;
 				INFOPLIST_FILE = Celetur/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = net.ischlecken.Celetur;
+				PRODUCT_BUNDLE_IDENTIFIER = net.prisnoc.Celetur;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -488,6 +540,7 @@
 				85F9082E1F12D9E30062BD63 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		85F9082F1F12D9E30062BD63 /* Build configuration list for PBXNativeTarget "CeleturTests" */ = {
 			isa = XCConfigurationList;
@@ -496,6 +549,7 @@
 				85F908311F12D9E30062BD63 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 

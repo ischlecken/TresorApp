@@ -1,0 +1,43 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!--
+   ***************************************************************************
+   Bundesanstalt fuer Strassenwesen
+   RWBA-Symbol
+   Bezeichnung:
+   Tankstelle
+   Ausdehnung in cm:
+         X_min     X_max     Y_min     Y_max
+         0.00000  15.00000   0.00000  15.00000
+-->
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="512px" height="512px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
+
+  <defs>
+    <linearGradient id="grad1" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%"   style="stop-color:#fff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ccc;stop-opacity:1" />
+    </linearGradient>
+
+    <linearGradient id="grad2"  x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%"   style="stop-color:#FECD32;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FB7E11;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+
+<!--
+   ***************************************************************************
+-->
+<path fill="url(#grad2)" fill-rule="evenodd" stroke="none" 
+      stroke-width="0.25" d="M0 512L0 0L512 0L512 512L0 512Z" />
+
+	
+<path id="key-icon"  fill="url(#grad1)" stroke="none" stroke-opacity="0.5" d="M286.53,325.487l-45.314,45.313h-43.874l0.001,43.873l-45.745-0.002v41.345H50v-70.458l145.737-145.737
+	C212.174,278.996,244.714,310.706,286.53,325.487z M425.646,92.338c48.473,48.474,48.471,127.064-0.001,175.536
+	c-48.475,48.476-127.062,48.476-175.537,0.001c-48.473-48.472-48.475-127.062,0-175.537
+	C298.58,43.865,377.173,43.865,425.646,92.338z M400.732,117.165c-12.024-12.021-31.517-12.022-43.538,0
+	c-12.022,12.023-12.022,31.516,0,43.538c12.021,12.022,31.513,12.021,43.536-0.001C412.754,148.679,412.752,129.187,400.732,117.165
+	z"/>
+	
+</svg>

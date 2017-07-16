@@ -1,15 +1,15 @@
 //
-//  CeleturLibraryTests.swift
-//  CeleturLibraryTests
+//  CeleturKitTests.swift
+//  CeleturKitTests
 //
-//  Created by Feldmaus on 09.07.17.
-//  Copyright © 2017 ischlecken. All rights reserved.
+//  Created by Feldmaus on 16.07.17.
+//  Copyright © 2017 prisnoc. All rights reserved.
 //
 
 import XCTest
-@testable import CeleturLibrary
+@testable import CeleturKit
 
-class CeleturLibraryTests: XCTestCase {
+class CeleturKitTests: XCTestCase {
     
     override func setUp() {
         super.setUp()

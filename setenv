@@ -1,0 +1,7 @@
+#!/bin/sh
+
+echo "Sourcing tresorapp environment..."
+
+DEVDIR=/Users/fe/Development
+
+alias brt="java -jar $DEVDIR/3rdParty/batik-1.9/batik-rasterizer-1.9.jar"

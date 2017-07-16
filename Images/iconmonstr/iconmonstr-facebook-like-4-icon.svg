@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<!-- The icon can be used freely in both personal and commercial projects with no attribution required, but always appreciated. 
+You may NOT sub-license, resell, rent, redistribute or otherwise transfer the icon without express written permission from iconmonstr.com -->
+
+
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+
+	 width="512px" height="512px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
+
+<path id="facebook-like-circle-icon" d="M340.691,226.607l14.812,9.453v82.65l-20.477,17.941h-59.644l-27.717-15.621l-30.883,0.032
+
+	v-71.025c0.256-0.035,0.54-0.074,0.844-0.121c35.961-5.385,51.225-42.212,64.69-74.706c2.526-6.096,7.893-18.3,9.463-21.862h14.204
+
+	v8.319l-6.384,21.795v43.145H340.691z M462.417,256c0,113.771-92.229,206-206,206s-206-92.229-206-206s92.229-206,206-206
+
+	S462.417,142.229,462.417,256z M371.776,227.762l-26.761-17.427h-29.143v-26.394l6.385-21.795v-25.07H281.44
+
+	c0,0-10.468,23.011-14.153,31.904c-12.136,29.279-24.674,59.53-50.57,64.564V220.57h-75.659v127.776h75.659v-11.042h25.666
+
+	l28.523,15.62h69.402l31.468-28.127V227.762z"/>
+
+</svg>
+

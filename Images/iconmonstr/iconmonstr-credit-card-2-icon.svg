@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- The icon can be used freely in both personal and commercial projects with no attribution required, but always appreciated. 
+You may NOT sub-license, resell, rent, redistribute or otherwise transfer the icon without express written permission from iconmonstr.com -->
+
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="512px" height="512px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
+<path id="credit-card-2-icon" d="M422,158.5c5.522,0,10,4.477,10,10v175c0,5.522-4.478,10-10,10H90c-5.523,0-10-4.478-10-10v-175
+	c0-5.523,4.477-10,10-10H422z M432,128.5H80c-16.568,0-30,13.432-30,30v195c0,16.568,13.432,30,30,30h352c16.568,0,30-13.432,30-30
+	v-195C462,141.932,448.568,128.5,432,128.5z M163.51,270.334h7.158c7.18,0,13-5.82,13-13v-4.803H163.51V270.334z M110,216.666v5.74
+	h20.125v-18.74H123C115.82,203.666,110,209.486,110,216.666z M110,257.334c0,7.18,5.82,13,13,13h7.125v-17.803H110V257.334z
+	 M110,245.531h20.125v-16.125H110V245.531z M170.668,203.666h-33.543v66.668h19.385v-47.928h27.158v-5.74
+	C183.668,209.486,177.848,203.666,170.668,203.666z M163.51,229.406v16.125h20.158v-16.125H163.51z M162.668,308H110v19h52.668V308z
+	 M243.668,308H191v19h52.668V308z M324.168,308H271.5v19h52.668V308z M404.668,308H352v19h52.668V308z M404.334,237
+	c0,19.514-15.819,35.334-35.334,35.334s-35.333-15.82-35.333-35.334s15.818-35.334,35.333-35.334S404.334,217.486,404.334,237z
+	 M325.667,237c0-11.639,4.621-22.211,12.113-30.004c-5.415-3.375-11.806-5.33-18.655-5.33c-19.514,0-35.333,15.82-35.333,35.334
+	s15.819,35.334,35.333,35.334c6.85,0,13.24-1.955,18.655-5.33C330.288,259.211,325.667,248.639,325.667,237z"/>
+</svg>

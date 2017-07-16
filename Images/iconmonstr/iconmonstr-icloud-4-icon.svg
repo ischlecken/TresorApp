@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<!-- The icon can be used freely in both personal and commercial projects with no attribution required, but always appreciated. 
+You may NOT sub-license, resell, rent, redistribute or otherwise transfer the icon without express written permission from iconmonstr.com -->
+
+
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+
+	 width="512px" height="512px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
+
+<path id="icloud-circle-icon" d="M256.417,50c-113.771,0-206,92.229-206,206s92.229,206,206,206s206-92.229,206-206
+
+	S370.188,50,256.417,50z M343.076,341.461H175.135c-31.354,0-56.768-25.414-56.768-56.769c0-22.649,13.268-42.196,32.451-51.304
+
+	c0.154-21.705,17.782-39.255,39.523-39.255c7.653,0,14.774,2.211,20.829,5.977c13.249-22.48,37.693-37.572,65.675-37.572
+
+	c41.034,0,74.477,32.44,76.119,73.073c24.759,4.639,43.502,26.354,43.502,52.461C396.467,317.559,372.562,341.461,343.076,341.461z"
+
+	/>
+
+</svg>
+

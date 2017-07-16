@@ -7,188 +7,190 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		85F907F11F12D8360062BD63 /* CeleturLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85F907E71F12D8360062BD63 /* CeleturLibrary.framework */; };
-		85F907F61F12D8360062BD63 /* CeleturLibraryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F907F51F12D8360062BD63 /* CeleturLibraryTests.swift */; };
-		85F907F81F12D8360062BD63 /* CeleturLibrary.h in Headers */ = {isa = PBXBuildFile; fileRef = 85F907EA1F12D8360062BD63 /* CeleturLibrary.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		85F9085A1F12DE700062BD63 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F908591F12DE700062BD63 /* Logger.swift */; };
-		85F9085C1F12E6370062BD63 /* CeleturUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F9085B1F12E6370062BD63 /* CeleturUtil.swift */; };
+		85EEE21A1F1B4E4B002CE85E /* CeleturKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85EEE2101F1B4E4B002CE85E /* CeleturKit.framework */; };
+		85EEE21F1F1B4E4B002CE85E /* CeleturKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EEE21E1F1B4E4B002CE85E /* CeleturKitTests.swift */; };
+		85EEE2211F1B4E4B002CE85E /* CeleturKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 85EEE2131F1B4E4B002CE85E /* CeleturKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		85EEE22E1F1B4F0C002CE85E /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EEE22B1F1B4F0C002CE85E /* CoreDataStack.swift */; };
+		85EEE22F1F1B4F0C002CE85E /* CeleturUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EEE22C1F1B4F0C002CE85E /* CeleturUtil.swift */; };
+		85EEE23A1F1B52DE002CE85E /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EEE2391F1B52DE002CE85E /* Logger.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		85F907F21F12D8360062BD63 /* PBXContainerItemProxy */ = {
+		85EEE21B1F1B4E4B002CE85E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 85F907DE1F12D8360062BD63 /* Project object */;
+			containerPortal = 85EEE2071F1B4E4B002CE85E /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 85F907E61F12D8360062BD63;
-			remoteInfo = CeleturLibrary;
+			remoteGlobalIDString = 85EEE20F1F1B4E4B002CE85E;
+			remoteInfo = CeleturKit;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		85F907E71F12D8360062BD63 /* CeleturLibrary.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CeleturLibrary.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		85F907EA1F12D8360062BD63 /* CeleturLibrary.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CeleturLibrary.h; sourceTree = "<group>"; };
-		85F907EB1F12D8360062BD63 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		85F907F01F12D8360062BD63 /* CeleturLibraryTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CeleturLibraryTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		85F907F51F12D8360062BD63 /* CeleturLibraryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CeleturLibraryTests.swift; sourceTree = "<group>"; };
-		85F907F71F12D8360062BD63 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		85F908591F12DE700062BD63 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
-		85F9085B1F12E6370062BD63 /* CeleturUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CeleturUtil.swift; sourceTree = "<group>"; };
+		85EEE2101F1B4E4B002CE85E /* CeleturKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CeleturKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		85EEE2131F1B4E4B002CE85E /* CeleturKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CeleturKit.h; sourceTree = "<group>"; };
+		85EEE2141F1B4E4B002CE85E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		85EEE2191F1B4E4B002CE85E /* CeleturKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CeleturKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		85EEE21E1F1B4E4B002CE85E /* CeleturKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CeleturKitTests.swift; sourceTree = "<group>"; };
+		85EEE2201F1B4E4B002CE85E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		85EEE22B1F1B4F0C002CE85E /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
+		85EEE22C1F1B4F0C002CE85E /* CeleturUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CeleturUtil.swift; sourceTree = "<group>"; };
+		85EEE2391F1B52DE002CE85E /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		85F907E31F12D8360062BD63 /* Frameworks */ = {
+		85EEE20C1F1B4E4B002CE85E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		85F907ED1F12D8360062BD63 /* Frameworks */ = {
+		85EEE2161F1B4E4B002CE85E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				85F907F11F12D8360062BD63 /* CeleturLibrary.framework in Frameworks */,
+				85EEE21A1F1B4E4B002CE85E /* CeleturKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		85F907DD1F12D8360062BD63 = {
+		85EEE2061F1B4E4B002CE85E = {
 			isa = PBXGroup;
 			children = (
-				85F907E91F12D8360062BD63 /* CeleturLibrary */,
-				85F907F41F12D8360062BD63 /* CeleturLibraryTests */,
-				85F907E81F12D8360062BD63 /* Products */,
+				85EEE2121F1B4E4B002CE85E /* CeleturKit */,
+				85EEE21D1F1B4E4B002CE85E /* CeleturKitTests */,
+				85EEE2111F1B4E4B002CE85E /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		85F907E81F12D8360062BD63 /* Products */ = {
+		85EEE2111F1B4E4B002CE85E /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				85F907E71F12D8360062BD63 /* CeleturLibrary.framework */,
-				85F907F01F12D8360062BD63 /* CeleturLibraryTests.xctest */,
+				85EEE2101F1B4E4B002CE85E /* CeleturKit.framework */,
+				85EEE2191F1B4E4B002CE85E /* CeleturKitTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		85F907E91F12D8360062BD63 /* CeleturLibrary */ = {
+		85EEE2121F1B4E4B002CE85E /* CeleturKit */ = {
 			isa = PBXGroup;
 			children = (
-				85F907EA1F12D8360062BD63 /* CeleturLibrary.h */,
-				85F907EB1F12D8360062BD63 /* Info.plist */,
-				85F908591F12DE700062BD63 /* Logger.swift */,
-				85F9085B1F12E6370062BD63 /* CeleturUtil.swift */,
+				85EEE22C1F1B4F0C002CE85E /* CeleturUtil.swift */,
+				85EEE22B1F1B4F0C002CE85E /* CoreDataStack.swift */,
+				85EEE2391F1B52DE002CE85E /* Logger.swift */,
+				85EEE2131F1B4E4B002CE85E /* CeleturKit.h */,
+				85EEE2141F1B4E4B002CE85E /* Info.plist */,
 			);
-			path = CeleturLibrary;
+			path = CeleturKit;
 			sourceTree = "<group>";
 		};
-		85F907F41F12D8360062BD63 /* CeleturLibraryTests */ = {
+		85EEE21D1F1B4E4B002CE85E /* CeleturKitTests */ = {
 			isa = PBXGroup;
 			children = (
-				85F907F51F12D8360062BD63 /* CeleturLibraryTests.swift */,
-				85F907F71F12D8360062BD63 /* Info.plist */,
+				85EEE21E1F1B4E4B002CE85E /* CeleturKitTests.swift */,
+				85EEE2201F1B4E4B002CE85E /* Info.plist */,
 			);
-			path = CeleturLibraryTests;
+			path = CeleturKitTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		85F907E41F12D8360062BD63 /* Headers */ = {
+		85EEE20D1F1B4E4B002CE85E /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				85F907F81F12D8360062BD63 /* CeleturLibrary.h in Headers */,
+				85EEE2211F1B4E4B002CE85E /* CeleturKit.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		85F907E61F12D8360062BD63 /* CeleturLibrary */ = {
+		85EEE20F1F1B4E4B002CE85E /* CeleturKit */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 85F907FB1F12D8360062BD63 /* Build configuration list for PBXNativeTarget "CeleturLibrary" */;
+			buildConfigurationList = 85EEE2241F1B4E4B002CE85E /* Build configuration list for PBXNativeTarget "CeleturKit" */;
 			buildPhases = (
-				85F907E21F12D8360062BD63 /* Sources */,
-				85F907E31F12D8360062BD63 /* Frameworks */,
-				85F907E41F12D8360062BD63 /* Headers */,
-				85F907E51F12D8360062BD63 /* Resources */,
+				85EEE20B1F1B4E4B002CE85E /* Sources */,
+				85EEE20C1F1B4E4B002CE85E /* Frameworks */,
+				85EEE20D1F1B4E4B002CE85E /* Headers */,
+				85EEE20E1F1B4E4B002CE85E /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = CeleturLibrary;
-			productName = CeleturLibrary;
-			productReference = 85F907E71F12D8360062BD63 /* CeleturLibrary.framework */;
+			name = CeleturKit;
+			productName = CeleturKit;
+			productReference = 85EEE2101F1B4E4B002CE85E /* CeleturKit.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		85F907EF1F12D8360062BD63 /* CeleturLibraryTests */ = {
+		85EEE2181F1B4E4B002CE85E /* CeleturKitTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 85F907FE1F12D8360062BD63 /* Build configuration list for PBXNativeTarget "CeleturLibraryTests" */;
+			buildConfigurationList = 85EEE2271F1B4E4B002CE85E /* Build configuration list for PBXNativeTarget "CeleturKitTests" */;
 			buildPhases = (
-				85F907EC1F12D8360062BD63 /* Sources */,
-				85F907ED1F12D8360062BD63 /* Frameworks */,
-				85F907EE1F12D8360062BD63 /* Resources */,
+				85EEE2151F1B4E4B002CE85E /* Sources */,
+				85EEE2161F1B4E4B002CE85E /* Frameworks */,
+				85EEE2171F1B4E4B002CE85E /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				85F907F31F12D8360062BD63 /* PBXTargetDependency */,
+				85EEE21C1F1B4E4B002CE85E /* PBXTargetDependency */,
 			);
-			name = CeleturLibraryTests;
-			productName = CeleturLibraryTests;
-			productReference = 85F907F01F12D8360062BD63 /* CeleturLibraryTests.xctest */;
+			name = CeleturKitTests;
+			productName = CeleturKitTests;
+			productReference = 85EEE2191F1B4E4B002CE85E /* CeleturKitTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		85F907DE1F12D8360062BD63 /* Project object */ = {
+		85EEE2071F1B4E4B002CE85E /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0900;
 				LastUpgradeCheck = 0900;
-				ORGANIZATIONNAME = ischlecken;
+				ORGANIZATIONNAME = prisnoc;
 				TargetAttributes = {
-					85F907E61F12D8360062BD63 = {
+					85EEE20F1F1B4E4B002CE85E = {
 						CreatedOnToolsVersion = 9.0;
 						LastSwiftMigration = 0900;
-						ProvisioningStyle = Automatic;
 					};
-					85F907EF1F12D8360062BD63 = {
+					85EEE2181F1B4E4B002CE85E = {
 						CreatedOnToolsVersion = 9.0;
 					};
 				};
 			};
-			buildConfigurationList = 85F907E11F12D8360062BD63 /* Build configuration list for PBXProject "CeleturLibrary" */;
+			buildConfigurationList = 85EEE20A1F1B4E4B002CE85E /* Build configuration list for PBXProject "CeleturKit" */;
 			compatibilityVersion = "Xcode 8.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 			);
-			mainGroup = 85F907DD1F12D8360062BD63;
-			productRefGroup = 85F907E81F12D8360062BD63 /* Products */;
+			mainGroup = 85EEE2061F1B4E4B002CE85E;
+			productRefGroup = 85EEE2111F1B4E4B002CE85E /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				85F907E61F12D8360062BD63 /* CeleturLibrary */,
-				85F907EF1F12D8360062BD63 /* CeleturLibraryTests */,
+				85EEE20F1F1B4E4B002CE85E /* CeleturKit */,
+				85EEE2181F1B4E4B002CE85E /* CeleturKitTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		85F907E51F12D8360062BD63 /* Resources */ = {
+		85EEE20E1F1B4E4B002CE85E /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		85F907EE1F12D8360062BD63 /* Resources */ = {
+		85EEE2171F1B4E4B002CE85E /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -198,35 +200,36 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		85F907E21F12D8360062BD63 /* Sources */ = {
+		85EEE20B1F1B4E4B002CE85E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				85F9085C1F12E6370062BD63 /* CeleturUtil.swift in Sources */,
-				85F9085A1F12DE700062BD63 /* Logger.swift in Sources */,
+				85EEE22E1F1B4F0C002CE85E /* CoreDataStack.swift in Sources */,
+				85EEE23A1F1B52DE002CE85E /* Logger.swift in Sources */,
+				85EEE22F1F1B4F0C002CE85E /* CeleturUtil.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		85F907EC1F12D8360062BD63 /* Sources */ = {
+		85EEE2151F1B4E4B002CE85E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				85F907F61F12D8360062BD63 /* CeleturLibraryTests.swift in Sources */,
+				85EEE21F1F1B4E4B002CE85E /* CeleturKitTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		85F907F31F12D8360062BD63 /* PBXTargetDependency */ = {
+		85EEE21C1F1B4E4B002CE85E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 85F907E61F12D8360062BD63 /* CeleturLibrary */;
-			targetProxy = 85F907F21F12D8360062BD63 /* PBXContainerItemProxy */;
+			target = 85EEE20F1F1B4E4B002CE85E /* CeleturKit */;
+			targetProxy = 85EEE21B1F1B4E4B002CE85E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		85F907F91F12D8360062BD63 /* Debug */ = {
+		85EEE2221F1B4E4B002CE85E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -284,7 +287,7 @@
 			};
 			name = Debug;
 		};
-		85F907FA1F12D8360062BD63 /* Release */ = {
+		85EEE2231F1B4E4B002CE85E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -335,24 +338,21 @@
 			};
 			name = Release;
 		};
-		85F907FC1F12D8360062BD63 /* Debug */ = {
+		85EEE2251F1B4E4B002CE85E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 4V27BGKSLA;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = CeleturLibrary/Info.plist;
+				INFOPLIST_FILE = CeleturKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = net.ischlecken.CeleturLibrary;
+				PRODUCT_BUNDLE_IDENTIFIER = net.prisnoc.CeleturKit;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
@@ -360,52 +360,49 @@
 			};
 			name = Debug;
 		};
-		85F907FD1F12D8360062BD63 /* Release */ = {
+		85EEE2261F1B4E4B002CE85E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 4V27BGKSLA;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = CeleturLibrary/Info.plist;
+				INFOPLIST_FILE = CeleturKit/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = net.ischlecken.CeleturLibrary;
+				PRODUCT_BUNDLE_IDENTIFIER = net.prisnoc.CeleturKit;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
-		85F907FF1F12D8360062BD63 /* Debug */ = {
+		85EEE2281F1B4E4B002CE85E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				DEVELOPMENT_TEAM = 4V27BGKSLA;
-				INFOPLIST_FILE = CeleturLibraryTests/Info.plist;
+				INFOPLIST_FILE = CeleturKitTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = net.ischlecken.CeleturLibraryTests;
+				PRODUCT_BUNDLE_IDENTIFIER = net.prisnoc.CeleturKitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		85F908001F12D8360062BD63 /* Release */ = {
+		85EEE2291F1B4E4B002CE85E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				DEVELOPMENT_TEAM = 4V27BGKSLA;
-				INFOPLIST_FILE = CeleturLibraryTests/Info.plist;
+				INFOPLIST_FILE = CeleturKitTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = net.ischlecken.CeleturLibraryTests;
+				PRODUCT_BUNDLE_IDENTIFIER = net.prisnoc.CeleturKitTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -415,34 +412,34 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		85F907E11F12D8360062BD63 /* Build configuration list for PBXProject "CeleturLibrary" */ = {
+		85EEE20A1F1B4E4B002CE85E /* Build configuration list for PBXProject "CeleturKit" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				85F907F91F12D8360062BD63 /* Debug */,
-				85F907FA1F12D8360062BD63 /* Release */,
+				85EEE2221F1B4E4B002CE85E /* Debug */,
+				85EEE2231F1B4E4B002CE85E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		85F907FB1F12D8360062BD63 /* Build configuration list for PBXNativeTarget "CeleturLibrary" */ = {
+		85EEE2241F1B4E4B002CE85E /* Build configuration list for PBXNativeTarget "CeleturKit" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				85F907FC1F12D8360062BD63 /* Debug */,
-				85F907FD1F12D8360062BD63 /* Release */,
+				85EEE2251F1B4E4B002CE85E /* Debug */,
+				85EEE2261F1B4E4B002CE85E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		85F907FE1F12D8360062BD63 /* Build configuration list for PBXNativeTarget "CeleturLibraryTests" */ = {
+		85EEE2271F1B4E4B002CE85E /* Build configuration list for PBXNativeTarget "CeleturKitTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				85F907FF1F12D8360062BD63 /* Debug */,
-				85F908001F12D8360062BD63 /* Release */,
+				85EEE2281F1B4E4B002CE85E /* Debug */,
+				85EEE2291F1B4E4B002CE85E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 85F907DE1F12D8360062BD63 /* Project object */;
+	rootObject = 85EEE2071F1B4E4B002CE85E /* Project object */;
 }

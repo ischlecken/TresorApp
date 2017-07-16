@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- The icon can be used freely in both personal and commercial projects with no attribution required, but always appreciated. 
+You may NOT sub-license, resell, rent, redistribute or otherwise transfer the icon without express written permission from iconmonstr.com -->
+
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="512px" height="512px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
+<path id="wireless-4-icon" d="M256,50C142.229,50,50,142.229,50,256c0,113.771,92.229,206,206,206s206-92.229,206-206
+	C462,142.229,369.771,50,256,50z M258,370.965l-45.5-45.5c11.645-11.645,27.731-18.847,45.5-18.847s33.856,7.202,45.5,18.847
+	L258,370.965z M324.5,304.465c-17.019-17.02-40.53-27.546-66.501-27.546c-25.969,0-49.48,10.526-66.5,27.546l-28-28
+	c24.186-24.186,57.596-39.144,94.5-39.144c36.906,0,70.316,14.958,94.501,39.144L324.5,304.465z M373.5,255.465
+	c-29.56-29.559-70.394-47.841-115.5-47.841c-45.105,0-85.941,18.282-115.5,47.841l-28.7-28.7
+	c36.904-36.904,87.887-59.73,144.2-59.73s107.296,22.826,144.2,59.73L373.5,255.465z"/>
+</svg>

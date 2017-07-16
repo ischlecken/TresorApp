@@ -8,10 +8,16 @@ public class CoreDataStack {
   public let store:NSPersistentStore?
   
   public convenience init(_ dbName:String) {
-    self.init(dbName, using:Bundle.main)
+    self.init(dbName, using:Bundle.main,andDocumentURL:CoreDataStack.applicationDocumentsDirectory())
   }
   
-  public init(_ dbName:String, using bundle:Bundle) {
+  public convenience init(_ dbName:String, using bundle:Bundle,inAppGroupContainer appGroupContainerId:String) {
+    let url = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupContainerId)
+    
+    self.init(dbName,using:bundle,andDocumentURL:url!)
+  }
+  
+  public init(_ dbName:String, using bundle:Bundle, andDocumentURL documentsURL:URL) {
     let modelName = dbName
     let databaseName = dbName+".sqlite"
     let modelURL = bundle.url(forResource: modelName, withExtension: "momd")
@@ -22,7 +28,6 @@ public class CoreDataStack {
     context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
     context.persistentStoreCoordinator = psc
     
-    let documentsURL = CoreDataStack.applicationDocumentsDirectory()
     let storeURL = documentsURL.appendingPathComponent(databaseName)
     
     do {
@@ -40,12 +45,12 @@ public class CoreDataStack {
     }
   }
   
-  static func applicationDocumentsDirectory() -> NSURL {
+  static func applicationDocumentsDirectory() -> URL {
     let fileManager = FileManager.default
     
     let urls =
       fileManager.urls(for: .documentDirectory,
-                       in: .userDomainMask) as [NSURL]
+                       in: .userDomainMask) as [URL]
     
     return urls[0]
   }

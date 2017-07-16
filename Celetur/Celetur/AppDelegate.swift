@@ -14,7 +14,7 @@ import CeleturKit
 class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDelegate {
 
   var window: UIWindow?
-  lazy var persistentContainer: CoreDataStack = CoreDataStack("CeleturKit",using:Bundle(identifier:"net.prisnoc.CeleturKit")!)
+  lazy var persistentContainer: CoreDataStack = CoreDataStack("CeleturKit",using:Bundle(identifier:"net.prisnoc.CeleturKit")!,inAppGroupContainer:"group.net.prisnoc.Celetur")
   
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
     // Override point for customization after application launch.

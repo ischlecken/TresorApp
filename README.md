@@ -14,4 +14,6 @@ Hugo Schlecken
 
 ## License
 
-
+<!-- 
+otool -L CeleturKit
+-->

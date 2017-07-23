@@ -42,12 +42,29 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
   @objc
   func insertNewObject(_ sender: Any) {
     let context = self.fetchedResultsController.managedObjectContext
-    let newEvent = Tresor(context: context)
+    let newTresor = Tresor(context: context)
          
     // If appropriate, configure the new managed object.
-    newEvent.createts = Date()
-    newEvent.id = CeleturUtil.create()
-
+    newTresor.createts = Date()
+    newTresor.id = CeleturKitUtil.create()
+    
+    let algorithm = SymmetricCipherAlgorithm.aes_256
+    let key = CipherRandomUtil.randomStringOfLength(algorithm.requiredKeySize())
+    let plainText = "Test, the quick brown fox jumps over the lazy dog, 123,123,123"
+    let cipher = SymmetricCipher(algorithm: algorithm,options: 0x0003)
+    
+    do {
+      let encryptedText = try cipher.crypt(string:plainText,key:key)
+      
+      newTresor.nonce = encryptedText
+      
+      print("plain:\(plainText) key:\(key) encryptedText:\(encryptedText.hexDescription)")
+    } catch let celeturKitError as CeleturKitError {
+      print("CeleturKitError while trigger cipher:\(celeturKitError)")
+    } catch {
+      print("Error while trigger cipher:\(error)")
+    }
+   
     // Save the context.
     do {
         try context.save()

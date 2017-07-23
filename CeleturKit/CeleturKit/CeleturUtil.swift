@@ -8,9 +8,9 @@
 
 import Foundation
 
-public class CeleturUtil {
+public class CeleturKitUtil {
   
-  public static func create() -> String {
+  public class func create() -> String {
     return UUID().uuidString
   }
 }

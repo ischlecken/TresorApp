@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8576D77A1F255F5200D9328A /* CeleturKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85EEE2361F1B5215002CE85E /* CeleturKit.framework */; };
+		8576D77B1F255F5200D9328A /* CeleturKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 85EEE2361F1B5215002CE85E /* CeleturKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		85EEE1FF1F1A68A9002CE85E /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85EEE1FE1F1A68A9002CE85E /* CloudKit.framework */; };
 		85EEE2011F1A68E1002CE85E /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85EEE2001F1A68E1002CE85E /* StoreKit.framework */; };
 		85EEE2031F1A68EF002CE85E /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85EEE2021F1A68EF002CE85E /* MapKit.framework */; };
@@ -21,6 +23,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		8576D77C1F255F5200D9328A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 85EEE2301F1B5215002CE85E /* CeleturKit.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 85EEE20F1F1B4E4B002CE85E;
+			remoteInfo = CeleturKit;
+		};
 		85EEE2351F1B5215002CE85E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 85EEE2301F1B5215002CE85E /* CeleturKit.xcodeproj */;
@@ -43,6 +52,20 @@
 			remoteInfo = Celetur;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		8576D77E1F255F5200D9328A /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				8576D77B1F255F5200D9328A /* CeleturKit.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		85EEE1FD1F1A68A2002CE85E /* Celetur.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Celetur.entitlements; sourceTree = "<group>"; };
@@ -70,6 +93,7 @@
 			files = (
 				85EEE23B1F1B53B7002CE85E /* CeleturKit.framework in Frameworks */,
 				85EEE2011F1A68E1002CE85E /* StoreKit.framework in Frameworks */,
+				8576D77A1F255F5200D9328A /* CeleturKit.framework in Frameworks */,
 				85EEE2031F1A68EF002CE85E /* MapKit.framework in Frameworks */,
 				85EEE1FF1F1A68A9002CE85E /* CloudKit.framework in Frameworks */,
 			);
@@ -158,10 +182,12 @@
 				85F908061F12D9E30062BD63 /* Sources */,
 				85F908071F12D9E30062BD63 /* Frameworks */,
 				85F908081F12D9E30062BD63 /* Resources */,
+				8576D77E1F255F5200D9328A /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				8576D77D1F255F5200D9328A /* PBXTargetDependency */,
 			);
 			name = Celetur;
 			productName = Celetur;
@@ -319,6 +345,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		8576D77D1F255F5200D9328A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = CeleturKit;
+			targetProxy = 8576D77C1F255F5200D9328A /* PBXContainerItemProxy */;
+		};
 		85F908251F12D9E30062BD63 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 85F908091F12D9E30062BD63 /* Celetur */;
@@ -452,6 +483,7 @@
 		85F9082D1F12D9E30062BD63 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Celetur/Celetur.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -470,6 +502,7 @@
 		85F9082E1F12D9E30062BD63 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Celetur/Celetur.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";

@@ -47,6 +47,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     // If appropriate, configure the new managed object.
     newTresor.createts = Date()
     newTresor.id = CeleturKitUtil.create()
+    newTresor.name = "test"
     
     let algorithm = SymmetricCipherAlgorithm.aes_256
     let key = CipherRandomUtil.randomStringOfLength(algorithm.requiredKeySize())

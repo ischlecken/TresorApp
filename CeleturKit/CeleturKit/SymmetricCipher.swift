@@ -10,18 +10,17 @@ import Foundation
 import CKCommonCrypto
 
 public class SymmetricCipher {
+
+  var algorithm: SymmetricCipherAlgorithm
+  var options: SymmetricCipherOptions
+  var iv: Data?
   
-  // properties
-  var algorithm: SymmetricCipherAlgorithm    // Algorithm
-  var options: CCOptions                      // Options (i.e: kCCOptionECBMode + kCCOptionPKCS7Padding)
-  var iv: Data?                             // Initialization Vector
-  
-  public init(algorithm: SymmetricCipherAlgorithm, options: Int) {
+  public init(algorithm: SymmetricCipherAlgorithm, options: SymmetricCipherOptions) {
     self.algorithm = algorithm
-    self.options = CCOptions(options)
+    self.options = options
   }
   
-  public convenience init(algorithm: SymmetricCipherAlgorithm, options: Int, iv: String, encoding: String.Encoding = String.Encoding.utf8) {
+  public convenience init(algorithm: SymmetricCipherAlgorithm, options: SymmetricCipherOptions, iv: String, encoding: String.Encoding = String.Encoding.utf8) {
     self.init(algorithm: algorithm, options: options)
     self.iv = iv.data(using: encoding)
   }
@@ -56,7 +55,7 @@ public class SymmetricCipher {
     print("cryptoOperation() key:\(key)")
     
     // Validation checks.
-    if iv == nil && (self.options & CCOptions(kCCOptionECBMode) == 0) {
+    if iv == nil && !self.options.contains(SymmetricCipherOptions.ECBMode) {
       throw(CeleturKitError.cipherMissingIV)
     }
     
@@ -84,7 +83,7 @@ public class SymmetricCipher {
     let cryptStatus = CCCrypt(
       operation,                  // Operation
       algorithm.ccAlgorithm(),    // Algorithm
-      options,                    // Options
+      options.rawValue,           // Options
       keyBytes,                   // key data
       keyLength,                  // key length
       ivBuffer,                   // IV buffer

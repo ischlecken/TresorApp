@@ -51,7 +51,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     let algorithm = SymmetricCipherAlgorithm.aes_256
     let key = CipherRandomUtil.randomStringOfLength(algorithm.requiredKeySize())
     let plainText = "Test, the quick brown fox jumps over the lazy dog, 123,123,123"
-    let cipher = SymmetricCipher(algorithm: algorithm,options: 0x0003)
+    let cipher = SymmetricCipher(algorithm: algorithm,options: [.ECBMode,.PKCS7Padding])
     
     do {
       let encryptedText = try cipher.crypt(string:plainText,key:key)

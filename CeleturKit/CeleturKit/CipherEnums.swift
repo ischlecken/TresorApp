@@ -80,14 +80,12 @@ public enum SymmetricCipherAlgorithm {
   }
 }
 
-enum SymmetricCipherOptions {
-  case ecb
-  case cbc
+public struct SymmetricCipherOptions:OptionSet {
+  public let rawValue: UInt32
   
-  func options() -> CCOptions {
-    switch(self) {
-    case .ecb: return CCOptions(kCCOptionECBMode)
-    case .cbc: return CCOptions(kCCOptionECBMode)
-    }
-  }
+  public init(rawValue: UInt32) {
+    self.rawValue = rawValue }
+
+  public static let ECBMode      = SymmetricCipherOptions(rawValue:0x0002)
+  public static let PKCS7Padding = SymmetricCipherOptions(rawValue:0x0001)
 }

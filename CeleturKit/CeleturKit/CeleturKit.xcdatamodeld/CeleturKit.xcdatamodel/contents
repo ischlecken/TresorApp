@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="13196.5" systemVersion="16F73" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="13209.6" systemVersion="16G29" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Audit" representedClassName="Audit" syncable="YES" codeGenerationType="class">
         <attribute name="createts" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="message" optional="YES" attributeType="String" syncable="YES"/>
@@ -52,6 +52,7 @@
         <attribute name="metainfo" optional="YES" attributeType="Binary" syncable="YES"/>
         <attribute name="nonce" optional="YES" attributeType="Binary" syncable="YES"/>
         <attribute name="prevdocid" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="previewimage" optional="YES" attributeType="Binary" syncable="YES"/>
         <relationship name="items" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TresorDocumentItem" inverseName="documentid" inverseEntity="TresorDocumentItem" syncable="YES"/>
         <relationship name="tresorid" maxCount="1" deletionRule="Nullify" destinationEntity="Tresor" inverseName="documents" inverseEntity="Tresor" syncable="YES"/>
     </entity>
@@ -102,7 +103,7 @@
         <element name="Commandqueue" positionX="187" positionY="-180" width="128" height="223"/>
         <element name="Schemaversion" positionX="187" positionY="-333" width="128" height="88"/>
         <element name="Tresor" positionX="-423" positionY="135" width="128" height="193"/>
-        <element name="TresorDocument" positionX="-414" positionY="377" width="128" height="178"/>
+        <element name="TresorDocument" positionX="-414" positionY="377" width="128" height="193"/>
         <element name="TresorDocumentItem" positionX="-117" positionY="347" width="128" height="178"/>
         <element name="TresorPermission" positionX="-515" positionY="-135" width="128" height="178"/>
         <element name="User" positionX="-317" positionY="-135" width="128" height="193"/>

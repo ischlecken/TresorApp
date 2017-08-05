@@ -1,7 +1,4 @@
 //
-//  MasterViewController.swift
-//  Celetur
-//
 //  Created by Feldmaus on 09.07.17.
 //  Copyright © 2017 ischlecken. All rights reserved.
 //
@@ -10,9 +7,9 @@ import UIKit
 import CoreData
 import CeleturKit
 
-class MasterViewController: UITableViewController, NSFetchedResultsControllerDelegate {
+class TresorDocumentViewController: UITableViewController, NSFetchedResultsControllerDelegate {
 
-  var detailViewController: DetailViewController? = nil
+  var tresor: Tresor? = nil
   var managedObjectContext: NSManagedObjectContext? = nil
 
 
@@ -23,10 +20,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
 
     let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(insertNewObject(_:)))
     navigationItem.rightBarButtonItem = addButton
-    if let split = splitViewController {
-        let controllers = split.viewControllers
-        detailViewController = (controllers[controllers.count-1] as! UINavigationController).topViewController as? DetailViewController
-    }
   }
 
   override func viewWillAppear(_ animated: Bool) {
@@ -42,12 +35,13 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
   @objc
   func insertNewObject(_ sender: Any) {
     let context = self.fetchedResultsController.managedObjectContext
-    let newTresor = Tresor(context: context)
+    let newTresorDocument = TresorDocument(context: context)
          
     // If appropriate, configure the new managed object.
-    newTresor.createts = Date()
-    newTresor.id = CeleturKitUtil.create()
-    newTresor.name = "test"
+    newTresorDocument.createts = Date()
+    newTresorDocument.id = CeleturKitUtil.create()
+    newTresorDocument.tresorid = self.tresor
+    
     
     let algorithm = SymmetricCipherAlgorithm.aes_256
     let key = CipherRandomUtil.randomStringOfLength(algorithm.requiredKeySize())
@@ -57,7 +51,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     do {
       let encryptedText = try cipher.crypt(string:plainText,key:key)
       
-      newTresor.nonce = encryptedText
+      newTresorDocument.nonce = encryptedText
       
       print("plain:\(plainText) key:\(key) encryptedText:\(encryptedText.hexDescription)")
     } catch let celeturKitError as CeleturKitError {
@@ -80,11 +74,12 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
   // MARK: - Segues
 
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-    if segue.identifier == "showDetail" {
+    if segue.identifier == "showTresorDocumentItem" {
         if let indexPath = tableView.indexPathForSelectedRow {
         let object = fetchedResultsController.object(at: indexPath)
-            let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
-            controller.detailItem = object
+            let controller = segue.destination as! TresorDocumentItemViewController
+            controller.tresorDocument = object
+            controller.managedObjectContext = self.managedObjectContext
             controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
             controller.navigationItem.leftItemsSupplementBackButton = true
         }
@@ -103,7 +98,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
   }
 
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+    let cell = tableView.dequeueReusableCell(withIdentifier: "TresorDocCell", for: indexPath)
     let event = fetchedResultsController.object(at: indexPath)
     configureCell(cell, withEvent: event)
     return cell
@@ -130,7 +125,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
   }
 
-  func configureCell(_ cell: UITableViewCell, withEvent event: Tresor) {
+  func configureCell(_ cell: UITableViewCell, withEvent event: TresorDocument) {
     cell.textLabel!.text = event.createts!.description
     cell.detailTextLabel!.text = event.id
     
@@ -138,12 +133,12 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
 
   // MARK: - Fetched results controller
 
-  var fetchedResultsController: NSFetchedResultsController<Tresor> {
+  var fetchedResultsController: NSFetchedResultsController<TresorDocument> {
       if _fetchedResultsController != nil {
           return _fetchedResultsController!
       }
       
-      let fetchRequest: NSFetchRequest<Tresor> = Tresor.fetchRequest()
+      let fetchRequest: NSFetchRequest<TresorDocument> = TresorDocument.fetchRequest()
       
       // Set the batch size to a suitable number.
       fetchRequest.fetchBatchSize = 20
@@ -155,7 +150,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
       
       // Edit the section name key path and cache name if appropriate.
       // nil for section name key path means "no sections".
-      let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext!, sectionNameKeyPath: nil, cacheName: "Master")
+      let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext!, sectionNameKeyPath: nil, cacheName: "TresorDocument")
       aFetchedResultsController.delegate = self
       _fetchedResultsController = aFetchedResultsController
       
@@ -170,7 +165,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
       
       return _fetchedResultsController!
   }    
-  var _fetchedResultsController: NSFetchedResultsController<Tresor>? = nil
+  var _fetchedResultsController: NSFetchedResultsController<TresorDocument>? = nil
 
   func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
       tableView.beginUpdates()
@@ -194,9 +189,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
           case .delete:
               tableView.deleteRows(at: [indexPath!], with: .fade)
           case .update:
-              configureCell(tableView.cellForRow(at: indexPath!)!, withEvent: anObject as! Tresor)
+              configureCell(tableView.cellForRow(at: indexPath!)!, withEvent: anObject as! TresorDocument)
           case .move:
-              configureCell(tableView.cellForRow(at: indexPath!)!, withEvent: anObject as! Tresor)
+              configureCell(tableView.cellForRow(at: indexPath!)!, withEvent: anObject as! TresorDocument)
               tableView.moveRow(at: indexPath!, to: newIndexPath!)
       }
   }

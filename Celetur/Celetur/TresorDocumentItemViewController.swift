@@ -40,6 +40,8 @@ class TresorDocumentItemViewController: UITableViewController, NSFetchedResultsC
     newTresorDocumentItem.createts = Date()
     newTresorDocumentItem.id = CeleturKitUtil.create()
     newTresorDocumentItem.documentid = self.tresorDocument
+    newTresorDocumentItem.mimetype = "application/bla"
+    newTresorDocumentItem.type="test"
     
     
     let algorithm = SymmetricCipherAlgorithm.aes_256
@@ -50,7 +52,7 @@ class TresorDocumentItemViewController: UITableViewController, NSFetchedResultsC
     do {
       let encryptedText = try cipher.crypt(string:plainText,key:key)
       
-      newTresorDocumentItem.nonce = encryptedText
+      newTresorDocumentItem.payload = encryptedText
       
       print("plain:\(plainText) key:\(key) encryptedText:\(encryptedText.hexDescription)")
     } catch let celeturKitError as CeleturKitError {
@@ -73,7 +75,7 @@ class TresorDocumentItemViewController: UITableViewController, NSFetchedResultsC
   // MARK: - Segues
 
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-    if segue.identifier == "showDetail" {
+    if segue.identifier == "showTresorDocumentItemDetail" {
         if let indexPath = tableView.indexPathForSelectedRow {
         let object = fetchedResultsController.object(at: indexPath)
             let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
@@ -96,7 +98,7 @@ class TresorDocumentItemViewController: UITableViewController, NSFetchedResultsC
   }
 
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCell(withIdentifier: "TresorDocCell", for: indexPath)
+    let cell = tableView.dequeueReusableCell(withIdentifier: "tresorDocumentItemCell", for: indexPath)
     let event = fetchedResultsController.object(at: indexPath)
     configureCell(cell, withEvent: event)
     return cell

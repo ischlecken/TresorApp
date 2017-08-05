@@ -85,7 +85,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="TresorCell" textLabel="Arm-wq-HPj" detailTextLabel="SFp-nC-yo5" style="IBUITableViewCellStyleSubtitle" id="WCw-Qf-5nD">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="tresorCell" textLabel="Arm-wq-HPj" detailTextLabel="SFp-nC-yo5" style="IBUITableViewCellStyleSubtitle" id="WCw-Qf-5nD">
                                 <rect key="frame" x="0.0" y="22" width="414" height="75"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="WCw-Qf-5nD" id="37f-cq-3Eg">
@@ -135,7 +135,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="TresorDocCell" textLabel="IiW-9V-RKm" detailTextLabel="u38-QN-XDh" style="IBUITableViewCellStyleSubtitle" id="DOq-B8-qMB">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="tresorDocumentCell" textLabel="IiW-9V-RKm" detailTextLabel="u38-QN-XDh" style="IBUITableViewCellStyleSubtitle" id="DOq-B8-qMB">
                                 <rect key="frame" x="0.0" y="28" width="414" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="DOq-B8-qMB" id="C5h-Dz-W1T">
@@ -159,7 +159,7 @@
                                     </subviews>
                                 </tableViewCellContentView>
                                 <connections>
-                                    <segue destination="AHs-R7-M3s" kind="show" identifier="showTresorDocumentItem" action="showDetailViewController:sender:" id="ORl-9c-Re2"/>
+                                    <segue destination="AHs-R7-M3s" kind="show" identifier="showTresorDocumentItem" id="brN-yA-5JI"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -172,9 +172,9 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jOg-tF-UOd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1578" y="-630"/>
+            <point key="canvasLocation" x="1576.8115942028987" y="-630.16304347826087"/>
         </scene>
-        <!--Tresor Document-->
+        <!--Tresor Document Item-->
         <scene sceneID="Nal-th-cba">
             <objects>
                 <tableViewController id="AHs-R7-M3s" customClass="TresorDocumentItemViewController" customModule="Celetur" customModuleProvider="target" sceneMemberID="viewController">
@@ -183,7 +183,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" textLabel="Q8Q-7e-O9R" detailTextLabel="d61-gW-xVW" style="IBUITableViewCellStyleSubtitle" id="SMj-ao-Qgp">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="tresorDocumentItemCell" textLabel="Q8Q-7e-O9R" detailTextLabel="d61-gW-xVW" style="IBUITableViewCellStyleSubtitle" id="SMj-ao-Qgp">
                                 <rect key="frame" x="0.0" y="28" width="414" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="SMj-ao-Qgp" id="Cgm-Ga-LaN">
@@ -206,6 +206,9 @@
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <segue destination="vC3-pB-5Vb" kind="showDetail" identifier="showTresorDocumentItemDetail" id="dT4-4O-K5D"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -213,7 +216,7 @@
                             <outlet property="delegate" destination="AHs-R7-M3s" id="0fH-u2-efH"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Tresor Document" id="cPO-kC-c0S"/>
+                    <navigationItem key="navigationItem" title="Tresor Document Item" id="cPO-kC-c0S"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="P71-Cc-JzJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -236,4 +239,7 @@
             <point key="canvasLocation" x="-45" y="129"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="dT4-4O-K5D"/>
+    </inferredMetricsTieBreakers>
 </document>

@@ -65,7 +65,7 @@
         <attribute name="payload" attributeType="Binary" syncable="YES"/>
         <attribute name="type" attributeType="String" defaultValueString="document" syncable="YES"/>
         <relationship name="documentid" maxCount="1" deletionRule="Nullify" destinationEntity="TresorDocument" inverseName="items" inverseEntity="TresorDocument" syncable="YES"/>
-        <relationship name="userdeviceid" maxCount="1" deletionRule="Nullify" destinationEntity="UserDevice" inverseName="documentitems" inverseEntity="UserDevice" syncable="YES"/>
+        <relationship name="userdeviceid" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UserDevice" inverseName="documentitems" inverseEntity="UserDevice" syncable="YES"/>
     </entity>
     <entity name="TresorPermission" representedClassName="TresorPermission" syncable="YES" codeGenerationType="class">
         <attribute name="approvedelete" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
@@ -104,7 +104,7 @@
         <element name="Schemaversion" positionX="187" positionY="-333" width="128" height="88"/>
         <element name="Tresor" positionX="-423" positionY="135" width="128" height="193"/>
         <element name="TresorDocument" positionX="-414" positionY="377" width="128" height="193"/>
-        <element name="TresorDocumentItem" positionX="-117" positionY="347" width="128" height="178"/>
+        <element name="TresorDocumentItem" positionX="-117" positionY="347" width="128" height="180"/>
         <element name="TresorPermission" positionX="-515" positionY="-135" width="128" height="178"/>
         <element name="User" positionX="-317" positionY="-135" width="128" height="193"/>
         <element name="UserDevice" positionX="-119" positionY="-79" width="128" height="133"/>

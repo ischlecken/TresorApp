@@ -35,12 +35,14 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   @objc
   func insertNewObject(_ sender: Any) {
     let context = self.fetchedResultsController.managedObjectContext
+    
     let newTresorDocument = TresorDocument(context: context)
          
     // If appropriate, configure the new managed object.
     newTresorDocument.createts = Date()
     newTresorDocument.id = CeleturKitUtil.create()
     newTresorDocument.tresorid = self.tresor
+    
     
     
     let algorithm = SymmetricCipherAlgorithm.aes_256
@@ -53,12 +55,24 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
       
       newTresorDocument.nonce = encryptedText
       
+      
       print("plain:\(plainText) key:\(key) encryptedText:\(encryptedText.hexDescription)")
     } catch let celeturKitError as CeleturKitError {
       print("CeleturKitError while trigger cipher:\(celeturKitError)")
     } catch {
       print("Error while trigger cipher:\(error)")
     }
+    
+    let newTresorDocumentItem = TresorDocumentItem(context: context)
+    
+    // If appropriate, configure the new managed object.
+    newTresorDocumentItem.createts = Date()
+    newTresorDocumentItem.id = CeleturKitUtil.create()
+    newTresorDocumentItem.type = "main"
+    newTresorDocumentItem.mimetype = "application/json"
+    newTresorDocumentItem.payload = plainText.data(using: String.Encoding.utf8)
+    
+    newTresorDocument.addToItems(newTresorDocumentItem)
    
     // Save the context.
     do {
@@ -69,6 +83,9 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
         let nserror = error as NSError
         fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
     }
+    
+   
+    
   }
 
   // MARK: - Segues
@@ -78,8 +95,10 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
         if let indexPath = tableView.indexPathForSelectedRow {
         let object = fetchedResultsController.object(at: indexPath)
             let controller = segue.destination as! TresorDocumentItemViewController
-            controller.tresorDocument = object
+          
             controller.managedObjectContext = self.managedObjectContext
+            controller.tresorDocument = object
+          
             controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
             controller.navigationItem.leftItemsSupplementBackButton = true
         }
@@ -98,7 +117,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   }
 
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCell(withIdentifier: "TresorDocCell", for: indexPath)
+    let cell = tableView.dequeueReusableCell(withIdentifier: "tresorDocumentCell", for: indexPath)
     let event = fetchedResultsController.object(at: indexPath)
     configureCell(cell, withEvent: event)
     return cell

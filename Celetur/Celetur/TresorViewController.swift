@@ -76,8 +76,9 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
         if let indexPath = tableView.indexPathForSelectedRow {
         let object = fetchedResultsController.object(at: indexPath)
             let controller = segue.destination as! TresorDocumentViewController
-            controller.tresor = object
+          
             controller.managedObjectContext = self.managedObjectContext
+            controller.tresor = object
             controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
             controller.navigationItem.leftItemsSupplementBackButton = true
         }
@@ -96,7 +97,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   }
 
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCell(withIdentifier: "TresorCell", for: indexPath)
+    let cell = tableView.dequeueReusableCell(withIdentifier: "tresorCell", for: indexPath)
     let event = fetchedResultsController.object(at: indexPath)
     configureCell(cell, withEvent: event)
     return cell

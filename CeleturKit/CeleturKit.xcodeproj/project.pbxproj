@@ -13,6 +13,8 @@
 		8517BDEF1F24F6AE009DB663 /* CipherRandomUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8517BDEE1F24F6AE009DB663 /* CipherRandomUtil.swift */; };
 		8517BDF11F24F95D009DB663 /* Data+HexDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8517BDF01F24F95D009DB663 /* Data+HexDescription.swift */; };
 		85C5C5861F36E6C100DE7EBC /* TresorDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85C5C5851F36E6C100DE7EBC /* TresorDataModel.swift */; };
+		85C5C58C1F370E1F00DE7EBC /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85C5C5891F370E1E00DE7EBC /* Keychain.swift */; };
+		85C5C58E1F37190C00DE7EBC /* TresorKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85C5C58D1F37190C00DE7EBC /* TresorKeys.swift */; };
 		85EEE21A1F1B4E4B002CE85E /* CeleturKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85EEE2101F1B4E4B002CE85E /* CeleturKit.framework */; };
 		85EEE21F1F1B4E4B002CE85E /* CeleturKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EEE21E1F1B4E4B002CE85E /* CeleturKitTests.swift */; };
 		85EEE2211F1B4E4B002CE85E /* CeleturKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 85EEE2131F1B4E4B002CE85E /* CeleturKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -39,6 +41,8 @@
 		8517BDEE1F24F6AE009DB663 /* CipherRandomUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CipherRandomUtil.swift; sourceTree = "<group>"; };
 		8517BDF01F24F95D009DB663 /* Data+HexDescription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+HexDescription.swift"; sourceTree = "<group>"; };
 		85C5C5851F36E6C100DE7EBC /* TresorDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TresorDataModel.swift; sourceTree = "<group>"; };
+		85C5C5891F370E1E00DE7EBC /* Keychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
+		85C5C58D1F37190C00DE7EBC /* TresorKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TresorKeys.swift; sourceTree = "<group>"; };
 		85EEE2101F1B4E4B002CE85E /* CeleturKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CeleturKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		85EEE2131F1B4E4B002CE85E /* CeleturKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CeleturKit.h; sourceTree = "<group>"; };
 		85EEE2141F1B4E4B002CE85E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -91,6 +95,7 @@
 		85EEE2121F1B4E4B002CE85E /* CeleturKit */ = {
 			isa = PBXGroup;
 			children = (
+				85C5C5891F370E1E00DE7EBC /* Keychain.swift */,
 				85EEE22C1F1B4F0C002CE85E /* CeleturUtil.swift */,
 				85EEE22B1F1B4F0C002CE85E /* CoreDataStack.swift */,
 				85EEE2391F1B52DE002CE85E /* Logger.swift */,
@@ -103,6 +108,7 @@
 				8517BDEE1F24F6AE009DB663 /* CipherRandomUtil.swift */,
 				8517BDF01F24F95D009DB663 /* Data+HexDescription.swift */,
 				85C5C5851F36E6C100DE7EBC /* TresorDataModel.swift */,
+				85C5C58D1F37190C00DE7EBC /* TresorKeys.swift */,
 			);
 			path = CeleturKit;
 			sourceTree = "<group>";
@@ -227,6 +233,8 @@
 			files = (
 				8517BDE51F2493FC009DB663 /* CeleturKitError.swift in Sources */,
 				8517BDE71F24947A009DB663 /* CipherEnums.swift in Sources */,
+				85C5C58E1F37190C00DE7EBC /* TresorKeys.swift in Sources */,
+				85C5C58C1F370E1F00DE7EBC /* Keychain.swift in Sources */,
 				85EEE22E1F1B4F0C002CE85E /* CoreDataStack.swift in Sources */,
 				8517BDEF1F24F6AE009DB663 /* CipherRandomUtil.swift in Sources */,
 				85C5C5861F36E6C100DE7EBC /* TresorDataModel.swift in Sources */,

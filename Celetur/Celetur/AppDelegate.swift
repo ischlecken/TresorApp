@@ -18,6 +18,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
   var window: UIWindow?
   lazy var persistentContainer: CoreDataStack = CoreDataStack("CeleturKit",using:Bundle(identifier:"net.prisnoc.CeleturKit")!,inAppGroupContainer:"group.net.prisnoc.Celetur")
   
+  var tresorKeys: TresorKeys = TresorKeys()
+  
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
     // Override point for customization after application launch.
     let splitViewController = self.window!.rootViewController as! UISplitViewController
@@ -28,6 +30,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     let masterNavigationController = splitViewController.viewControllers[0] as! UINavigationController
     let controller = masterNavigationController.topViewController as! TresorViewController
     controller.tresorDataModel = TresorDataModel(self.persistentContainer)
+    
+    do {
+      //try tresorKeys.removeMasterKey()
+      
+      let masterKey = try tresorKeys.getMasterKey()
+      
+      celeturLogger.info("masterKey:\(masterKey.accountName),\(masterKey.accessToken ?? "not set")")
+    } catch CeleturKitError.keychainError(let keychainError){
+      celeturLogger.debug("error fetching tresor masterkey: \(keychainError)")
+    } catch {
+      celeturLogger.error("error fetching tresor masterkey",error:error)
+    }
     
     return true
   }

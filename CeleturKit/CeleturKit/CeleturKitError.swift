@@ -15,4 +15,6 @@ public enum CeleturKitError: Error {
   case dataSaveFailed(coreDataError:NSError)
   case creationOfFetchResultsControllerFailed(coreDataError:NSError)
   
+  case keychainError(keychainError:OSStatus)
+  
 }

@@ -9,7 +9,7 @@ import CeleturKit
 
 class TresorViewController: UITableViewController, NSFetchedResultsControllerDelegate {
   
-  var tresorDataModel: TresorDataModel? = nil
+  var tresorAppState: TresorAppState?
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -33,7 +33,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   @objc
   func insertNewObject(_ sender: Any) {
    do {
-      let _ = try self.tresorDataModel?.createTresor()
+      let _ = try self.tresorAppState?.tresorDataModel.createTresor()
     } catch let celeturKitError as CeleturKitError {
       celeturLogger.error("CeleturKitError while creating tresor",error:celeturKitError)
     } catch {
@@ -49,7 +49,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
         let object = fetchedResultsController.object(at: indexPath)
             let controller = segue.destination as! TresorDocumentViewController
           
-            controller.tresorDataModel = self.tresorDataModel
+            controller.tresorAppState = self.tresorAppState
             controller.tresor = object
             controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
             controller.navigationItem.leftItemsSupplementBackButton = true
@@ -110,7 +110,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     }
     
     do {
-      try _fetchedResultsController = tresorDataModel!.createAndFetchTresorFetchedResultsController()
+      try _fetchedResultsController = self.tresorAppState?.tresorDataModel.createAndFetchTresorFetchedResultsController()
       
       _fetchedResultsController?.delegate = self
     } catch {

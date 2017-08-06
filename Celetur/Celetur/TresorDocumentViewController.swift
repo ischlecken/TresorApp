@@ -9,8 +9,8 @@ import CeleturKit
 
 class TresorDocumentViewController: UITableViewController, NSFetchedResultsControllerDelegate {
 
-  var tresor: Tresor? = nil
-  var tresorDataModel: TresorDataModel? = nil
+  var tresor: Tresor?
+  var tresorAppState: TresorAppState?
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -34,9 +34,9 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   @objc
   func insertNewObject(_ sender: Any) {
     do {
-      let tresorDocument = try self.tresorDataModel?.createTresorDocument(tresor: self.tresor!)
+      let tresorDocument = try self.tresorAppState?.tresorDataModel.createTresorDocument(tresor: self.tresor!)
       
-      let _ = try self.tresorDataModel?.createTresorDocumentItem(tresorDocument: tresorDocument!)
+      let _ = try self.tresorAppState?.tresorDataModel.createTresorDocumentItem(tresorDocument: tresorDocument!,masterKey: (self.tresorAppState?.masterKey)!)
       
     } catch let celeturKitError as CeleturKitError {
       celeturLogger.error("CeleturKitError while creating tresor document",error:celeturKitError)
@@ -53,7 +53,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
         let object = fetchedResultsController.object(at: indexPath)
             let controller = segue.destination as! TresorDocumentItemViewController
           
-            controller.tresorDataModel = self.tresorDataModel
+            controller.tresorAppState = self.tresorAppState
             controller.tresorDocument = object
           
             controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
@@ -115,7 +115,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
       }
     
       do {
-        try _fetchedResultsController = tresorDataModel!.createAndFetchTresorDocumentFetchedResultsController()
+        try _fetchedResultsController = self.tresorAppState?.tresorDataModel.createAndFetchTresorDocumentFetchedResultsController()
         
         _fetchedResultsController?.delegate = self
       } catch {

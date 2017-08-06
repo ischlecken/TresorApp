@@ -60,27 +60,36 @@ public class TresorDataModel {
     return newTresorDocument
   }
   
-  public func createTresorDocumentItem(tresorDocument:TresorDocument) throws -> TresorDocumentItem {
+  public func createTresorDocumentItem(tresorDocument:TresorDocument,masterKey:TresorKey) throws -> TresorDocumentItem {
     let algorithm = SymmetricCipherAlgorithm.aes_256
-    let key = CipherRandomUtil.randomStringOfLength(algorithm.requiredKeySize())
-    let plainText = "Test, the quick brown fox jumps over the lazy dog, 123,123,123"
+    let key = masterKey.accessToken
+    let plainText = "{ 'title': 'gmx.de','user':'bla@fasel.de','password':'hugo'}"
     let cipher = SymmetricCipher(algorithm: algorithm,options: [.ECBMode,.PKCS7Padding])
-    let encryptedText = try cipher.crypt(string:plainText,key:key)
+    let encryptedText = try cipher.crypt(string:plainText,key:key!)
     
     let newTresorDocumentItem = TresorDocumentItem(context: self.managedContext!)
     newTresorDocumentItem.createts = Date()
     newTresorDocumentItem.id = CeleturKitUtil.create()
     newTresorDocumentItem.type = "main"
     newTresorDocumentItem.mimetype = "application/json"
-    newTresorDocumentItem.payload = plainText.data(using: String.Encoding.utf8)
+    newTresorDocumentItem.payload = encryptedText
     
     tresorDocument.addToItems(newTresorDocumentItem)
     
-    celeturKitLogger.debug("plain:\(plainText) key:\(key) encryptedText:\(encryptedText.hexDescription)")
+    celeturKitLogger.debug("plain:\(plainText) key:\(key!) encryptedText:\(encryptedText.hexDescription)")
     
     try self.saveContext()
     
     return newTresorDocumentItem
+  }
+  
+  public func decryptTresorDocumentItemPayload(tresorDocumentItem:TresorDocumentItem,masterKey:TresorKey) throws -> Data {
+    let algorithm = SymmetricCipherAlgorithm.aes_256
+    let key = masterKey.accessToken
+    let cipher = SymmetricCipher(algorithm: algorithm,options: [.ECBMode,.PKCS7Padding])
+    let decryptedText = try cipher.decrypt(tresorDocumentItem.payload!,key:key!)
+    
+    return decryptedText
   }
   
   func saveContext() throws {

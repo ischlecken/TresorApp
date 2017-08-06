@@ -11,16 +11,12 @@ import CoreData
 import CeleturKit
 
 let celeturLogger = Logger("Celetur")
-let appGroup = "group.net.prisnoc.Celetur"
-let celeturKitIdentifier = "net.prisnoc.CeleturKit"
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDelegate {
 
   var window: UIWindow?
-  lazy var persistentContainer: CoreDataStack = CoreDataStack("CeleturKit",using:Bundle(identifier:celeturKitIdentifier)!,inAppGroupContainer:appGroup)
-  
-  var tresorKeys: TresorKeys = TresorKeys(appGroup: appGroup)
+  var tresorAppState = TresorAppState()
   
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
     // Override point for customization after application launch.
@@ -31,24 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
 
     let masterNavigationController = splitViewController.viewControllers[0] as! UINavigationController
     let controller = masterNavigationController.topViewController as! TresorViewController
-    controller.tresorDataModel = TresorDataModel(self.persistentContainer)
-    
-    /*
-    do {
-      try tresorKeys.removeMasterKey()
-    } catch CeleturKitError.keychainError(let keychainError){
-      celeturLogger.debug("error fetching tresor masterkey: \(keychainError)")
-    } catch {
-      celeturLogger.error("error fetching tresor masterkey",error:error)
-    } */
-    
-    tresorKeys.getMasterKey(masterKeyCompletion:{ (masterKey:TresorKey?, error:Error?) -> Void in
-      if let e = error {
-        celeturLogger.debug("error:\(e)")
-      } else if let mk = masterKey {
-        celeturLogger.info("masterKey:\(mk.accountName),\(mk.accessToken ?? "not set")")
-      }
-    })
+    controller.tresorAppState = self.tresorAppState
     
     return true
   }
@@ -74,7 +53,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
   func applicationWillTerminate(_ application: UIApplication) {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     // Saves changes in the application's managed object context before the application terminates.
-    persistentContainer.saveContext()
+    tresorAppState.persistentContainer.saveContext()
   }
 
   // MARK: - Split view
@@ -82,7 +61,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
   func splitViewController(_ splitViewController: UISplitViewController, collapseSecondary secondaryViewController:UIViewController, onto primaryViewController:UIViewController) -> Bool {
       guard let secondaryAsNavController = secondaryViewController as? UINavigationController else { return false }
       guard let topAsDetailController = secondaryAsNavController.topViewController as? DetailViewController else { return false }
-      if topAsDetailController.detailItem == nil {
+      if topAsDetailController.tresorDocumentItem == nil {
           // Return true to indicate that we have handled the collapse by doing nothing; the secondary controller will be discarded.
           return true
       }

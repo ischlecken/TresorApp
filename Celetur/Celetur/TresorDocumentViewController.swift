@@ -10,8 +10,7 @@ import CeleturKit
 class TresorDocumentViewController: UITableViewController, NSFetchedResultsControllerDelegate {
 
   var tresor: Tresor? = nil
-  var managedObjectContext: NSManagedObjectContext? = nil
-
+  var tresorDataModel: TresorDataModel? = nil
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -34,58 +33,16 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
 
   @objc
   func insertNewObject(_ sender: Any) {
-    let context = self.fetchedResultsController.managedObjectContext
-    
-    let newTresorDocument = TresorDocument(context: context)
-         
-    // If appropriate, configure the new managed object.
-    newTresorDocument.createts = Date()
-    newTresorDocument.id = CeleturKitUtil.create()
-    newTresorDocument.tresorid = self.tresor
-    
-    
-    
-    let algorithm = SymmetricCipherAlgorithm.aes_256
-    let key = CipherRandomUtil.randomStringOfLength(algorithm.requiredKeySize())
-    let plainText = "Test, the quick brown fox jumps over the lazy dog, 123,123,123"
-    let cipher = SymmetricCipher(algorithm: algorithm,options: [.ECBMode,.PKCS7Padding])
-    
     do {
-      let encryptedText = try cipher.crypt(string:plainText,key:key)
+      let tresorDocument = try self.tresorDataModel?.createTresorDocument(tresor: self.tresor!)
       
-      newTresorDocument.nonce = encryptedText
+      let _ = try self.tresorDataModel?.createTresorDocumentItem(tresorDocument: tresorDocument!)
       
-      
-      print("plain:\(plainText) key:\(key) encryptedText:\(encryptedText.hexDescription)")
     } catch let celeturKitError as CeleturKitError {
-      print("CeleturKitError while trigger cipher:\(celeturKitError)")
+      celeturLogger.error("CeleturKitError while creating tresor document",error:celeturKitError)
     } catch {
-      print("Error while trigger cipher:\(error)")
+      celeturLogger.error("Error while creating tresor  document",error:error)
     }
-    
-    let newTresorDocumentItem = TresorDocumentItem(context: context)
-    
-    // If appropriate, configure the new managed object.
-    newTresorDocumentItem.createts = Date()
-    newTresorDocumentItem.id = CeleturKitUtil.create()
-    newTresorDocumentItem.type = "main"
-    newTresorDocumentItem.mimetype = "application/json"
-    newTresorDocumentItem.payload = plainText.data(using: String.Encoding.utf8)
-    
-    newTresorDocument.addToItems(newTresorDocumentItem)
-   
-    // Save the context.
-    do {
-        try context.save()
-    } catch {
-        // Replace this implementation with code to handle the error appropriately.
-        // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-        let nserror = error as NSError
-        fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
-    }
-    
-   
-    
   }
 
   // MARK: - Segues
@@ -96,7 +53,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
         let object = fetchedResultsController.object(at: indexPath)
             let controller = segue.destination as! TresorDocumentItemViewController
           
-            controller.managedObjectContext = self.managedObjectContext
+            controller.tresorDataModel = self.tresorDataModel
             controller.tresorDocument = object
           
             controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
@@ -156,36 +113,20 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
       if _fetchedResultsController != nil {
           return _fetchedResultsController!
       }
-      
-      let fetchRequest: NSFetchRequest<TresorDocument> = TresorDocument.fetchRequest()
-      
-      // Set the batch size to a suitable number.
-      fetchRequest.fetchBatchSize = 20
-      
-      // Edit the sort key as appropriate.
-      let sortDescriptor = NSSortDescriptor(key: "createts", ascending: false)
-      
-      fetchRequest.sortDescriptors = [sortDescriptor]
-      
-      // Edit the section name key path and cache name if appropriate.
-      // nil for section name key path means "no sections".
-      let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext!, sectionNameKeyPath: nil, cacheName: "TresorDocument")
-      aFetchedResultsController.delegate = self
-      _fetchedResultsController = aFetchedResultsController
-      
+    
       do {
-          try _fetchedResultsController!.performFetch()
+        try _fetchedResultsController = tresorDataModel!.createAndFetchTresorDocumentFetchedResultsController()
+        
+        _fetchedResultsController?.delegate = self
       } catch {
-           // Replace this implementation with code to handle the error appropriately.
-           // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development. 
-           let nserror = error as NSError
-           fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+        celeturLogger.error("CeleturKitError while creating FetchedResultsController",error:error)
       }
       
       return _fetchedResultsController!
   }    
   var _fetchedResultsController: NSFetchedResultsController<TresorDocument>? = nil
 
+  
   func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
       tableView.beginUpdates()
   }

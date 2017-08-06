@@ -9,8 +9,7 @@ import CeleturKit
 
 class TresorViewController: UITableViewController, NSFetchedResultsControllerDelegate {
   
-  var managedObjectContext: NSManagedObjectContext? = nil
-
+  var tresorDataModel: TresorDataModel? = nil
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -33,39 +32,12 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
 
   @objc
   func insertNewObject(_ sender: Any) {
-    let context = self.fetchedResultsController.managedObjectContext
-    let newTresor = Tresor(context: context)
-         
-    // If appropriate, configure the new managed object.
-    newTresor.createts = Date()
-    newTresor.id = CeleturKitUtil.create()
-    newTresor.name = "test"
-    
-    let algorithm = SymmetricCipherAlgorithm.aes_256
-    let key = CipherRandomUtil.randomStringOfLength(algorithm.requiredKeySize())
-    let plainText = "Test, the quick brown fox jumps over the lazy dog, 123,123,123"
-    let cipher = SymmetricCipher(algorithm: algorithm,options: [.ECBMode,.PKCS7Padding])
-    
-    do {
-      let encryptedText = try cipher.crypt(string:plainText,key:key)
-      
-      newTresor.nonce = encryptedText
-      
-      print("plain:\(plainText) key:\(key) encryptedText:\(encryptedText.hexDescription)")
+   do {
+      let _ = try self.tresorDataModel?.createTresor()
     } catch let celeturKitError as CeleturKitError {
-      print("CeleturKitError while trigger cipher:\(celeturKitError)")
+      celeturLogger.error("CeleturKitError while creating tresor",error:celeturKitError)
     } catch {
-      print("Error while trigger cipher:\(error)")
-    }
-   
-    // Save the context.
-    do {
-        try context.save()
-    } catch {
-        // Replace this implementation with code to handle the error appropriately.
-        // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-        let nserror = error as NSError
-        fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+      celeturLogger.error("Error while creating tresor",error:error)
     }
   }
 
@@ -77,7 +49,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
         let object = fetchedResultsController.object(at: indexPath)
             let controller = segue.destination as! TresorDocumentViewController
           
-            controller.managedObjectContext = self.managedObjectContext
+            controller.tresorDataModel = self.tresorDataModel
             controller.tresor = object
             controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
             controller.navigationItem.leftItemsSupplementBackButton = true
@@ -133,37 +105,20 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   // MARK: - Fetched results controller
 
   var fetchedResultsController: NSFetchedResultsController<Tresor> {
-      if _fetchedResultsController != nil {
-          return _fetchedResultsController!
-      }
-      
-      let fetchRequest: NSFetchRequest<Tresor> = Tresor.fetchRequest()
-      
-      // Set the batch size to a suitable number.
-      fetchRequest.fetchBatchSize = 20
-      
-      // Edit the sort key as appropriate.
-      let sortDescriptor = NSSortDescriptor(key: "createts", ascending: false)
-      
-      fetchRequest.sortDescriptors = [sortDescriptor]
-      
-      // Edit the section name key path and cache name if appropriate.
-      // nil for section name key path means "no sections".
-      let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext!, sectionNameKeyPath: nil, cacheName: "Tresor")
-      aFetchedResultsController.delegate = self
-      _fetchedResultsController = aFetchedResultsController
-      
-      do {
-          try _fetchedResultsController!.performFetch()
-      } catch {
-           // Replace this implementation with code to handle the error appropriately.
-           // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development. 
-           let nserror = error as NSError
-           fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
-      }
-      
+    if _fetchedResultsController != nil {
       return _fetchedResultsController!
-  }    
+    }
+    
+    do {
+      try _fetchedResultsController = tresorDataModel!.createAndFetchTresorFetchedResultsController()
+      
+      _fetchedResultsController?.delegate = self
+    } catch {
+      celeturLogger.error("CeleturKitError while creating FetchedResultsController",error:error)
+    }
+    
+    return _fetchedResultsController!
+  }
   var _fetchedResultsController: NSFetchedResultsController<Tresor>? = nil
 
   func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {

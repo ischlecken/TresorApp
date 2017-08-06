@@ -10,6 +10,8 @@ import UIKit
 import CoreData
 import CeleturKit
 
+let celeturLogger = Logger("Celetur")
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDelegate {
 
@@ -25,7 +27,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
 
     let masterNavigationController = splitViewController.viewControllers[0] as! UINavigationController
     let controller = masterNavigationController.topViewController as! TresorViewController
-    controller.managedObjectContext = self.persistentContainer.context
+    controller.tresorDataModel = TresorDataModel(self.persistentContainer)
+    
     return true
   }
 

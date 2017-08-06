@@ -11,4 +11,8 @@ public enum CeleturKitError: Error {
   case cipherOperationFailed
   case cipherWrongInputData
   case cipherUnknownError
+  
+  case dataSaveFailed(coreDataError:NSError)
+  case creationOfFetchResultsControllerFailed(coreDataError:NSError)
+  
 }

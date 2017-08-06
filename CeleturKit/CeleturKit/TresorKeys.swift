@@ -41,37 +41,38 @@ public class TresorKeys {
   let appGroup : String
   
   public init(appGroup:String) {
-      self.appGroup = appGroup
+    self.appGroup = appGroup
   }
   
   let masterKeyName = "MasterKey"
   
-  public func getMasterKey(masterKeyCompletion: @escaping (TresorKey?,Error?)->Void) throws -> Void {
+  public func createNewMasterKey() throws -> TresorKey {
+    let token = CipherRandomUtil.randomStringOfLength(SymmetricCipherAlgorithm.aes_256.requiredKeySize())
+    var masterKey = TresorKey(name:masterKeyName,appGroup: self.appGroup,accessToken:token)
+    
+    try masterKey.saveInKeychain()
+    
+    return masterKey
+  }
+  
+  public func getMasterKey(masterKeyCompletion: @escaping (TresorKey?,Error?) -> Void) -> Void {
     var key = TresorKey(name: masterKeyName,appGroup: self.appGroup)
     
-    do {
-      let _ = try key.fetchFromKeychain(completion:{ (error:Error?) -> Void in
+    key.fetchFromKeychain(completion: { (masterKey:TresorKey?,error:Error?) -> Void in
+      if let e = error as? CeleturKitError, case .keychainError(let keychainError) = e, keychainError == errSecItemNotFound {
+        celeturKitLogger.debug("item not found")
         
-        masterKeyCompletion(key,error)
-      })
-    } catch CeleturKitError.keychainError(let keychainError) {
-      
-      if keychainError==errSecItemNotFound {
-        celeturKitLogger.info("masterkey does not exist, create new one...")
-        
-        let token = CipherRandomUtil.randomStringOfLength(SymmetricCipherAlgorithm.aes_256.requiredKeySize())
-        let masterKey = TresorKey(name:masterKeyName,appGroup: self.appGroup,accessToken:token)
-        
-        try masterKey.saveInKeychain()
-        
-        let _ = try key.fetchFromKeychain(completion:{ (error:Error?) -> Void in
+        do {
+          let newKey = try self.createNewMasterKey()
           
-          masterKeyCompletion(key,error)
-        })
+          masterKeyCompletion(newKey,nil)
+        } catch {
+          masterKeyCompletion(nil,error)
+        }
       } else {
-        celeturKitLogger.debug("CeleturKitError while fetching masterkey from keychain: \(keychainError)")
+        masterKeyCompletion(masterKey,error)
       }
-    }
+    })
   }
   
   public func removeMasterKey() throws {

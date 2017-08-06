@@ -33,21 +33,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     let controller = masterNavigationController.topViewController as! TresorViewController
     controller.tresorDataModel = TresorDataModel(self.persistentContainer)
     
+    /*
     do {
-      //try tresorKeys.removeMasterKey()
-      
-      try tresorKeys.getMasterKey(masterKeyCompletion:{ (masterKey:TresorKey?, error:Error?) -> Void in
-        if let e = error {
-            celeturLogger.debug("error:\(e)")
-        } else if let mk = masterKey {
-          celeturLogger.info("masterKey:\(mk.accountName),\(mk.accessToken ?? "not set")")
-        }
-     })
+      try tresorKeys.removeMasterKey()
     } catch CeleturKitError.keychainError(let keychainError){
       celeturLogger.debug("error fetching tresor masterkey: \(keychainError)")
     } catch {
       celeturLogger.error("error fetching tresor masterkey",error:error)
-    }
+    } */
+    
+    tresorKeys.getMasterKey(masterKeyCompletion:{ (masterKey:TresorKey?, error:Error?) -> Void in
+      if let e = error {
+        celeturLogger.debug("error:\(e)")
+      } else if let mk = masterKey {
+        celeturLogger.info("masterKey:\(mk.accountName),\(mk.accessToken ?? "not set")")
+      }
+    })
     
     return true
   }

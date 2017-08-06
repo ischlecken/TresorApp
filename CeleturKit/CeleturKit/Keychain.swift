@@ -125,11 +125,11 @@ public protocol KeychainItemType {
 extension KeychainItemType {
   
   public var accessMode: KeychainItemAccessibility? {
-    return .whenUnlocked
+    return .whenUnlockedThisDeviceOnly
   }
   
   public var accessPolicy: SecAccessControlCreateFlags? {
-    return .touchIDAny
+    return .userPresence
   }
   
   public var accessGroup: String? {
@@ -143,6 +143,9 @@ extension KeychainItemType {
     if let group = accessGroup {
       itemAttributes[String(kSecAttrAccessGroup)] = group
     }
+    
+    itemAttributes.removeValue(forKey: String(kSecAttrAccessible))
+    itemAttributes.removeValue(forKey: String(kSecAttrAccessControl))
     
     if setAccessControl {
       if let policy = accessPolicy, let access = accessMode {
@@ -158,6 +161,7 @@ extension KeychainItemType {
         }
         
         itemAttributes[String(kSecAttrAccessControl)] = accessControl
+        itemAttributes[String(kSecUseOperationPrompt)] = "Ausweispapiere, aber plötzlich..."
       } else if let access = accessMode {
         itemAttributes[String(kSecAttrAccessible)] = access.keychainAttrValue
       }
@@ -186,6 +190,7 @@ extension KeychainItemType {
     
     itemAttributes[String(kSecReturnData)] = kCFBooleanTrue
     itemAttributes[String(kSecReturnAttributes)] = kCFBooleanTrue
+    itemAttributes[String(kSecUseOperationPrompt)] = "Ausweispapiere, aber plötzlich..."
     
     try self.setInternalAttributes(itemAttributes: &itemAttributes,setAccessControl: false)
     
@@ -277,15 +282,17 @@ public struct Keychain: KeychainServiceType {
 
 extension KeychainItemType {
   
-  public func saveInKeychain(_ keychain: KeychainServiceType = Keychain()) throws {
+  public mutating func saveInKeychain(_ keychain: KeychainServiceType = Keychain()) throws {
     try keychain.insertItemWithAttributes(attributesToSave())
+    
+    self.data = self.dataToStore
   }
   
   public func removeFromKeychain(_ keychain: KeychainServiceType = Keychain()) throws {
     try keychain.removeItemWithAttributes(attributesForRemove())
   }
   
-  public mutating func fetchFromKeychain(completion: @escaping (Error?) ->Void, _ keychain: KeychainServiceType = Keychain()) throws -> Self {
+  public mutating func fetchFromKeychain(completion: @escaping (Self?,Error?) -> Void, _ keychain: KeychainServiceType = Keychain()) {
     var me = self
     
     DispatchQueue.global().async {
@@ -296,16 +303,14 @@ extension KeychainItemType {
         }
         
         DispatchQueue.main.async {
-          completion(nil)
+          completion(me,nil)
         }
       } catch {
         DispatchQueue.main.async {
-          completion(nil)
+          completion(nil,error)
         }
       }
     }
-    
-    return self
   }
 }
 

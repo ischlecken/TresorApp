@@ -78,6 +78,8 @@ public enum KeychainItemAccessibility {
   }
 }
 
+
+
 private let keychainItemAccessibilityLookup: [KeychainItemAccessibility:CFString] = {
   var lookup: [KeychainItemAccessibility:CFString] = [
     .afterFirstUnlock: kSecAttrAccessibleAfterFirstUnlock,
@@ -91,6 +93,7 @@ private let keychainItemAccessibilityLookup: [KeychainItemAccessibility:CFString
   
   return lookup
 }()
+
 
 extension KeychainItemAccessibility : KeychainAttrRepresentable {
   internal var keychainAttrValue: CFString {
@@ -111,6 +114,7 @@ public protocol KeychainServiceType {
 
 public protocol KeychainItemType {
   
+  var accessPolicy: SecAccessControlCreateFlags? {get}
   var accessMode: KeychainItemAccessibility? {get}
   var accessGroup: String? {get}
   var attributes: [String: Any] {get}
@@ -124,6 +128,10 @@ extension KeychainItemType {
     return .whenUnlocked
   }
   
+  public var accessPolicy: SecAccessControlCreateFlags? {
+    return .touchIDAny
+  }
+  
   public var accessGroup: String? {
     return nil
   }
@@ -131,23 +139,38 @@ extension KeychainItemType {
 
 extension KeychainItemType {
   
-  private func setInternalAttributes(itemAttributes: inout [String: Any] ){
+  private func setInternalAttributes(itemAttributes: inout [String: Any], setAccessControl:Bool ) throws {
     if let group = accessGroup {
       itemAttributes[String(kSecAttrAccessGroup)] = group
     }
     
-    if let access = accessMode {
-      itemAttributes[String(kSecAttrAccessible)] = access.keychainAttrValue
+    if setAccessControl {
+      if let policy = accessPolicy, let access = accessMode {
+        var error: Unmanaged<CFError>?
+        
+        guard let accessControl = SecAccessControlCreateWithFlags(kCFAllocatorDefault, access.keychainAttrValue, policy, &error)
+          else {
+            if let e = error?.takeRetainedValue() {
+              throw CeleturKitError.keychainError1(keychainError: e)
+            } else {
+              throw CeleturKitError.keychainError(keychainError: -1)
+            }
+        }
+        
+        itemAttributes[String(kSecAttrAccessControl)] = accessControl
+      } else if let access = accessMode {
+        itemAttributes[String(kSecAttrAccessible)] = access.keychainAttrValue
+      }
     }
   }
   
-  internal var attributesToSave: [String: Any] {
+  internal func attributesToSave() throws -> [String: Any] {
     var itemAttributes = attributes
     let archivedData = NSKeyedArchiver.archivedData(withRootObject: dataToStore)
     
     itemAttributes[String(kSecValueData)] = archivedData
     
-    self.setInternalAttributes(itemAttributes: &itemAttributes)
+    try self.setInternalAttributes(itemAttributes: &itemAttributes,setAccessControl: true)
     
     return itemAttributes
   }
@@ -158,22 +181,22 @@ extension KeychainItemType {
     return NSKeyedUnarchiver.unarchiveObject(with: valueData) as? [String: Any] ?? nil
   }
   
-  internal var attributesForFetch: [String: Any] {
+  internal func attributesForFetch() throws -> [String: Any] {
     var itemAttributes = attributes
     
     itemAttributes[String(kSecReturnData)] = kCFBooleanTrue
     itemAttributes[String(kSecReturnAttributes)] = kCFBooleanTrue
     
-    self.setInternalAttributes(itemAttributes: &itemAttributes)
+    try self.setInternalAttributes(itemAttributes: &itemAttributes,setAccessControl: false)
     
     return itemAttributes
   }
   
   
-  internal var attributesForRemove: [String: Any] {
+  internal func attributesForRemove() throws -> [String: Any] {
     var itemAttributes = attributes
     
-    self.setInternalAttributes(itemAttributes: &itemAttributes)
+    try self.setInternalAttributes(itemAttributes: &itemAttributes,setAccessControl: false)
     
     return itemAttributes
   }
@@ -255,17 +278,31 @@ public struct Keychain: KeychainServiceType {
 extension KeychainItemType {
   
   public func saveInKeychain(_ keychain: KeychainServiceType = Keychain()) throws {
-    try keychain.insertItemWithAttributes(attributesToSave)
+    try keychain.insertItemWithAttributes(attributesToSave())
   }
   
   public func removeFromKeychain(_ keychain: KeychainServiceType = Keychain()) throws {
-    try keychain.removeItemWithAttributes(attributesForRemove)
+    try keychain.removeItemWithAttributes(attributesForRemove())
   }
   
-  public mutating func fetchFromKeychain(_ keychain: KeychainServiceType = Keychain()) throws -> Self {
-    if  let result = try keychain.fetchItemWithAttributes(attributesForFetch),
-      let itemData = dataFromAttributes(result) {
-      data = itemData
+  public mutating func fetchFromKeychain(completion: @escaping (Error?) ->Void, _ keychain: KeychainServiceType = Keychain()) throws -> Self {
+    var me = self
+    
+    DispatchQueue.global().async {
+      do {
+        if let result = try keychain.fetchItemWithAttributes(me.attributesForFetch()),
+          let itemData = me.dataFromAttributes(result) {
+          me.data = itemData
+        }
+        
+        DispatchQueue.main.async {
+          completion(nil)
+        }
+      } catch {
+        DispatchQueue.main.async {
+          completion(nil)
+        }
+      }
     }
     
     return self

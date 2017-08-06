@@ -11,14 +11,16 @@ import CoreData
 import CeleturKit
 
 let celeturLogger = Logger("Celetur")
+let appGroup = "group.net.prisnoc.Celetur"
+let celeturKitIdentifier = "net.prisnoc.CeleturKit"
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDelegate {
 
   var window: UIWindow?
-  lazy var persistentContainer: CoreDataStack = CoreDataStack("CeleturKit",using:Bundle(identifier:"net.prisnoc.CeleturKit")!,inAppGroupContainer:"group.net.prisnoc.Celetur")
+  lazy var persistentContainer: CoreDataStack = CoreDataStack("CeleturKit",using:Bundle(identifier:celeturKitIdentifier)!,inAppGroupContainer:appGroup)
   
-  var tresorKeys: TresorKeys = TresorKeys()
+  var tresorKeys: TresorKeys = TresorKeys(appGroup: appGroup)
   
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
     // Override point for customization after application launch.
@@ -34,9 +36,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     do {
       //try tresorKeys.removeMasterKey()
       
-      let masterKey = try tresorKeys.getMasterKey()
-      
-      celeturLogger.info("masterKey:\(masterKey.accountName),\(masterKey.accessToken ?? "not set")")
+      try tresorKeys.getMasterKey(masterKeyCompletion:{ (masterKey:TresorKey?, error:Error?) -> Void in
+        if let e = error {
+            celeturLogger.debug("error:\(e)")
+        } else if let mk = masterKey {
+          celeturLogger.info("masterKey:\(mk.accountName),\(mk.accessToken ?? "not set")")
+        }
+     })
     } catch CeleturKitError.keychainError(let keychainError){
       celeturLogger.debug("error fetching tresor masterkey: \(keychainError)")
     } catch {

@@ -43,6 +43,7 @@
 		85C5C5851F36E6C100DE7EBC /* TresorDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TresorDataModel.swift; sourceTree = "<group>"; };
 		85C5C5891F370E1E00DE7EBC /* Keychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		85C5C58D1F37190C00DE7EBC /* TresorKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TresorKeys.swift; sourceTree = "<group>"; };
+		85C5C5901F3778F500DE7EBC /* LocalAuthentication.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = LocalAuthentication.framework; path = System/Library/Frameworks/LocalAuthentication.framework; sourceTree = SDKROOT; };
 		85EEE2101F1B4E4B002CE85E /* CeleturKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CeleturKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		85EEE2131F1B4E4B002CE85E /* CeleturKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CeleturKit.h; sourceTree = "<group>"; };
 		85EEE2141F1B4E4B002CE85E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -74,12 +75,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		85C5C58F1F3778F500DE7EBC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				85C5C5901F3778F500DE7EBC /* LocalAuthentication.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		85EEE2061F1B4E4B002CE85E = {
 			isa = PBXGroup;
 			children = (
 				85EEE2121F1B4E4B002CE85E /* CeleturKit */,
 				85EEE21D1F1B4E4B002CE85E /* CeleturKitTests */,
 				85EEE2111F1B4E4B002CE85E /* Products */,
+				85C5C58F1F3778F500DE7EBC /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};

@@ -20,9 +20,10 @@ public class SymmetricCipher {
     self.options = options
   }
   
-  public convenience init(algorithm: SymmetricCipherAlgorithm, options: SymmetricCipherOptions, iv: String, encoding: String.Encoding = String.Encoding.utf8) {
+  public convenience init(algorithm: SymmetricCipherAlgorithm, options: SymmetricCipherOptions, iv: Data, encoding: String.Encoding = String.Encoding.utf8) {
     self.init(algorithm: algorithm, options: options)
-    self.iv = iv.data(using: encoding)
+    
+    self.iv = iv
   }
   
   public func crypt(string: String, key: String) throws -> Data {
@@ -78,7 +79,9 @@ public class SymmetricCipher {
     let ivBuffer: UnsafePointer<UInt8>? = (iv == nil) ? nil : iv!.withUnsafeBytes({ (bytes: UnsafePointer<UInt8>) -> UnsafePointer<UInt8> in
       return bytes
     })
+    
     var bytesDecrypted   = Int(0)
+    
     // Perform operation
     let cryptStatus = CCCrypt(
       operation,                  // Operation
@@ -92,12 +95,15 @@ public class SymmetricCipher {
       bufferPointer,              // output buffer
       bufferLength,               // output buffer length
       &bytesDecrypted)            // output bytes decrypted real length
-    if Int32(cryptStatus) == Int32(kCCSuccess) {
+    
+    
+    if cryptStatus == kCCSuccess {
       bufferData.count = bytesDecrypted // Adjust buffer size to real bytes
+      
       return bufferData as Data
     } else {
       print("Error in crypto operation: \(cryptStatus)")
-      throw(CeleturKitError.cipherOperationFailed)
+      throw(CeleturKitError.cipherOperationFailed(ccError: cryptStatus))
     }
   }
   

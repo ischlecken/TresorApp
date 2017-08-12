@@ -8,7 +8,7 @@
 
 public enum CeleturKitError: Error {
   case cipherMissingIV
-  case cipherOperationFailed
+  case cipherOperationFailed(ccError:Int32)
   case cipherWrongInputData
   case cipherUnknownError
   

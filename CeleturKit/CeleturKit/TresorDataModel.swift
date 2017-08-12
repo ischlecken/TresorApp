@@ -25,7 +25,7 @@ public class TresorDataModel {
     let algorithm = SymmetricCipherAlgorithm.aes_256
     let key = CipherRandomUtil.randomStringOfLength(algorithm.requiredKeySize())
     let plainText = "Test, the quick brown fox jumps over the lazy dog, 123,123,123"
-    let cipher = SymmetricCipher(algorithm: algorithm,options: [.ECBMode,.PKCS7Padding])
+    let cipher = SymmetricCipher(algorithm: algorithm, options: [.ECBMode,.PKCS7Padding])
     
     let encryptedText = try cipher.crypt(string:plainText,key:key)
       
@@ -64,7 +64,8 @@ public class TresorDataModel {
     let algorithm = SymmetricCipherAlgorithm.aes_256
     let key = masterKey.accessToken
     let plainText = "{ 'title': 'gmx.de','user':'bla@fasel.de','password':'hugo'}"
-    let cipher = SymmetricCipher(algorithm: algorithm,options: [.ECBMode,.PKCS7Padding])
+    let nonce = CipherRandomUtil.randomDataOfLength(algorithm.requiredBlockSize())
+    let cipher = SymmetricCipher(algorithm: algorithm,options: [.PKCS7Padding], iv:nonce!)
     let encryptedText = try cipher.crypt(string:plainText,key:key!)
     
     let newTresorDocumentItem = TresorDocumentItem(context: self.managedContext!)
@@ -73,6 +74,7 @@ public class TresorDataModel {
     newTresorDocumentItem.type = "main"
     newTresorDocumentItem.mimetype = "application/json"
     newTresorDocumentItem.payload = encryptedText
+    newTresorDocumentItem.nonce = nonce
     
     tresorDocument.addToItems(newTresorDocumentItem)
     
@@ -83,13 +85,19 @@ public class TresorDataModel {
     return newTresorDocumentItem
   }
   
-  public func decryptTresorDocumentItemPayload(tresorDocumentItem:TresorDocumentItem,masterKey:TresorKey) throws -> Data {
+  public func decryptTresorDocumentItemPayload(tresorDocumentItem:TresorDocumentItem,masterKey:TresorKey) throws -> Data? {
     let algorithm = SymmetricCipherAlgorithm.aes_256
     let key = masterKey.accessToken
-    let cipher = SymmetricCipher(algorithm: algorithm,options: [.ECBMode,.PKCS7Padding])
-    let decryptedText = try cipher.decrypt(tresorDocumentItem.payload!,key:key!)
+    let nonce = tresorDocumentItem.nonce
+    var result:Data? = nil
     
-    return decryptedText
+    if nonce != nil {
+      let cipher = SymmetricCipher(algorithm: algorithm,options: [.PKCS7Padding], iv:nonce!)
+      
+      result = try cipher.decrypt(tresorDocumentItem.payload!,key:key!)
+    }
+    
+    return result
   }
   
   func saveContext() throws {

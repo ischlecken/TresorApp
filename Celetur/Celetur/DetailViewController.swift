@@ -35,7 +35,11 @@ class DetailViewController: UIViewController {
           do {
             let data = try self.tresorAppState!.tresorDataModel.decryptTresorDocumentItemPayload(tresorDocumentItem: item, masterKey:key)
             
-            label.text = String(data: data, encoding: String.Encoding.utf8)
+            if let d = data {
+              label.text = String(data: d, encoding: String.Encoding.utf8)
+            } else {
+              label.text = "Failed to decrypt payload"
+            }
           } catch {
             celeturLogger.error("Error while decrypting payload", error: error)
           }

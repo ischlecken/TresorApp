@@ -10,8 +10,8 @@
 		8517BDE51F2493FC009DB663 /* CeleturKitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8517BDE41F2493FC009DB663 /* CeleturKitError.swift */; };
 		8517BDE71F24947A009DB663 /* CipherEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8517BDE61F24947A009DB663 /* CipherEnums.swift */; };
 		8517BDED1F24EA50009DB663 /* SymmetricCipher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8517BDEC1F24EA50009DB663 /* SymmetricCipher.swift */; };
-		8517BDEF1F24F6AE009DB663 /* CipherRandomUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8517BDEE1F24F6AE009DB663 /* CipherRandomUtil.swift */; };
-		8517BDF11F24F95D009DB663 /* Data+HexDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8517BDF01F24F95D009DB663 /* Data+HexDescription.swift */; };
+		8517BDF11F24F95D009DB663 /* Data+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8517BDF01F24F95D009DB663 /* Data+Extension.swift */; };
+		855462FA1F3F449A00C001F6 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 855462F91F3F449900C001F6 /* String+Extension.swift */; };
 		85C5C5861F36E6C100DE7EBC /* TresorDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85C5C5851F36E6C100DE7EBC /* TresorDataModel.swift */; };
 		85C5C58C1F370E1F00DE7EBC /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85C5C5891F370E1E00DE7EBC /* Keychain.swift */; };
 		85C5C58E1F37190C00DE7EBC /* TresorKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85C5C58D1F37190C00DE7EBC /* TresorKeys.swift */; };
@@ -38,8 +38,8 @@
 		8517BDE41F2493FC009DB663 /* CeleturKitError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CeleturKitError.swift; sourceTree = "<group>"; };
 		8517BDE61F24947A009DB663 /* CipherEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CipherEnums.swift; sourceTree = "<group>"; };
 		8517BDEC1F24EA50009DB663 /* SymmetricCipher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SymmetricCipher.swift; sourceTree = "<group>"; };
-		8517BDEE1F24F6AE009DB663 /* CipherRandomUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CipherRandomUtil.swift; sourceTree = "<group>"; };
-		8517BDF01F24F95D009DB663 /* Data+HexDescription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+HexDescription.swift"; sourceTree = "<group>"; };
+		8517BDF01F24F95D009DB663 /* Data+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Extension.swift"; sourceTree = "<group>"; };
+		855462F91F3F449900C001F6 /* String+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
 		85C5C5851F36E6C100DE7EBC /* TresorDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TresorDataModel.swift; sourceTree = "<group>"; };
 		85C5C5891F370E1E00DE7EBC /* Keychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		85C5C58D1F37190C00DE7EBC /* TresorKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TresorKeys.swift; sourceTree = "<group>"; };
@@ -115,8 +115,8 @@
 				8517BDE41F2493FC009DB663 /* CeleturKitError.swift */,
 				8517BDE61F24947A009DB663 /* CipherEnums.swift */,
 				8517BDEC1F24EA50009DB663 /* SymmetricCipher.swift */,
-				8517BDEE1F24F6AE009DB663 /* CipherRandomUtil.swift */,
-				8517BDF01F24F95D009DB663 /* Data+HexDescription.swift */,
+				8517BDF01F24F95D009DB663 /* Data+Extension.swift */,
+				855462F91F3F449900C001F6 /* String+Extension.swift */,
 				85C5C5851F36E6C100DE7EBC /* TresorDataModel.swift */,
 				85C5C58D1F37190C00DE7EBC /* TresorKeys.swift */,
 			);
@@ -246,10 +246,10 @@
 				85C5C58E1F37190C00DE7EBC /* TresorKeys.swift in Sources */,
 				85C5C58C1F370E1F00DE7EBC /* Keychain.swift in Sources */,
 				85EEE22E1F1B4F0C002CE85E /* CoreDataStack.swift in Sources */,
-				8517BDEF1F24F6AE009DB663 /* CipherRandomUtil.swift in Sources */,
+				855462FA1F3F449A00C001F6 /* String+Extension.swift in Sources */,
 				85C5C5861F36E6C100DE7EBC /* TresorDataModel.swift in Sources */,
 				85EEE23A1F1B52DE002CE85E /* Logger.swift in Sources */,
-				8517BDF11F24F95D009DB663 /* Data+HexDescription.swift in Sources */,
+				8517BDF11F24F95D009DB663 /* Data+Extension.swift in Sources */,
 				85EEE22F1F1B4F0C002CE85E /* CeleturUtil.swift in Sources */,
 				85EEE23E1F1B67CE002CE85E /* CeleturKit.xcdatamodeld in Sources */,
 				8517BDED1F24EA50009DB663 /* SymmetricCipher.swift in Sources */,

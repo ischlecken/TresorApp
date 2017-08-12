@@ -47,7 +47,7 @@ public class TresorKeys {
   let masterKeyName = "MasterKey"
   
   public func createNewMasterKey() throws -> TresorKey {
-    let token = CipherRandomUtil.randomStringOfLength(SymmetricCipherAlgorithm.aes_256.requiredKeySize())
+    let token =  String(withRandomData:SymmetricCipherAlgorithm.aes_256.requiredKeySize())
     var masterKey = TresorKey(name:masterKeyName,appGroup: self.appGroup,accessToken:token)
     
     try masterKey.saveInKeychain()

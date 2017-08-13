@@ -30,6 +30,7 @@ class DetailViewController: UIViewController {
       
       
       if let label = passwordLabel {
+        label.text = item.payload?.hexEncodedString()
         
         if let key = self.tresorAppState?.masterKey {
           self.tresorAppState!.tresorDataModel.decryptTresorDocumentItemPayload(tresorDocumentItem: item, masterKey:key) { (operation) in

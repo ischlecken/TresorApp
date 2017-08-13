@@ -78,8 +78,6 @@ public enum KeychainItemAccessibility {
   }
 }
 
-
-
 private let keychainItemAccessibilityLookup: [KeychainItemAccessibility:CFString] = {
   var lookup: [KeychainItemAccessibility:CFString] = [
     .afterFirstUnlock: kSecAttrAccessibleAfterFirstUnlock,
@@ -292,7 +290,7 @@ extension KeychainItemType {
     try keychain.removeItemWithAttributes(attributesForRemove())
   }
   
-  public mutating func fetchFromKeychain(completion: @escaping (Self?,Error?) -> Void, _ keychain: KeychainServiceType = Keychain()) {
+  public mutating func fetchFromKeychain(_ keychain: KeychainServiceType = Keychain(), completion: @escaping (Self?,Error?) -> Void) {
     var me = self
     
     DispatchQueue.global().async {

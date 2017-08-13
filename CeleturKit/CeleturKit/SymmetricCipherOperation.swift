@@ -81,6 +81,8 @@ public class SymmetricCipherOperation : Operation {
     
     var bytesProcessed   = Int(0)
     
+    sleep(5)
+    
     let cryptStatus = CCCrypt(
       operation,                  // Operation
       algorithm.ccAlgorithm(),    // Algorithm

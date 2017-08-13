@@ -7,7 +7,7 @@ import UIKit
 import CoreData
 import CeleturKit
 
-class TresorDocumentItemViewController: UITableViewController, NSFetchedResultsControllerDelegate {
+class TresorDocumentItemViewController: UITableViewController {
   
   var tresorDocument: TresorDocument?
   var tresorAppState: TresorAppState?
@@ -35,8 +35,9 @@ class TresorDocumentItemViewController: UITableViewController, NSFetchedResultsC
   func insertNewObject(_ sender: Any) {
     
     do {
-      try self.tresorAppState?.tresorDataModel.createTresorDocumentItem(tresorDocument:tresorDocument!,masterKey: (self.tresorAppState?.masterKey!)!)
-      
+      try self.tresorAppState?.tresorDataModel.createTresorDocumentItem(tresorDocument:tresorDocument!,masterKey: (self.tresorAppState?.masterKey!)!) {
+        self.tableView.reloadData()
+      }
     } catch let celeturKitError as CeleturKitError {
       celeturLogger.error("CeleturKitError while creating tresor document item",error:celeturKitError)
     } catch {
@@ -50,7 +51,7 @@ class TresorDocumentItemViewController: UITableViewController, NSFetchedResultsC
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     if segue.identifier == "showTresorDocumentItemDetail" {
       if let indexPath = tableView.indexPathForSelectedRow {
-        let object = fetchedResultsController.object(at: indexPath)
+        let object = self.tresorDocument?.items?.allObjects[indexPath.row] as? TresorDocumentItem
         let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
         controller.tresorAppState = self.tresorAppState
         controller.tresorDocumentItem = object
@@ -63,18 +64,20 @@ class TresorDocumentItemViewController: UITableViewController, NSFetchedResultsC
   // MARK: - Table View
   
   override func numberOfSections(in tableView: UITableView) -> Int {
-    return fetchedResultsController.sections?.count ?? 0
+    return self.tresorDocument?.items?.count ?? 0
   }
   
   override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    let sectionInfo = fetchedResultsController.sections![section]
-    return sectionInfo.numberOfObjects
+    return 1
   }
   
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "tresorDocumentItemCell", for: indexPath)
-    let event = fetchedResultsController.object(at: indexPath)
-    configureCell(cell, withEvent: event)
+    
+    let event = self.tresorDocument?.items?.allObjects[indexPath.row] as? TresorDocumentItem
+    
+    configureCell(cell, withTresorDocumentItem: event)
+    
     return cell
   }
   
@@ -85,43 +88,27 @@ class TresorDocumentItemViewController: UITableViewController, NSFetchedResultsC
   
   override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
     if editingStyle == .delete {
-      let context = fetchedResultsController.managedObjectContext
-      context.delete(fetchedResultsController.object(at: indexPath))
+      let context = self.tresorAppState?.persistentContainer.context
+      let object = self.tresorDocument?.items?.allObjects[indexPath.row] as? TresorDocumentItem
+      
+      context?.delete(object!)
       
       do {
-        try context.save()
+        try context?.save()
+        
+        self.tableView.reloadData()
       } catch {
-        // Replace this implementation with code to handle the error appropriately.
-        // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-        let nserror = error as NSError
-        fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+        celeturLogger.error("Error while deleting TresorDocumentItem", error: error)
       }
     }
   }
   
-  func configureCell(_ cell: UITableViewCell, withEvent event: TresorDocumentItem) {
-    cell.textLabel!.text = event.createts!.description
-    cell.detailTextLabel!.text = event.id
+  func configureCell(_ cell: UITableViewCell, withTresorDocumentItem tresorDocumentItem: TresorDocumentItem?) {
+    cell.textLabel!.text = tresorDocumentItem?.createts!.description
+    cell.detailTextLabel!.text = tresorDocumentItem?.id
     
   }
   
-  // MARK: - Fetched results controller
-  var fetchedResultsController: NSFetchedResultsController<TresorDocumentItem> {
-    if _fetchedResultsController != nil {
-      return _fetchedResultsController!
-    }
-    
-    do {
-      try _fetchedResultsController = self.tresorAppState?.tresorDataModel.createAndFetchTresorDocumentItemFetchedResultsController()
-      
-      _fetchedResultsController?.delegate = self
-    } catch {
-      celeturLogger.error("CeleturKitError while creating FetchedResultsController",error:error)
-    }
-    
-    return _fetchedResultsController!
-  }
-  var _fetchedResultsController: NSFetchedResultsController<TresorDocumentItem>? = nil
   
   func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
     tableView.beginUpdates()
@@ -145,9 +132,9 @@ class TresorDocumentItemViewController: UITableViewController, NSFetchedResultsC
     case .delete:
       tableView.deleteRows(at: [indexPath!], with: .fade)
     case .update:
-      configureCell(tableView.cellForRow(at: indexPath!)!, withEvent: anObject as! TresorDocumentItem)
+      configureCell(tableView.cellForRow(at: indexPath!)!, withTresorDocumentItem: anObject as? TresorDocumentItem)
     case .move:
-      configureCell(tableView.cellForRow(at: indexPath!)!, withEvent: anObject as! TresorDocumentItem)
+      configureCell(tableView.cellForRow(at: indexPath!)!, withTresorDocumentItem: anObject as? TresorDocumentItem)
       tableView.moveRow(at: indexPath!, to: newIndexPath!)
     }
   }
@@ -155,15 +142,6 @@ class TresorDocumentItemViewController: UITableViewController, NSFetchedResultsC
   func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
     tableView.endUpdates()
   }
-  
-  /*
-   // Implementing the above methods to update the table view in response to individual changes may have performance implications if a large number of changes are made simultaneously. If this proves to be an issue, you can instead just implement controllerDidChangeContent: which notifies the delegate that all section and object changes have been processed.
-   
-   func controllerDidChangeContent(controller: NSFetchedResultsController) {
-   // In the simplest, most efficient, case, reload the table view.
-   tableView.reloadData()
-   }
-   */
   
 }
 

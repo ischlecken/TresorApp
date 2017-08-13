@@ -41,7 +41,7 @@ public class TresorDataModel {
     return newTresorDocument
   }
   
-  public func createTresorDocumentItem(tresorDocument:TresorDocument,masterKey:TresorKey) throws {
+  public func createTresorDocumentItem(tresorDocument:TresorDocument,masterKey:TresorKey, onCompleted:(()->Void)? = nil) throws {
     let key = masterKey.accessToken
     let plainText = "{ 'title': 'gmx.de','user':'bla@fasel.de','password':'hugo'}"
     
@@ -64,6 +64,8 @@ public class TresorDataModel {
       
       do {
         try self.saveContext()
+        
+        onCompleted?()
       } catch {
         celeturKitLogger.error("Error while saving tresordocumentitem", error: error)
       }
@@ -112,48 +114,5 @@ public class TresorDataModel {
     
     return aFetchedResultsController
   }
-  
-  public func createAndFetchTresorDocumentFetchedResultsController() throws -> NSFetchedResultsController<TresorDocument> {
-    let fetchRequest: NSFetchRequest<TresorDocument> = TresorDocument.fetchRequest()
-    
-    // Set the batch size to a suitable number.
-    fetchRequest.fetchBatchSize = 20
-    
-    // Edit the sort key as appropriate.
-    let sortDescriptor = NSSortDescriptor(key: "createts", ascending: false)
-    
-    fetchRequest.sortDescriptors = [sortDescriptor]
-    
-    let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedContext!, sectionNameKeyPath: nil, cacheName: "TresorDocument")
-    
-    do {
-      try aFetchedResultsController.performFetch()
-    } catch {
-      throw CeleturKitError.creationOfFetchResultsControllerFailed(coreDataError: error as NSError)
-    }
-    
-    return aFetchedResultsController
-  }
-
-  public func createAndFetchTresorDocumentItemFetchedResultsController() throws -> NSFetchedResultsController<TresorDocumentItem> {
-    let fetchRequest: NSFetchRequest<TresorDocumentItem> = TresorDocumentItem.fetchRequest()
-    
-    // Set the batch size to a suitable number.
-    fetchRequest.fetchBatchSize = 20
-    
-    // Edit the sort key as appropriate.
-    let sortDescriptor = NSSortDescriptor(key: "createts", ascending: false)
-    
-    fetchRequest.sortDescriptors = [sortDescriptor]
-    
-    let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedContext!, sectionNameKeyPath: nil, cacheName: "TresorDocumentItem")
-    
-    do {
-      try aFetchedResultsController.performFetch()
-    } catch {
-      throw CeleturKitError.creationOfFetchResultsControllerFailed(coreDataError: error as NSError)
-    }
-    
-    return aFetchedResultsController
-  }
+ 
 }

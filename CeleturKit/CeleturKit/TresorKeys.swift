@@ -63,7 +63,7 @@ public class TresorKeys {
   public func getMasterKey(masterKeyCompletion: @escaping (TresorKey?,Error?) -> Void) -> Void {
     var key = TresorKey(name: masterKeyName,appGroup: self.appGroup)
     
-    key.fetchFromKeychain(completion: { (masterKey:TresorKey?,error:Error?) -> Void in
+    key.fetchFromKeychain() { (masterKey:TresorKey?,error:Error?) -> Void in
       if let e = error as? CeleturKitError, case .keychainError(let keychainError) = e, keychainError == errSecItemNotFound {
         celeturKitLogger.debug("item not found")
         
@@ -77,7 +77,7 @@ public class TresorKeys {
       } else {
         masterKeyCompletion(masterKey,error)
       }
-    })
+    }
   }
   
   public func removeMasterKey() throws {

@@ -11,26 +11,30 @@ import LocalAuthentication
 
 public struct TresorKey: KeychainGenericPasswordType {
   public let accountName: String
-  public let token: String
-  
+  public let token: Data
   public let appGroup: String?
-  
   
   public var data = [String: Any]()
   
   public var dataToStore: [String: Any] {
-    return ["token": token]
+    return ["token": token.hexEncodedString()]
   }
   
-  public var accessToken: String? {
-    return data["token"] as? String
+  public var accessToken: Data? {
+    var result:Data? = nil
+    
+    if let t = data["token"] as? String {
+      result = Data(fromHexEncodedString:t)
+    }
+    
+    return result
   }
   
   public var accessGroup: String? {
     return self.appGroup
   }
   
-  init(name: String, appGroup: String, accessToken: String = "") {
+  init(name: String, appGroup: String, accessToken: Data = Data()) {
     self.accountName = name
     self.appGroup = appGroup
     self.token = accessToken
@@ -47,7 +51,8 @@ public class TresorKeys {
   let masterKeyName = "MasterKey"
   
   public func createNewMasterKey() throws -> TresorKey {
-    let token =  String(withRandomData:SymmetricCipherAlgorithm.aes_256.requiredKeySize())
+    let token =  try Data(withRandomData:SymmetricCipherAlgorithm.aes_256.requiredKeySize())
+    
     var masterKey = TresorKey(name:masterKeyName,appGroup: self.appGroup,accessToken:token)
     
     try masterKey.saveInKeychain()

@@ -18,4 +18,6 @@ public enum CeleturKitError: Error {
   case keychainError(keychainError:OSStatus)
   case keychainError1(keychainError:Error)
   
+  case randomBytesError(error:OSStatus)
+  
 }

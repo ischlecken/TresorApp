@@ -21,17 +21,7 @@ public class TresorDataModel {
     newTresor.createts = Date()
     newTresor.id = CeleturKitUtil.create()
     newTresor.name = "test"
-    
-    let algorithm = SymmetricCipherAlgorithm.aes_256
-    let key = String(withRandomData:algorithm.requiredKeySize())
-    let plainText = "Test, the quick brown fox jumps over the lazy dog, 123,123,123"
-    let cipher = SymmetricCipher(algorithm: algorithm, options: [.ECBMode,.PKCS7Padding])
-    
-    let encryptedText = try cipher.crypt(string:plainText,key:key)
-      
-    newTresor.nonce = encryptedText
-      
-    celeturKitLogger.debug("plain:\(plainText) key:\(key) encryptedText:\(encryptedText.hexEncodedString())")
+    newTresor.nonce = try Data(withRandomData: SymmetricCipherAlgorithm.aes_256.requiredBlockSize())
     
     try self.saveContext()
     
@@ -43,18 +33,8 @@ public class TresorDataModel {
     newTresorDocument.createts = Date()
     newTresorDocument.id = CeleturKitUtil.create()
     newTresorDocument.tresorid = tresor
-  
-    let algorithm = SymmetricCipherAlgorithm.aes_256
-    let key = String(withRandomData:algorithm.requiredKeySize())
-    let plainText = "Test, the quick brown fox jumps over the lazy dog, 123,123,123"
-    let cipher = SymmetricCipher(algorithm: algorithm,options: [.ECBMode,.PKCS7Padding])
+    newTresorDocument.nonce = try Data(withRandomData:SymmetricCipherAlgorithm.aes_256.requiredBlockSize())
     
-    let encryptedText = try cipher.crypt(string:plainText,key:key)
-    
-    newTresorDocument.nonce = encryptedText
-    
-    celeturKitLogger.debug("plain:\(plainText) key:\(key) encryptedText:\(encryptedText.hexEncodedString())")
-  
     try self.saveContext()
     
     return newTresorDocument
@@ -64,8 +44,8 @@ public class TresorDataModel {
     let algorithm = SymmetricCipherAlgorithm.aes_256
     let key = masterKey.accessToken
     let plainText = "{ 'title': 'gmx.de','user':'bla@fasel.de','password':'hugo'}"
-    let nonce = Data(withRandomData:algorithm.requiredBlockSize())
-    let cipher = SymmetricCipher(algorithm: algorithm,options: [.PKCS7Padding], iv:nonce!)
+    let nonce = try Data(withRandomData:algorithm.requiredBlockSize())
+    let cipher = SymmetricCipher(algorithm: algorithm,options: [.PKCS7Padding], iv:nonce)
     let encryptedText = try cipher.crypt(string:plainText,key:key!)
     
     let newTresorDocumentItem = TresorDocumentItem(context: self.managedContext!)

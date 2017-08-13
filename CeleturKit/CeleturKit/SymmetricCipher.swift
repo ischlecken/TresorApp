@@ -26,7 +26,7 @@ public class SymmetricCipher {
     self.iv = iv
   }
   
-  public func crypt(string: String, key: String) throws -> Data {
+  public func crypt(string: String, key: Data) throws -> Data {
     do {
       if let data = string.data(using: String.Encoding.utf8) {
         return try self.cryptoOperation(data, key: key, operation: CCOperation(kCCEncrypt))
@@ -36,7 +36,7 @@ public class SymmetricCipher {
     }
   }
   
-  public func crypt(data: Data, key: String) throws -> Data {
+  public func crypt(data: Data, key: Data) throws -> Data {
     do {
       return try self.cryptoOperation(data, key: key, operation: CCOperation(kCCEncrypt))
     } catch {
@@ -44,7 +44,7 @@ public class SymmetricCipher {
     }
   }
   
-  public func decrypt(_ data: Data, key: String) throws -> Data  {
+  public func decrypt(_ data: Data, key: Data) throws -> Data  {
     do {
       return try self.cryptoOperation(data, key: key, operation: CCOperation(kCCDecrypt))
     } catch {
@@ -52,8 +52,8 @@ public class SymmetricCipher {
     }
   }
   
-  internal func cryptoOperation(_ inputData: Data, key: String, operation: CCOperation) throws -> Data {
-    print("cryptoOperation() key:\(key)")
+  internal func cryptoOperation(_ inputData: Data, key: Data, operation: CCOperation) throws -> Data {
+    print("cryptoOperation() key:\(key.hexEncodedString())")
     
     // Validation checks.
     if iv == nil && !self.options.contains(SymmetricCipherOptions.ECBMode) {
@@ -61,7 +61,7 @@ public class SymmetricCipher {
     }
     
     // Prepare data parameters
-    let keyData: Data! = key.data(using: String.Encoding.utf8, allowLossyConversion: false)!
+    let keyData: Data! = key
     let keyBytes = keyData.withUnsafeBytes { (bytes: UnsafePointer<UInt8>) -> UnsafePointer<UInt8> in
       return bytes
     }

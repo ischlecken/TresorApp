@@ -33,7 +33,7 @@ class TresorAppState {
       if let e = error {
         celeturLogger.debug("error:\(e)")
       } else if let mk = masterKey {
-        celeturLogger.info("masterKey:\(mk.accountName),\(mk.accessToken ?? "not set")")
+        celeturLogger.info("masterKey:\(mk.accountName),\(mk.accessToken?.hexEncodedString() ?? "not set")")
         
         self.masterKey = mk
       }

@@ -11,7 +11,7 @@ public extension Data {
     return self.map { String(format: "%02hhx", $0) }.joined()
   }
   
-  public init?(withRandomData length: Int) {
+  public init(withRandomData length: Int) throws {
    self.init(count: length)
     
     let bytes = self.withUnsafeMutableBytes { (bytes: UnsafeMutablePointer<UInt8>) -> UnsafeMutablePointer<UInt8> in
@@ -20,7 +20,9 @@ public extension Data {
     
     let status = SecRandomCopyBytes(kSecRandomDefault, length, bytes)
     
-    guard status == 0 else { return nil }
+    if status != errSecSuccess {
+      throw CeleturKitError.randomBytesError(error: status)
+    }
   }
   
   public init?(fromHexEncodedString string: String) {

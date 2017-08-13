@@ -36,7 +36,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     do {
       let tresorDocument = try self.tresorAppState?.tresorDataModel.createTresorDocument(tresor: self.tresor!)
       
-      let _ = try self.tresorAppState?.tresorDataModel.createTresorDocumentItem(tresorDocument: tresorDocument!,masterKey: (self.tresorAppState?.masterKey)!)
+      try self.tresorAppState?.tresorDataModel.createTresorDocumentItem(tresorDocument: tresorDocument!,masterKey: (self.tresorAppState?.masterKey)!)
       
     } catch let celeturKitError as CeleturKitError {
       celeturLogger.error("CeleturKitError while creating tresor document",error:celeturKitError)

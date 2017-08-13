@@ -32,16 +32,12 @@ class DetailViewController: UIViewController {
       if let label = passwordLabel {
         
         if let key = self.tresorAppState?.masterKey {
-          do {
-            let data = try self.tresorAppState!.tresorDataModel.decryptTresorDocumentItemPayload(tresorDocumentItem: item, masterKey:key)
-            
-            if let d = data {
+          self.tresorAppState!.tresorDataModel.decryptTresorDocumentItemPayload(tresorDocumentItem: item, masterKey:key) { (operation) in
+            if let d = operation.outputData {
               label.text = String(data: d, encoding: String.Encoding.utf8)
             } else {
-              label.text = "Failed to decrypt payload"
+              label.text = "Failed to decrypt payload: \(String(describing: operation.error))"
             }
-          } catch {
-            celeturLogger.error("Error while decrypting payload", error: error)
           }
         } else {
           label.text = "Masterkey not set, could not decrypt payload..."

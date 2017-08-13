@@ -11,6 +11,7 @@ import Foundation
 public class TresorDataModel {
   
   var managedContext : NSManagedObjectContext? = nil
+  let cipherQueue = OperationQueue()
   
   public init(_ coreDataStack:CoreDataStack) {
     self.managedContext = coreDataStack.context
@@ -40,44 +41,45 @@ public class TresorDataModel {
     return newTresorDocument
   }
   
-  public func createTresorDocumentItem(tresorDocument:TresorDocument,masterKey:TresorKey) throws -> TresorDocumentItem {
-    let algorithm = SymmetricCipherAlgorithm.aes_256
+  public func createTresorDocumentItem(tresorDocument:TresorDocument,masterKey:TresorKey) throws {
     let key = masterKey.accessToken
     let plainText = "{ 'title': 'gmx.de','user':'bla@fasel.de','password':'hugo'}"
-    let nonce = try Data(withRandomData:algorithm.requiredBlockSize())
-    let cipher = SymmetricCipher(algorithm: algorithm,options: [.PKCS7Padding], iv:nonce)
-    let encryptedText = try cipher.crypt(string:plainText,key:key!)
     
-    let newTresorDocumentItem = TresorDocumentItem(context: self.managedContext!)
-    newTresorDocumentItem.createts = Date()
-    newTresorDocumentItem.id = CeleturKitUtil.create()
-    newTresorDocumentItem.type = "main"
-    newTresorDocumentItem.mimetype = "application/json"
-    newTresorDocumentItem.payload = encryptedText
-    newTresorDocumentItem.nonce = nonce
+    let operation = AES256EncryptionOperation(key:masterKey.accessToken!,inputString: plainText, iv:nil)
+    try operation.createRandomIV()
     
-    tresorDocument.addToItems(newTresorDocumentItem)
-    
-    celeturKitLogger.debug("plain:\(plainText) key:\(key!) encryptedText:\(encryptedText.hexEncodedString())")
-    
-    try self.saveContext()
-    
-    return newTresorDocumentItem
-  }
-  
-  public func decryptTresorDocumentItemPayload(tresorDocumentItem:TresorDocumentItem,masterKey:TresorKey) throws -> Data? {
-    let algorithm = SymmetricCipherAlgorithm.aes_256
-    let key = masterKey.accessToken
-    let nonce = tresorDocumentItem.nonce
-    var result:Data? = nil
-    
-    if nonce != nil {
-      let cipher = SymmetricCipher(algorithm: algorithm,options: [.PKCS7Padding], iv:nonce!)
+    operation.mainQueueCompletionBlock = { (cipherOperation) in
+      let newTresorDocumentItem = TresorDocumentItem(context: self.managedContext!)
       
-      result = try cipher.decrypt(tresorDocumentItem.payload!,key:key!)
+      newTresorDocumentItem.createts = Date()
+      newTresorDocumentItem.id = CeleturKitUtil.create()
+      newTresorDocumentItem.type = "main"
+      newTresorDocumentItem.mimetype = "application/json"
+      newTresorDocumentItem.payload = cipherOperation.outputData
+      newTresorDocumentItem.nonce = cipherOperation.iv
+      
+      tresorDocument.addToItems(newTresorDocumentItem)
+      
+      celeturKitLogger.debug("plain:\(plainText) key:\(key!) encryptedText:\(String(describing: cipherOperation.outputData?.hexEncodedString()))")
+      
+      do {
+        try self.saveContext()
+      } catch {
+        celeturKitLogger.error("Error while saving tresordocumentitem", error: error)
+      }
     }
     
-    return result
+    self.cipherQueue.addOperation(operation)
+  }
+  
+  public func decryptTresorDocumentItemPayload(tresorDocumentItem:TresorDocumentItem,masterKey:TresorKey, completionBlock: SymmetricCipherCompletionType?) {
+    let operation = AES256DecryptionOperation(key:masterKey.accessToken!,inputData: tresorDocumentItem.payload!, iv:tresorDocumentItem.nonce)
+    
+    if let c = completionBlock {
+      operation.mainQueueCompletionBlock = c
+    }
+    
+    self.cipherQueue.addOperation(operation)
   }
   
   func saveContext() throws {

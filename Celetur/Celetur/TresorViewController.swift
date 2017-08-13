@@ -18,6 +18,8 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
 
     let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(insertNewObject(_:)))
     navigationItem.rightBarButtonItem = addButton
+    
+    self.tableView.register(UINib(nibName:"TresorCell",bundle:nil),forCellReuseIdentifier:"tresorCell")
   }
 
   override func viewWillAppear(_ animated: Bool) {
@@ -69,10 +71,16 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   }
 
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCell(withIdentifier: "tresorCell", for: indexPath)
+    let cell = tableView.dequeueReusableCell(withIdentifier: "tresorCell", for: indexPath) as? TresorTableViewCell
     let event = fetchedResultsController.object(at: indexPath)
-    configureCell(cell, withEvent: event)
-    return cell
+    
+    configureCell(cell!, withEvent: event)
+    
+    return cell!
+  }
+  
+  override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    self.performSegue(withIdentifier: "showTresorDocument", sender: self)
   }
 
   override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
@@ -96,9 +104,9 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     }
   }
 
-  func configureCell(_ cell: UITableViewCell, withEvent event: Tresor) {
-    cell.textLabel!.text = event.createts!.description
-    cell.detailTextLabel!.text = event.id
+  func configureCell(_ cell: TresorTableViewCell, withEvent event: Tresor) {
+    cell.createdLabel!.text = event.createts!.description
+    cell.nameLabel!.text = event.id
     
   }
 
@@ -137,15 +145,16 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   }
 
   func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+      let cell = tableView.cellForRow(at: indexPath!) as? TresorTableViewCell
       switch type {
           case .insert:
               tableView.insertRows(at: [newIndexPath!], with: .fade)
           case .delete:
               tableView.deleteRows(at: [indexPath!], with: .fade)
           case .update:
-              configureCell(tableView.cellForRow(at: indexPath!)!, withEvent: anObject as! Tresor)
+              configureCell(cell!, withEvent: anObject as! Tresor)
           case .move:
-              configureCell(tableView.cellForRow(at: indexPath!)!, withEvent: anObject as! Tresor)
+              configureCell(cell!, withEvent: anObject as! Tresor)
               tableView.moveRow(at: indexPath!, to: newIndexPath!)
       }
   }

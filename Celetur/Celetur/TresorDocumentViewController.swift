@@ -38,6 +38,7 @@ class TresorDocumentViewController: UITableViewController {
       
       try self.tresorAppState?.tresorDataModel.createTresorDocumentItem(tresorDocument: tresorDocument!,masterKey: (self.tresorAppState?.masterKey)!)
       
+      self.tableView.reloadData()
     } catch let celeturKitError as CeleturKitError {
       celeturLogger.error("CeleturKitError while creating tresor document",error:celeturKitError)
     } catch {

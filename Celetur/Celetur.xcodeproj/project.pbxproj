@@ -13,10 +13,12 @@
 		852C26641F37CD850041273F /* TresorConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 852C26631F37CD850041273F /* TresorConstants.swift */; };
 		8576D77A1F255F5200D9328A /* CeleturKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85EEE2361F1B5215002CE85E /* CeleturKit.framework */; };
 		8576D77B1F255F5200D9328A /* CeleturKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 85EEE2361F1B5215002CE85E /* CeleturKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		85DC68CF1F40FA26004AFAAC /* TresorCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 85DC68CE1F40FA26004AFAAC /* TresorCell.xib */; };
 		85EEE1FF1F1A68A9002CE85E /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85EEE1FE1F1A68A9002CE85E /* CloudKit.framework */; };
 		85EEE2011F1A68E1002CE85E /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85EEE2001F1A68E1002CE85E /* StoreKit.framework */; };
 		85EEE2031F1A68EF002CE85E /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85EEE2021F1A68EF002CE85E /* MapKit.framework */; };
 		85EEE23B1F1B53B7002CE85E /* CeleturKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85EEE2361F1B5215002CE85E /* CeleturKit.framework */; };
+		85F151EA1F40FBBB008F8C85 /* TresorTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F151E91F40FBBB008F8C85 /* TresorTableViewCell.swift */; };
 		85F9080E1F12D9E30062BD63 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F9080D1F12D9E30062BD63 /* AppDelegate.swift */; };
 		85F908131F12D9E30062BD63 /* TresorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F908121F12D9E30062BD63 /* TresorViewController.swift */; };
 		85F908151F12D9E30062BD63 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F908141F12D9E30062BD63 /* DetailViewController.swift */; };
@@ -76,11 +78,13 @@
 		850B80F41F35E7AF0078F042 /* TresorDocumentItemViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TresorDocumentItemViewController.swift; sourceTree = "<group>"; };
 		852C26601F37CCDB0041273F /* TresorAppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TresorAppState.swift; sourceTree = "<group>"; };
 		852C26631F37CD850041273F /* TresorConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TresorConstants.swift; sourceTree = "<group>"; };
+		85DC68CE1F40FA26004AFAAC /* TresorCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TresorCell.xib; sourceTree = "<group>"; };
 		85EEE1FD1F1A68A2002CE85E /* Celetur.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Celetur.entitlements; sourceTree = "<group>"; };
 		85EEE1FE1F1A68A9002CE85E /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		85EEE2001F1A68E1002CE85E /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		85EEE2021F1A68EF002CE85E /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		85EEE2301F1B5215002CE85E /* CeleturKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CeleturKit.xcodeproj; path = ../CeleturKit/CeleturKit.xcodeproj; sourceTree = "<group>"; };
+		85F151E91F40FBBB008F8C85 /* TresorTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TresorTableViewCell.swift; sourceTree = "<group>"; };
 		85F9080A1F12D9E30062BD63 /* Celetur.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Celetur.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		85F9080D1F12D9E30062BD63 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		85F908121F12D9E30062BD63 /* TresorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TresorViewController.swift; sourceTree = "<group>"; };
@@ -117,6 +121,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		85DC68D11F40FA34004AFAAC /* TableCells */ = {
+			isa = PBXGroup;
+			children = (
+				85DC68CE1F40FA26004AFAAC /* TresorCell.xib */,
+				85F151E91F40FBBB008F8C85 /* TresorTableViewCell.swift */,
+			);
+			path = TableCells;
+			sourceTree = "<group>";
+		};
 		85EEE2311F1B5215002CE85E /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -148,6 +161,7 @@
 		85F9080C1F12D9E30062BD63 /* Celetur */ = {
 			isa = PBXGroup;
 			children = (
+				85DC68D11F40FA34004AFAAC /* TableCells */,
 				85EEE1FD1F1A68A2002CE85E /* Celetur.entitlements */,
 				85F9080D1F12D9E30062BD63 /* AppDelegate.swift */,
 				85F908121F12D9E30062BD63 /* TresorViewController.swift */,
@@ -322,6 +336,7 @@
 			files = (
 				85F9081D1F12D9E30062BD63 /* LaunchScreen.storyboard in Resources */,
 				85F9081A1F12D9E30062BD63 /* Assets.xcassets in Resources */,
+				85DC68CF1F40FA26004AFAAC /* TresorCell.xib in Resources */,
 				85F908181F12D9E30062BD63 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -346,6 +361,7 @@
 				85F908131F12D9E30062BD63 /* TresorViewController.swift in Sources */,
 				850B80F31F35DFF10078F042 /* TresorDocumentViewController.swift in Sources */,
 				852C26611F37CCDB0041273F /* TresorAppState.swift in Sources */,
+				85F151EA1F40FBBB008F8C85 /* TresorTableViewCell.swift in Sources */,
 				85F908151F12D9E30062BD63 /* DetailViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

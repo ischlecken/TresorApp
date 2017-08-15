@@ -14,9 +14,6 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    // Do any additional setup after loading the view, typically from a nib.
-    navigationItem.leftBarButtonItem = editButtonItem
-    
     self.tableView.register(UINib(nibName:"TresorCell",bundle:nil),forCellReuseIdentifier:"tresorCell")
   }
   
@@ -46,6 +43,10 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
         let controller = (segue.destination as! UINavigationController).topViewController as! EditTresorViewController
         controller.tresorAppState = self.tresorAppState
         
+        if let t = sender as? Tresor {
+          controller.tresor = t
+        }
+      
       default: break
       }
     }
@@ -56,9 +57,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   @IBAction func unwindToTresor(segue: UIStoryboardSegue) {
     print("unwindToTresor:\(String(describing: segue.identifier))")
     
-    if segue.identifier == "unwindToTresor" {
-      self.tableView.reloadData()
-    }
+    
   }
   
   // MARK: - Table View
@@ -90,24 +89,53 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     return true
   }
   
-  override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-    if editingStyle == .delete {
-      let context = fetchedResultsController.managedObjectContext
-      context.delete(fetchedResultsController.object(at: indexPath))
+  override func tableView(_ tableView: UITableView, editActionsForRowAt: IndexPath) -> [UITableViewRowAction]? {
+    
+    let editAction = UITableViewRowAction(style: .normal, title: "Edit") { action, index in
+      print("edit button tapped")
+      self.performSegue(withIdentifier: "showEditTresor", sender: self.fetchedResultsController.object(at: editActionsForRowAt))
+    }
+    editAction.backgroundColor = .orange
+    
+    let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { action, index in
+      let context = self.tresorAppState?.persistentContainer.context
+      
+      context?.delete(self.fetchedResultsController.object(at: index))
       
       do {
-        try context.save()
+        try context?.save()
       } catch {
-        // Replace this implementation with code to handle the error appropriately.
-        // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-        let nserror = error as NSError
-        fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+        celeturLogger.error("Error while deleting tresor object",error:error)
+        
+        self.tresorAppState?.tresorDataModel.flushFetchedResultsControllerCache()
+        do {
+          try self._fetchedResultsController?.performFetch()
+          self.tableView.reloadData()
+        } catch {
+          celeturLogger.error("Error while refreshing fetchedResultsController", error: error)
+        }
+        
       }
+    }
+    
+    return [editAction, deleteAction]
+  }
+  
+  override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+    if editingStyle == .delete {
+      
     }
   }
   
   func configureCell(_ cell: TresorTableViewCell, withEvent event: Tresor) {
-    cell.createdLabel!.text = event.createts!.description
+    
+    if let t = event.changets {
+      cell.createdLabel!.text = t.description
+      
+    } else {
+      cell.createdLabel!.text = event.createts!.description
+    }
+    
     cell.nameLabel!.text = event.name
     cell.descriptionLabel!.text = event.tresordescription
     

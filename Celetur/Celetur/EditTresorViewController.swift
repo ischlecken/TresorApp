@@ -21,6 +21,7 @@ class EditTresorViewController: UIViewController {
         if let t = self.tresor {
           t.name = nameTextfield.text!
           t.tresordescription = descriptionTextfield.text
+          t.changets = Date()
           
           try self.tresorAppState?.tresorDataModel.saveContext()
         } else {

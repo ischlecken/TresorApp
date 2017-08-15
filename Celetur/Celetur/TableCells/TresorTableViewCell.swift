@@ -14,8 +14,7 @@ class TresorTableViewCell: UITableViewCell {
   
   override func awakeFromNib() {
     super.awakeFromNib()
-    
-    print("awake from nib")
+   
   }
   
 }

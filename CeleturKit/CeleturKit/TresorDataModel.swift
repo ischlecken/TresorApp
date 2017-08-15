@@ -115,5 +115,11 @@ public class TresorDataModel {
     
     return aFetchedResultsController
   }
+  
+  public func flushFetchedResultsControllerCache() {
+    let cacheName = "Tresor"
+    
+    NSFetchedResultsController<NSFetchRequestResult>.deleteCache(withName: cacheName)
+  }
  
 }

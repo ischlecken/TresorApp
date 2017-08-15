@@ -34,12 +34,12 @@
     </entity>
     <entity name="Tresor" representedClassName="Tresor" syncable="YES" codeGenerationType="class">
         <attribute name="changets" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="cipheralgorithm" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="createts" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="deletets" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="id" attributeType="String" syncable="YES"/>
         <attribute name="name" attributeType="String" syncable="YES"/>
         <attribute name="nonce" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="tresordescription" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="documents" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TresorDocument" inverseName="tresorid" inverseEntity="TresorDocument" syncable="YES"/>
         <relationship name="ownedbyusers" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="User" inverseName="ownedtresors" inverseEntity="User" syncable="YES"/>
         <relationship name="userpermissions" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TresorPermission" inverseName="tresorid" inverseEntity="TresorPermission" syncable="YES"/>

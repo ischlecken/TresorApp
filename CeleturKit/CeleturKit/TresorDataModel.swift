@@ -17,11 +17,12 @@ public class TresorDataModel {
     self.managedContext = coreDataStack.context
   }
   
-  public func createTresor() throws -> Tresor {
+  public func createTresor(name:String, description:String?) throws -> Tresor {
     let newTresor = Tresor(context: self.managedContext!)
     newTresor.createts = Date()
     newTresor.id = CeleturKitUtil.create()
-    newTresor.name = "test"
+    newTresor.name = name
+    newTresor.tresordescription = description
     newTresor.nonce = try Data(withRandomData: SymmetricCipherAlgorithm.aes_256.requiredBlockSize())
     
     try self.saveContext()
@@ -84,7 +85,7 @@ public class TresorDataModel {
     self.cipherQueue.addOperation(operation)
   }
   
-  func saveContext() throws {
+  public func saveContext() throws {
     do {
       try self.managedContext!.save()
     } catch {

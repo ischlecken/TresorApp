@@ -77,7 +77,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FJe-Yq-33r" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1030" y="729"/>
+            <point key="canvasLocation" x="1651" y="482"/>
         </scene>
         <!--Split View Controller-->
         <scene sceneID="Nki-YV-4Qg">
@@ -102,7 +102,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="rQA-Li-nuf">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="templateCell" id="rQA-Li-nuf">
                                 <rect key="frame" x="0.0" y="22" width="414" height="75"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="rQA-Li-nuf" id="Y2L-jB-GmI">
@@ -120,11 +120,101 @@
                             <outlet property="delegate" destination="7bK-jq-Zjz" id="RA6-mI-bju"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Tresor" id="Zdf-7t-Un8"/>
+                    <navigationItem key="navigationItem" title="Tresor" id="Zdf-7t-Un8">
+                        <barButtonItem key="rightBarButtonItem" title="Add" id="jey-Ak-XPv">
+                            <connections>
+                                <segue destination="bU5-Rq-6eJ" kind="popoverPresentation" identifier="showEditTresor" popoverAnchorBarButtonItem="jey-Ak-XPv" id="9Ai-yq-0cb">
+                                    <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                                </segue>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rux-fX-hf1" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="698" y="-1142"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="zuT-aG-WgP">
+            <objects>
+                <navigationController id="bU5-Rq-6eJ" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="isg-RA-21r">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="64l-f6-2Yf" kind="relationship" relationship="rootViewController" id="jSk-bJ-CEY"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="bcD-7M-j1E" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1486" y="-2049"/>
+        </scene>
+        <!--Edit Tresor View Controller-->
+        <scene sceneID="7nl-py-jkg">
+            <objects>
+                <viewController id="64l-f6-2Yf" customClass="EditTresorViewController" customModule="Celetur" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="zVf-8Y-uT8"/>
+                        <viewControllerLayoutGuide type="bottom" id="PXj-Tp-Nma"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="H00-L2-yo8">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="u0L-pU-2e8">
+                                <rect key="frame" x="20" y="100" width="117" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="0HN-w7-xQ7">
+                                <rect key="frame" x="20" y="129" width="359" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Description" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PIp-oM-kc2">
+                                <rect key="frame" x="20" y="191" width="117" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="O0v-t5-NEK">
+                                <rect key="frame" x="20" y="220" width="359" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="Jg9-by-e99">
+                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="qHT-rJ-GQZ">
+                            <connections>
+                                <segue destination="19Z-KV-Wf7" kind="unwind" identifier="unwindToTresorCanceled" unwindAction="unwindToTresorWithSegue:" id="44D-xN-o3v"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="6ZG-9v-yEF">
+                            <connections>
+                                <action selector="saveAction:" destination="64l-f6-2Yf" id="oW7-nH-8ct"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="descriptionTextfield" destination="O0v-t5-NEK" id="KVp-I8-dgg"/>
+                        <outlet property="nameTextfield" destination="0HN-w7-xQ7" id="l6g-zS-hea"/>
+                        <segue destination="19Z-KV-Wf7" kind="unwind" identifier="unwindToTresor" unwindAction="unwindToTresorWithSegue:" id="XRF-uj-1il"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ux5-QI-2bK" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="19Z-KV-Wf7" userLabel="Exit" sceneMemberID="exit"/>
+            </objects>
+            <point key="canvasLocation" x="2220" y="-2049"/>
         </scene>
         <!--Tresor Document-->
         <scene sceneID="PA6-K3-lDo">

@@ -26,6 +26,7 @@
 		85F9081A1F12D9E30062BD63 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 85F908191F12D9E30062BD63 /* Assets.xcassets */; };
 		85F9081D1F12D9E30062BD63 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 85F9081B1F12D9E30062BD63 /* LaunchScreen.storyboard */; };
 		85F908281F12D9E30062BD63 /* CeleturTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F908271F12D9E30062BD63 /* CeleturTests.swift */; };
+		85FBDD4B1F42E0F0006B4271 /* EditTresorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FBDD4A1F42E0F0006B4271 /* EditTresorViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -96,6 +97,7 @@
 		85F908231F12D9E30062BD63 /* CeleturTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CeleturTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		85F908271F12D9E30062BD63 /* CeleturTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CeleturTests.swift; sourceTree = "<group>"; };
 		85F908291F12D9E30062BD63 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		85FBDD4A1F42E0F0006B4271 /* EditTresorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditTresorViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -121,6 +123,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8501E5BD1F42DB5600F6B95A /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				85DC68D11F40FA34004AFAAC /* TableCells */,
+				85F908161F12D9E30062BD63 /* Main.storyboard */,
+				85F908191F12D9E30062BD63 /* Assets.xcassets */,
+				85F9081B1F12D9E30062BD63 /* LaunchScreen.storyboard */,
+			);
+			name = UI;
+			sourceTree = "<group>";
+		};
 		85DC68D11F40FA34004AFAAC /* TableCells */ = {
 			isa = PBXGroup;
 			children = (
@@ -161,19 +174,17 @@
 		85F9080C1F12D9E30062BD63 /* Celetur */ = {
 			isa = PBXGroup;
 			children = (
-				85DC68D11F40FA34004AFAAC /* TableCells */,
+				8501E5BD1F42DB5600F6B95A /* UI */,
 				85EEE1FD1F1A68A2002CE85E /* Celetur.entitlements */,
 				85F9080D1F12D9E30062BD63 /* AppDelegate.swift */,
 				85F908121F12D9E30062BD63 /* TresorViewController.swift */,
 				850B80F21F35DFF10078F042 /* TresorDocumentViewController.swift */,
 				850B80F41F35E7AF0078F042 /* TresorDocumentItemViewController.swift */,
 				85F908141F12D9E30062BD63 /* DetailViewController.swift */,
-				85F908161F12D9E30062BD63 /* Main.storyboard */,
-				85F908191F12D9E30062BD63 /* Assets.xcassets */,
-				85F9081B1F12D9E30062BD63 /* LaunchScreen.storyboard */,
 				85F9081E1F12D9E30062BD63 /* Info.plist */,
 				852C26601F37CCDB0041273F /* TresorAppState.swift */,
 				852C26631F37CD850041273F /* TresorConstants.swift */,
+				85FBDD4A1F42E0F0006B4271 /* EditTresorViewController.swift */,
 			);
 			path = Celetur;
 			sourceTree = "<group>";
@@ -363,6 +374,7 @@
 				852C26611F37CCDB0041273F /* TresorAppState.swift in Sources */,
 				85F151EA1F40FBBB008F8C85 /* TresorTableViewCell.swift in Sources */,
 				85F908151F12D9E30062BD63 /* DetailViewController.swift in Sources */,
+				85FBDD4B1F42E0F0006B4271 /* EditTresorViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -19,7 +19,6 @@
 		85EEE21F1F1B4E4B002CE85E /* CeleturKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EEE21E1F1B4E4B002CE85E /* CeleturKitTests.swift */; };
 		85EEE2211F1B4E4B002CE85E /* CeleturKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 85EEE2131F1B4E4B002CE85E /* CeleturKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		85EEE22E1F1B4F0C002CE85E /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EEE22B1F1B4F0C002CE85E /* CoreDataStack.swift */; };
-		85EEE22F1F1B4F0C002CE85E /* CeleturUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EEE22C1F1B4F0C002CE85E /* CeleturUtil.swift */; };
 		85EEE23A1F1B52DE002CE85E /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EEE2391F1B52DE002CE85E /* Logger.swift */; };
 		85EEE23E1F1B67CE002CE85E /* CeleturKit.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 85EEE23C1F1B67CE002CE85E /* CeleturKit.xcdatamodeld */; };
 /* End PBXBuildFile section */
@@ -51,7 +50,6 @@
 		85EEE21E1F1B4E4B002CE85E /* CeleturKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CeleturKitTests.swift; sourceTree = "<group>"; };
 		85EEE2201F1B4E4B002CE85E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		85EEE22B1F1B4F0C002CE85E /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
-		85EEE22C1F1B4F0C002CE85E /* CeleturUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CeleturUtil.swift; sourceTree = "<group>"; };
 		85EEE2391F1B52DE002CE85E /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		85EEE23D1F1B67CE002CE85E /* CeleturKit.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CeleturKit.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -107,7 +105,6 @@
 			children = (
 				855462FB1F40853F00C001F6 /* SymmetricCipherOperation.swift */,
 				85C5C5891F370E1E00DE7EBC /* Keychain.swift */,
-				85EEE22C1F1B4F0C002CE85E /* CeleturUtil.swift */,
 				85EEE22B1F1B4F0C002CE85E /* CoreDataStack.swift */,
 				85EEE2391F1B52DE002CE85E /* Logger.swift */,
 				85EEE2131F1B4E4B002CE85E /* CeleturKit.h */,
@@ -250,7 +247,6 @@
 				85C5C5861F36E6C100DE7EBC /* TresorDataModel.swift in Sources */,
 				85EEE23A1F1B52DE002CE85E /* Logger.swift in Sources */,
 				8517BDF11F24F95D009DB663 /* Data+Extension.swift in Sources */,
-				85EEE22F1F1B4F0C002CE85E /* CeleturUtil.swift in Sources */,
 				85EEE23E1F1B67CE002CE85E /* CeleturKit.xcdatamodeld in Sources */,
 				855462FC1F40854000C001F6 /* SymmetricCipherOperation.swift in Sources */,
 			);

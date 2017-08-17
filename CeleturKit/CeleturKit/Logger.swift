@@ -29,7 +29,7 @@ public class Logger
   }
 
   public func error<T>(_ object: T, error:Error) {
-    print("ERROR", self.prefix, object)
+    print("ERROR", self.prefix, String(describing:object)+":"+String(describing:error))
   }
 }
 

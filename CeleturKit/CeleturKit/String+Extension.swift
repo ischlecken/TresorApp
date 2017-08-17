@@ -18,4 +18,8 @@ public extension String {
     }
   }
   
+  public static func uuid() -> String {
+    return UUID().uuidString
+  }
+  
 }

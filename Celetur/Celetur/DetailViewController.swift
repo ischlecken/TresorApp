@@ -13,47 +13,56 @@ class DetailViewController: UIViewController {
   
   var tresorAppState: TresorAppState?
   
-  @IBOutlet weak var titleLabel: UILabel!
-  @IBOutlet weak var userLabel: UILabel!
-  @IBOutlet weak var passwordLabel: UILabel!
+  @IBOutlet weak var activityView: UIActivityIndicatorView!
+  @IBOutlet weak var dataLabel: UILabel!
+  @IBOutlet weak var createtsLabel: UILabel!
+  
+  let dateFormatter = DateFormatter()
+  
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    
+    self.dateFormatter.dateStyle = DateFormatter.Style.short
+    self.dateFormatter.timeStyle = DateFormatter.Style.short
+    
+    configureView()
+  }
   
   func configureView() {
     
     if let item = tresorDocumentItem {
-      if let label = titleLabel {
-        label.text = item.createts!.description
-      }
-      
-      if let label = userLabel {
-        label.text = item.type
-      }
-      
-      
-      if let label = passwordLabel {
-        label.text = item.payload?.hexEncodedString()
+      if let label = createtsLabel {
         
-        if let key = self.tresorAppState?.masterKey {
-          self.tresorAppState!.tresorDataModel.decryptTresorDocumentItemPayload(tresorDocumentItem: item, masterKey:key) { (operation) in
-            if let d = operation.outputData {
-              label.text = String(data: d, encoding: String.Encoding.utf8)
-            } else {
-              label.text = "Failed to decrypt payload: \(String(describing: operation.error))"
+        label.text = self.dateFormatter.string(from: item.createts!)
+      }
+      
+      if let label = dataLabel {
+        label.text = ""
+        
+        if let payload = item.payload {
+          self.activityView.startAnimating()
+          label.text = payload.hexEncodedString()
+          
+          if let key = self.tresorAppState?.masterKey {
+            self.tresorAppState!.tresorDataModel.decryptTresorDocumentItemPayload(tresorDocumentItem: item, masterKey:key) { (operation) in
+              if let d = operation.outputData {
+                label.text = String(data: d, encoding: String.Encoding.utf8)
+              } else {
+                label.text = "Failed to decrypt payload: \(String(describing: operation.error))"
+              }
+              
+              self.activityView.stopAnimating()
             }
+          } else {
+            label.text = "Masterkey not set, could not decrypt payload..."
+            self.activityView.stopAnimating()
           }
-        } else {
-          label.text = "Masterkey not set, could not decrypt payload..."
         }
       }
     }
   }
   
-  override func viewDidLoad() {
-    super.viewDidLoad()
-    // Do any additional setup after loading the view, typically from a nib.
-    configureView()
-    
-    celeturLogger.debug("DetailViewController.viewDidLoad")
-  }
+  
   
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()

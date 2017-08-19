@@ -129,7 +129,7 @@ public class TresorDataModel {
       try self.saveContext()
       
       let key = masterKey.accessToken
-      let plainText = "{ 'title': 'gmx.de','user':'bla@fasel.de','password':'hugo'}"
+      let plainText = "{ \"title\": \"gmx.de\",\"user\":\"bla@fasel.de\",\"password\":\"hugo\"}"
       
       let operation = AES256EncryptionOperation(key:masterKey.accessToken!,inputString: plainText, iv:nil)
       try operation.createRandomIV()

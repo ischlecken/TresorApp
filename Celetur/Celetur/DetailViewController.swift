@@ -9,7 +9,7 @@
 import UIKit
 import CeleturKit
 
-class DetailViewController: UIViewController {
+class DetailViewController: UITableViewController {
   
   var tresorAppState: TresorAppState?
   
@@ -18,6 +18,8 @@ class DetailViewController: UIViewController {
   @IBOutlet weak var createtsLabel: UILabel!
   
   let dateFormatter = DateFormatter()
+  var model = [String:Any]()
+  var modelIndex = [String]()
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -47,6 +49,17 @@ class DetailViewController: UIViewController {
             self.tresorAppState!.tresorDataModel.decryptTresorDocumentItemPayload(tresorDocumentItem: item, masterKey:key) { (operation) in
               if let d = operation.outputData {
                 label.text = String(data: d, encoding: String.Encoding.utf8)
+                
+                do {
+                  self.model = (try JSONSerialization.jsonObject(with: d, options: []) as? [String:Any])!
+                  
+                  self.modelIndex = Array(self.model.keys)
+                  
+                  self.tableView.reloadData()
+                } catch {
+                  celeturLogger.error("Error while parsing payload",error:error)
+                }
+                
               } else {
                 label.text = "Failed to decrypt payload: \(String(describing: operation.error))"
               }
@@ -62,11 +75,13 @@ class DetailViewController: UIViewController {
     }
   }
   
-  
-  
-  override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-    // Dispose of any resources that can be recreated.
+  @IBAction func addItemAction(_ sender: Any) {
+    let key = "newKey" + String(Int(arc4random())%100)
+    
+    self.model[key] = "blafasel" + String(Int(arc4random())%10000)
+    
+    self.modelIndex = Array(self.model.keys)
+    self.tableView.reloadData()
   }
   
   var tresorDocumentItem: TresorDocumentItem? {
@@ -76,6 +91,59 @@ class DetailViewController: UIViewController {
     }
   }
   
+  
+  // MARK: - Table View
+  
+  override func numberOfSections(in tableView: UITableView) -> Int {
+    return 1
+  }
+  
+  override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    return self.modelIndex.count
+  }
+  
+  override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    let cell = tableView.dequeueReusableCell(withIdentifier: "detailCell", for: indexPath)
+    
+    configureCell(cell, forKey: self.modelIndex[indexPath.row])
+    
+    return cell
+  }
+  
+  override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+   
+  }
+  
+  override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+    return true
+  }
+  
+  override func tableView(_ tableView: UITableView, editActionsForRowAt: IndexPath) -> [UITableViewRowAction]? {
+    
+    let editAction = UITableViewRowAction(style: .normal, title: "Edit") { action, index in
+      print("edit button tapped")
+      
+    }
+    editAction.backgroundColor = .orange
+    
+    let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { action, index in
+      _ = self.tresorAppState?.persistentContainer.context
+      
+    }
+    
+    return [editAction, deleteAction]
+  }
+  
+  override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+    if editingStyle == .delete {
+      
+    }
+  }
+  
+  func configureCell(_ cell: UITableViewCell, forKey key: String) {
+    cell.textLabel?.text = key
+    cell.detailTextLabel?.text = self.model[key] as? String
+  }
   
 }
 

@@ -37,8 +37,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     // Dispose of any resources that can be recreated.
   }
   
-  @objc
-  func insertNewObject(_ sender: Any) {
+  @IBAction func insertNewObject(_ sender: Any) {
     do {
       let tresorDocument = try self.tresorAppState?.tresorDataModel.createTresorDocument(tresor: self.tresor!)
       

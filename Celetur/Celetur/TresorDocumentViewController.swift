@@ -12,6 +12,8 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   var tresor: Tresor?
   var tresorAppState: TresorAppState?
   
+  let dateFormatter = DateFormatter()
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     // Do any additional setup after loading the view, typically from a nib.
@@ -21,6 +23,8 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     navigationItem.rightBarButtonItem = addButton
   
     self.title = tresor?.tresordescription
+    self.dateFormatter.dateStyle = DateFormatter.Style.short
+    self.dateFormatter.timeStyle = DateFormatter.Style.short
   }
   
   override func viewWillAppear(_ animated: Bool) {
@@ -38,7 +42,13 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     do {
       let tresorDocument = try self.tresorAppState?.tresorDataModel.createTresorDocument(tresor: self.tresor!)
       
-      try self.tresorAppState?.tresorDataModel.createTresorDocumentItem(tresorDocument: tresorDocument!,masterKey: (self.tresorAppState?.masterKey)!)
+      var noItems = 1+(Int(arc4random()) % 4)
+      
+      while noItems>0 {
+        try self.tresorAppState?.tresorDataModel.createTresorDocumentItem(tresorDocument: tresorDocument!,masterKey: (self.tresorAppState?.masterKey)!)
+        
+        noItems -= 1
+      }
     } catch let celeturKitError as CeleturKitError {
       celeturLogger.error("CeleturKitError while creating tresor document",error:celeturKitError)
     } catch {
@@ -73,6 +83,15 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     return sectionInfo.numberOfObjects
   }
   
+  override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    if let sections = fetchedResultsController.sections {
+      let currentSection = sections[section]
+      return currentSection.name
+    }
+    
+    return nil
+  }
+  
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "tresorDocumentCell", for: indexPath)
     let tresorDocumentItem = fetchedResultsController.object(at: indexPath)
@@ -104,7 +123,11 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   
   func configureCell(_ cell: UITableViewCell, withTresorDocumentItem tresorDocumentItem: TresorDocumentItem) {
     cell.textLabel!.text = "Id:\(tresorDocumentItem.id!)"
-    cell.detailTextLabel!.text = "Device:"+(tresorDocumentItem.userdevice?.devicename ?? "-") + tresorDocumentItem.createts!.description
+    
+    cell.textLabel?.textColor = tresorDocumentItem.status == "encrypted" ? UIColor.black : UIColor.red
+    
+    let formatedCreatets = self.dateFormatter.string(from: tresorDocumentItem.createts!)
+    cell.detailTextLabel!.text = "Device:"+(tresorDocumentItem.userdevice?.devicename ?? "-") + " " + formatedCreatets
   }
   
   

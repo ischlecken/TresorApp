@@ -38,6 +38,8 @@ class EditTresorViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
+    self.nameTextfield.becomeFirstResponder()
+    
     if let t  = self.tresor {
       self.nameTextfield.text = t.name
       self.descriptionTextfield.text = t.tresordescription

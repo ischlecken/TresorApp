@@ -61,10 +61,11 @@
         <attribute name="createts" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="deletets" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="id" attributeType="String" syncable="YES"/>
-        <attribute name="mimetype" attributeType="String" syncable="YES"/>
+        <attribute name="mimetype" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="nonce" optional="YES" attributeType="Binary" syncable="YES"/>
-        <attribute name="payload" attributeType="Binary" syncable="YES"/>
-        <attribute name="type" attributeType="String" defaultValueString="document" syncable="YES"/>
+        <attribute name="payload" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="status" attributeType="String" syncable="YES"/>
+        <attribute name="type" optional="YES" attributeType="String" defaultValueString="document" syncable="YES"/>
         <relationship name="document" maxCount="1" deletionRule="Nullify" destinationEntity="TresorDocument" inverseName="documentitems" inverseEntity="TresorDocument" syncable="YES"/>
         <relationship name="tresor" maxCount="1" deletionRule="Nullify" destinationEntity="Tresor" inverseName="documentitems" inverseEntity="Tresor" syncable="YES"/>
         <relationship name="userdevice" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UserDevice" inverseName="documentitems" inverseEntity="UserDevice" syncable="YES"/>
@@ -106,7 +107,7 @@
         <element name="Schemaversion" positionX="187" positionY="-333" width="128" height="88"/>
         <element name="Tresor" positionX="-423" positionY="135" width="128" height="208"/>
         <element name="TresorDocument" positionX="-207" positionY="639" width="128" height="193"/>
-        <element name="TresorDocumentItem" positionX="-108" positionY="203" width="128" height="193"/>
+        <element name="TresorDocumentItem" positionX="-108" positionY="203" width="128" height="210"/>
         <element name="TresorPermission" positionX="-515" positionY="-135" width="128" height="178"/>
         <element name="User" positionX="-317" positionY="-135" width="128" height="193"/>
         <element name="UserDevice" positionX="-119" positionY="-79" width="128" height="133"/>

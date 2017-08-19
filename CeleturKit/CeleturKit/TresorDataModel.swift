@@ -99,56 +99,78 @@ public class TresorDataModel {
     return newTresorDocument
   }
   
-  public func createTresorDocumentItem(tresorDocument:TresorDocument,masterKey:TresorKey, onCompleted:(()->Void)? = nil) throws {
-    let key = masterKey.accessToken
-    let plainText = "{ 'title': 'gmx.de','user':'bla@fasel.de','password':'hugo'}"
+  fileprivate func createPendingTresorDocumentItem(tresorDocument:TresorDocument) -> TresorDocumentItem {
+    let result = TresorDocumentItem(context: self.managedContext!)
     
-    let operation = AES256EncryptionOperation(key:masterKey.accessToken!,inputString: plainText, iv:nil)
-    try operation.createRandomIV()
+    result.createts = Date()
+    result.id = String.uuid()
+    result.status = "pending"
+    result.tresor = tresorDocument.tresor
+    result.document = tresorDocument
     
-    operation.mainQueueCompletionBlock = { (cipherOperation) in
-      let newTresorDocumentItem = TresorDocumentItem(context: self.managedContext!)
-      
-      newTresorDocumentItem.createts = Date()
-      newTresorDocumentItem.id = String.uuid()
-      newTresorDocumentItem.type = "main"
-      newTresorDocumentItem.mimetype = "application/json"
-      newTresorDocumentItem.payload = cipherOperation.outputData
-      newTresorDocumentItem.nonce = cipherOperation.iv
-      newTresorDocumentItem.tresor = tresorDocument.tresor
-      
-      if self.userList != nil && self.userList!.count > 0 {
-        let userDeviceList = self.userList![Int(arc4random()) % self.userList!.count].userdevices!.allObjects as! [UserDevice]
-        let index = Int(arc4random()) % userDeviceList.count
-        print("userDeviceList.count:\(userDeviceList.count) index:\(index)")
-        userDeviceList[index].addToDocumentitems(newTresorDocumentItem)
-      }
-      
-      tresorDocument.tresor?.addToDocumentitems(newTresorDocumentItem)
-      tresorDocument.addToDocumentitems(newTresorDocumentItem)
-      
-      celeturKitLogger.debug("plain:\(plainText) key:\(key!) encryptedText:\(String(describing: cipherOperation.outputData?.hexEncodedString()))")
-      
-      do {
-        try self.saveContext()
-        
-        onCompleted?()
-      } catch {
-        celeturKitLogger.error("Error while saving tresordocumentitem", error: error)
-      }
+    if self.userList != nil && self.userList!.count > 0 {
+      let userDeviceList = self.userList![Int(arc4random()) % self.userList!.count].userdevices!.allObjects as! [UserDevice]
+      let index = Int(arc4random()) % userDeviceList.count
+      celeturKitLogger.debug("userDeviceList.count:\(userDeviceList.count) index:\(index)")
+      userDeviceList[index].addToDocumentitems(result)
     }
     
-    self.cipherQueue.addOperation(operation)
+    
+    return result
+  }
+  
+  public func createTresorDocumentItem(tresorDocument:TresorDocument,masterKey:TresorKey, onCompleted:(()->Void)? = nil) throws {
+    let newTresorDocumentItem = self.createPendingTresorDocumentItem(tresorDocument: tresorDocument)
+    
+    tresorDocument.tresor?.addToDocumentitems(newTresorDocumentItem)
+    tresorDocument.addToDocumentitems(newTresorDocumentItem)
+    
+    do {
+      try self.saveContext()
+      
+      let key = masterKey.accessToken
+      let plainText = "{ 'title': 'gmx.de','user':'bla@fasel.de','password':'hugo'}"
+      
+      let operation = AES256EncryptionOperation(key:masterKey.accessToken!,inputString: plainText, iv:nil)
+      try operation.createRandomIV()
+      
+      operation.mainQueueCompletionBlock = { (cipherOperation) in
+        newTresorDocumentItem.type = "main"
+        newTresorDocumentItem.mimetype = "application/json"
+        newTresorDocumentItem.status = "encrypted"
+        newTresorDocumentItem.payload = cipherOperation.outputData
+        newTresorDocumentItem.nonce = cipherOperation.iv
+    
+        celeturKitLogger.debug("plain:\(plainText) key:\(key!) encryptedText:\(String(describing: cipherOperation.outputData?.hexEncodedString()))")
+        
+        do {
+          try self.saveContext()
+          
+          onCompleted?()
+        } catch {
+          celeturKitLogger.error("Error while saving tresordocumentitem", error: error)
+        }
+      }
+      
+      self.cipherQueue.addOperation(operation)
+    } catch {
+      celeturKitLogger.error("Error while saving tresordocumentitem", error: error)
+    }
+    
+    
+    
   }
   
   public func decryptTresorDocumentItemPayload(tresorDocumentItem:TresorDocumentItem,masterKey:TresorKey, completionBlock: SymmetricCipherCompletionType?) {
-    let operation = AES256DecryptionOperation(key:masterKey.accessToken!,inputData: tresorDocumentItem.payload!, iv:tresorDocumentItem.nonce)
-    
-    if let c = completionBlock {
-      operation.mainQueueCompletionBlock = c
+    if let payload = tresorDocumentItem.payload, let nonce = tresorDocumentItem.nonce {
+      let operation = AES256DecryptionOperation(key:masterKey.accessToken!,inputData: payload, iv:nonce)
+      
+      if let c = completionBlock {
+        operation.mainQueueCompletionBlock = c
+      }
+      
+      self.cipherQueue.addOperation(operation)
     }
-    
-    self.cipherQueue.addOperation(operation)
   }
   
   public func saveContext() throws {
@@ -193,14 +215,14 @@ public class TresorDataModel {
     // Set the batch size to a suitable number.
     fetchRequest.fetchBatchSize = 20
     fetchRequest.predicate = NSPredicate(format: "tresor.id = %@", (tresor?.id)!)
-
+    
     
     // Edit the sort key as appropriate.
     let sortDescriptor = NSSortDescriptor(key: "createts", ascending: false)
     
     fetchRequest.sortDescriptors = [sortDescriptor]
     
-    let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedContext!, sectionNameKeyPath: nil, cacheName: nil)
+    let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedContext!, sectionNameKeyPath: "document.id", cacheName: nil)
     
     do {
       try aFetchedResultsController.performFetch()

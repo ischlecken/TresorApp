@@ -10,9 +10,13 @@ import CeleturKit
 class TresorViewController: UITableViewController, NSFetchedResultsControllerDelegate {
   
   var tresorAppState: TresorAppState?
+  let dateFormatter = DateFormatter()
   
   override func viewDidLoad() {
     super.viewDidLoad()
+    
+    self.dateFormatter.dateStyle = DateFormatter.Style.short
+    self.dateFormatter.timeStyle = DateFormatter.Style.short
     
     self.tableView.register(UINib(nibName:"TresorCell",bundle:nil),forCellReuseIdentifier:"tresorCell")
   }
@@ -73,9 +77,9 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "tresorCell", for: indexPath) as? TresorTableViewCell
-    let event = fetchedResultsController.object(at: indexPath)
+    let tresor = fetchedResultsController.object(at: indexPath)
     
-    configureCell(cell!, withEvent: event)
+    configureCell(cell!, withTresor: tresor)
     
     return cell!
   }
@@ -127,17 +131,17 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     }
   }
   
-  func configureCell(_ cell: TresorTableViewCell, withEvent event: Tresor) {
+  func configureCell(_ cell: TresorTableViewCell, withTresor tresor: Tresor) {
     
-    if let t = event.changets {
-      cell.createdLabel!.text = t.description
+    if let t = tresor.changets {
+      cell.createdLabel!.text = self.dateFormatter.string(from: t)
       
     } else {
-      cell.createdLabel!.text = event.createts!.description
+      cell.createdLabel!.text = self.dateFormatter.string(from: tresor.createts!)
     }
     
-    cell.nameLabel!.text = event.name
-    cell.descriptionLabel!.text = event.tresordescription
+    cell.nameLabel!.text = tresor.name
+    cell.descriptionLabel!.text = tresor.tresordescription
     
   }
   
@@ -184,11 +188,11 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     case .update:
       let cell = tableView.cellForRow(at: indexPath!) as? TresorTableViewCell
       
-      configureCell(cell!, withEvent: anObject as! Tresor)
+      configureCell(cell!, withTresor: anObject as! Tresor)
     case .move:
       let cell = tableView.cellForRow(at: indexPath!) as? TresorTableViewCell
       
-      configureCell(cell!, withEvent: anObject as! Tresor)
+      configureCell(cell!, withTresor: anObject as! Tresor)
       tableView.moveRow(at: indexPath!, to: newIndexPath!)
     }
   }

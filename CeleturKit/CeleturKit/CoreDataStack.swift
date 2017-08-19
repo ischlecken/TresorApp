@@ -22,7 +22,7 @@ public class CoreDataStack {
     let databaseName = dbName+".sqlite"
     let modelURL = bundle.url(forResource: modelName, withExtension: "momd")
     
-    model = NSManagedObjectModel(contentsOf: modelURL!)!
+    model = NSManagedObjectModel(contentsOf: modelURL!)
     psc = NSPersistentStoreCoordinator(managedObjectModel:model)
     
     context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)

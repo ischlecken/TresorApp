@@ -7,7 +7,7 @@ import UIKit
 import CoreData
 import CeleturKit
 
-class TresorDocumentViewController: UITableViewController {
+class TresorDocumentViewController: UITableViewController, NSFetchedResultsControllerDelegate {
   
   var tresor: Tresor?
   var tresorAppState: TresorAppState?
@@ -19,6 +19,8 @@ class TresorDocumentViewController: UITableViewController {
     
     let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(insertNewObject(_:)))
     navigationItem.rightBarButtonItem = addButton
+  
+    self.title = tresor?.tresordescription
   }
   
   override func viewWillAppear(_ animated: Bool) {
@@ -37,8 +39,6 @@ class TresorDocumentViewController: UITableViewController {
       let tresorDocument = try self.tresorAppState?.tresorDataModel.createTresorDocument(tresor: self.tresor!)
       
       try self.tresorAppState?.tresorDataModel.createTresorDocumentItem(tresorDocument: tresorDocument!,masterKey: (self.tresorAppState?.masterKey)!)
-      
-      self.tableView.reloadData()
     } catch let celeturKitError as CeleturKitError {
       celeturLogger.error("CeleturKitError while creating tresor document",error:celeturKitError)
     } catch {
@@ -49,14 +49,12 @@ class TresorDocumentViewController: UITableViewController {
   // MARK: - Segues
   
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-    if segue.identifier == "showTresorDocumentItem" {
+    if segue.identifier == "showTresorDocumentItemDetail" {
       if let indexPath = tableView.indexPathForSelectedRow {
-        let object = self.tresor?.documents?.allObjects[indexPath.row]
-        let controller = segue.destination as! TresorDocumentItemViewController
-        
+        let object = fetchedResultsController.object(at: indexPath)
+        let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
         controller.tresorAppState = self.tresorAppState
-        controller.tresorDocument = object as? TresorDocument
-        
+        controller.tresorDocumentItem = object
         controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
         controller.navigationItem.leftItemsSupplementBackButton = true
       }
@@ -66,18 +64,20 @@ class TresorDocumentViewController: UITableViewController {
   // MARK: - Table View
   
   override func numberOfSections(in tableView: UITableView) -> Int {
-    return self.tresor?.documents?.count ?? 0
+    return  fetchedResultsController.sections?.count ?? 0
   }
   
   override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return 1
+    let sectionInfo = fetchedResultsController.sections![section]
+    
+    return sectionInfo.numberOfObjects
   }
   
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "tresorDocumentCell", for: indexPath)
-    let event = self.tresor?.documents?.allObjects[indexPath.row] as? TresorDocument
+    let tresorDocumentItem = fetchedResultsController.object(at: indexPath)
     
-    configureCell(cell, withTresorDocument: event)
+    configureCell(cell, withTresorDocumentItem: tresorDocumentItem)
     
     return cell
   }
@@ -89,27 +89,43 @@ class TresorDocumentViewController: UITableViewController {
   
   override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
     if editingStyle == .delete {
-      let tresorDocument = self.tresor?.documents?.allObjects[indexPath.row] as? TresorDocument
+      let tresorDocumentItem = fetchedResultsController.object(at: indexPath)
       let context = self.tresorAppState?.persistentContainer.context
       
-      context?.delete(tresorDocument!)
+      context?.delete(tresorDocumentItem)
       
       do {
         try context?.save()
-        
-        self.tableView.reloadData()
       } catch {
         celeturLogger.error("Error while deleting TresorDocument", error: error)
       }
     }
   }
   
-  func configureCell(_ cell: UITableViewCell, withTresorDocument tresorDocument: TresorDocument?) {
-    cell.textLabel!.text = tresorDocument?.createts!.description
-    cell.detailTextLabel!.text = tresorDocument?.id
+  func configureCell(_ cell: UITableViewCell, withTresorDocumentItem tresorDocumentItem: TresorDocumentItem) {
+    cell.textLabel!.text = "Id:\(tresorDocumentItem.id!)"
+    cell.detailTextLabel!.text = "Device:"+(tresorDocumentItem.userdevice?.devicename ?? "-") + tresorDocumentItem.createts!.description
   }
   
   
+  // MARK: - Fetched results controller
+  
+  var fetchedResultsController: NSFetchedResultsController<TresorDocumentItem> {
+    if _fetchedResultsController != nil {
+      return _fetchedResultsController!
+    }
+    
+    do {
+      try _fetchedResultsController = self.tresorAppState?.tresorDataModel.createAndFetchTresorDocumentItemFetchedResultsController(tresor: tresor)
+      
+      _fetchedResultsController?.delegate = self
+    } catch {
+      celeturLogger.error("CeleturKitError while creating FetchedResultsController",error:error)
+    }
+    
+    return _fetchedResultsController!
+  }
+  var _fetchedResultsController: NSFetchedResultsController<TresorDocumentItem>? = nil
   
   func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
     tableView.beginUpdates()
@@ -133,9 +149,12 @@ class TresorDocumentViewController: UITableViewController {
     case .delete:
       tableView.deleteRows(at: [indexPath!], with: .fade)
     case .update:
-      configureCell(tableView.cellForRow(at: indexPath!)!, withTresorDocument: anObject as? TresorDocument)
+      let cell = tableView.cellForRow(at: indexPath!)
+      configureCell(cell!, withTresorDocumentItem: (anObject as? TresorDocumentItem)!)
     case .move:
-      configureCell(tableView.cellForRow(at: indexPath!)!, withTresorDocument: anObject as? TresorDocument)
+     let cell = tableView.cellForRow(at: indexPath!)
+       
+     configureCell(cell!, withTresorDocumentItem: (anObject as? TresorDocumentItem)!)
       tableView.moveRow(at: indexPath!, to: newIndexPath!)
     }
   }

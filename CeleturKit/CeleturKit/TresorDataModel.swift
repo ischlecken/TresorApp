@@ -20,6 +20,17 @@ public class TresorDataModel {
     self.initObjects()
   }
   
+  fileprivate func createUserDevice(user:User, deviceName:String) {
+    let newUserDevice = UserDevice(context:self.managedContext!)
+    newUserDevice.createts = Date()
+    newUserDevice.devicename = deviceName
+    newUserDevice.id = String.uuid()
+    newUserDevice.apndevicetoken = String.uuid()
+    newUserDevice.user = user
+    user.addToUserdevices(newUserDevice)
+    
+  }
+  
   func initObjects() {
     do {
       let userFetchRequest: NSFetchRequest<User> = User.fetchRequest()
@@ -35,29 +46,9 @@ public class TresorDataModel {
         newUser.createts = Date()
         newUser.id = String.uuid()
         
-        var newUserDevice = UserDevice(context:self.managedContext!)
-        newUserDevice.createts = Date()
-        newUserDevice.devicename = "Hugos iPhone"
-        newUserDevice.id = String.uuid()
-        newUserDevice.apndevicetoken = String.uuid()
-        newUserDevice.userid = newUser
-        newUser.addToUserdevices(newUserDevice)
-        
-        newUserDevice = UserDevice(context:self.managedContext!)
-        newUserDevice.createts = Date()
-        newUserDevice.devicename = "Hugos iPad"
-        newUserDevice.id = String.uuid()
-        newUserDevice.apndevicetoken = String.uuid()
-        newUserDevice.userid = newUser
-        newUser.addToUserdevices(newUserDevice)
-        
-        newUserDevice = UserDevice(context:self.managedContext!)
-        newUserDevice.createts = Date()
-        newUserDevice.devicename = "Hugos iWatch"
-        newUserDevice.id = String.uuid()
-        newUserDevice.apndevicetoken = String.uuid()
-        newUserDevice.userid = newUser
-        newUser.addToUserdevices(newUserDevice)
+        self.createUserDevice(user: newUser, deviceName: "Hugos iPhone")
+        self.createUserDevice(user: newUser, deviceName: "Hugos iPad")
+        self.createUserDevice(user: newUser, deviceName: "Hugos iWatch")
         
         self.userList?.append(newUser)
         
@@ -69,37 +60,10 @@ public class TresorDataModel {
         newUser.createts = Date()
         newUser.id = String.uuid()
         
-        newUserDevice = UserDevice(context:self.managedContext!)
-        newUserDevice.createts = Date()
-        newUserDevice.devicename = "Manfreds iPhone"
-        newUserDevice.id = String.uuid()
-        newUserDevice.apndevicetoken = String.uuid()
-        newUserDevice.userid = newUser
-        newUser.addToUserdevices(newUserDevice)
-        
-        newUserDevice = UserDevice(context:self.managedContext!)
-        newUserDevice.createts = Date()
-        newUserDevice.devicename = "Manfreds iPad"
-        newUserDevice.id = String.uuid()
-        newUserDevice.apndevicetoken = String.uuid()
-        newUserDevice.userid = newUser
-        newUser.addToUserdevices(newUserDevice)
-        
-        newUserDevice = UserDevice(context:self.managedContext!)
-        newUserDevice.createts = Date()
-        newUserDevice.devicename = "Manfreds iWatch"
-        newUserDevice.id = String.uuid()
-        newUserDevice.apndevicetoken = String.uuid()
-        newUserDevice.userid = newUser
-        newUser.addToUserdevices(newUserDevice)
-        
-        newUserDevice = UserDevice(context:self.managedContext!)
-        newUserDevice.createts = Date()
-        newUserDevice.devicename = "Manfreds iTV"
-        newUserDevice.id = String.uuid()
-        newUserDevice.apndevicetoken = String.uuid()
-        newUserDevice.userid = newUser
-        newUser.addToUserdevices(newUserDevice)
+        self.createUserDevice(user: newUser, deviceName: "Manfreds iPhone")
+        self.createUserDevice(user: newUser, deviceName: "Manfreds iPad")
+        self.createUserDevice(user: newUser, deviceName: "Manfreds iWatch")
+        self.createUserDevice(user: newUser, deviceName: "Manfreds iTV")
         
         self.userList?.append(newUser)
         
@@ -127,7 +91,7 @@ public class TresorDataModel {
     let newTresorDocument = TresorDocument(context: self.managedContext!)
     newTresorDocument.createts = Date()
     newTresorDocument.id = String.uuid()
-    newTresorDocument.tresorid = tresor
+    newTresorDocument.tresor = tresor
     newTresorDocument.nonce = try Data(withRandomData:SymmetricCipherAlgorithm.aes_256.requiredBlockSize())
     
     try self.saveContext()
@@ -151,6 +115,7 @@ public class TresorDataModel {
       newTresorDocumentItem.mimetype = "application/json"
       newTresorDocumentItem.payload = cipherOperation.outputData
       newTresorDocumentItem.nonce = cipherOperation.iv
+      newTresorDocumentItem.tresor = tresorDocument.tresor
       
       if self.userList != nil && self.userList!.count > 0 {
         let userDeviceList = self.userList![Int(arc4random()) % self.userList!.count].userdevices!.allObjects as! [UserDevice]
@@ -159,7 +124,8 @@ public class TresorDataModel {
         userDeviceList[index].addToDocumentitems(newTresorDocumentItem)
       }
       
-      tresorDocument.addToItems(newTresorDocumentItem)
+      tresorDocument.tresor?.addToDocumentitems(newTresorDocumentItem)
+      tresorDocument.addToDocumentitems(newTresorDocumentItem)
       
       celeturKitLogger.debug("plain:\(plainText) key:\(key!) encryptedText:\(String(describing: cipherOperation.outputData?.hexEncodedString()))")
       
@@ -205,7 +171,7 @@ public class TresorDataModel {
     
     fetchRequest.sortDescriptors = [sortDescriptor]
     
-    let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedContext!, sectionNameKeyPath: nil, cacheName: "Tresor")
+    let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedContext!, sectionNameKeyPath: nil, cacheName: nil)
     
     do {
       try aFetchedResultsController.performFetch()
@@ -217,9 +183,31 @@ public class TresorDataModel {
   }
   
   public func flushFetchedResultsControllerCache() {
-    let cacheName = "Tresor"
     
-    NSFetchedResultsController<NSFetchRequestResult>.deleteCache(withName: cacheName)
   }
   
+  
+  public func createAndFetchTresorDocumentItemFetchedResultsController(tresor:Tresor?) throws -> NSFetchedResultsController<TresorDocumentItem> {
+    let fetchRequest: NSFetchRequest<TresorDocumentItem> = TresorDocumentItem.fetchRequest()
+    
+    // Set the batch size to a suitable number.
+    fetchRequest.fetchBatchSize = 20
+    fetchRequest.predicate = NSPredicate(format: "tresor.id = %@", (tresor?.id)!)
+
+    
+    // Edit the sort key as appropriate.
+    let sortDescriptor = NSSortDescriptor(key: "createts", ascending: false)
+    
+    fetchRequest.sortDescriptors = [sortDescriptor]
+    
+    let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedContext!, sectionNameKeyPath: nil, cacheName: nil)
+    
+    do {
+      try aFetchedResultsController.performFetch()
+    } catch {
+      throw CeleturKitError.creationOfFetchResultsControllerFailed(coreDataError: error as NSError)
+    }
+    
+    return aFetchedResultsController
+  }
 }

@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		850B80F31F35DFF10078F042 /* TresorDocumentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 850B80F21F35DFF10078F042 /* TresorDocumentViewController.swift */; };
-		850B80F51F35E7AF0078F042 /* TresorDocumentItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 850B80F41F35E7AF0078F042 /* TresorDocumentItemViewController.swift */; };
 		852C26611F37CCDB0041273F /* TresorAppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 852C26601F37CCDB0041273F /* TresorAppState.swift */; };
 		852C26641F37CD850041273F /* TresorConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 852C26631F37CD850041273F /* TresorConstants.swift */; };
 		8576D77A1F255F5200D9328A /* CeleturKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85EEE2361F1B5215002CE85E /* CeleturKit.framework */; };
@@ -76,7 +75,6 @@
 
 /* Begin PBXFileReference section */
 		850B80F21F35DFF10078F042 /* TresorDocumentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TresorDocumentViewController.swift; sourceTree = "<group>"; };
-		850B80F41F35E7AF0078F042 /* TresorDocumentItemViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TresorDocumentItemViewController.swift; sourceTree = "<group>"; };
 		852C26601F37CCDB0041273F /* TresorAppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TresorAppState.swift; sourceTree = "<group>"; };
 		852C26631F37CD850041273F /* TresorConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TresorConstants.swift; sourceTree = "<group>"; };
 		85DC68CE1F40FA26004AFAAC /* TresorCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TresorCell.xib; sourceTree = "<group>"; };
@@ -179,7 +177,6 @@
 				85F9080D1F12D9E30062BD63 /* AppDelegate.swift */,
 				85F908121F12D9E30062BD63 /* TresorViewController.swift */,
 				850B80F21F35DFF10078F042 /* TresorDocumentViewController.swift */,
-				850B80F41F35E7AF0078F042 /* TresorDocumentItemViewController.swift */,
 				85F908141F12D9E30062BD63 /* DetailViewController.swift */,
 				85F9081E1F12D9E30062BD63 /* Info.plist */,
 				852C26601F37CCDB0041273F /* TresorAppState.swift */,
@@ -367,7 +364,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				85F9080E1F12D9E30062BD63 /* AppDelegate.swift in Sources */,
-				850B80F51F35E7AF0078F042 /* TresorDocumentItemViewController.swift in Sources */,
 				852C26641F37CD850041273F /* TresorConstants.swift in Sources */,
 				85F908131F12D9E30062BD63 /* TresorViewController.swift in Sources */,
 				850B80F31F35DFF10078F042 /* TresorDocumentViewController.swift in Sources */,

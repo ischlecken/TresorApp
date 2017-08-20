@@ -308,7 +308,7 @@
                     </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
-                        <outlet property="activityView" destination="9LQ-1B-Zsw" id="t1Z-Tn-ZFD"/>
+                        <outlet property="activityView" destination="9LQ-1B-Zsw" id="CmL-PK-eWP"/>
                         <outlet property="createtsLabel" destination="z5E-hV-pXk" id="q32-ST-389"/>
                         <outlet property="dataLabel" destination="YQa-zI-kqj" id="4Qh-sA-16K"/>
                     </connections>
@@ -420,7 +420,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="activityView" destination="Teo-e7-bb4" id="PMK-Rl-LVx"/>
+                        <outlet property="activityView" destination="Teo-e7-bb4" id="3Rm-um-v9k"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tkg-yl-I3h" userLabel="First Responder" sceneMemberID="firstResponder"/>

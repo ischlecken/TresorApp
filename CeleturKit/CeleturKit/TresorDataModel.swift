@@ -11,11 +11,14 @@ import Foundation
 public class TresorDataModel {
   
   var managedContext : NSManagedObjectContext? = nil
+  var tempManagedContext : NSManagedObjectContext? = nil
   let cipherQueue = OperationQueue()
   var userList : [User]?
   
   public init(_ coreDataStack:CoreDataStack) {
     self.managedContext = coreDataStack.context
+    self.tempManagedContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+    self.tempManagedContext?.parent = self.managedContext
     
     self.initObjects()
   }
@@ -108,8 +111,6 @@ public class TresorDataModel {
     result.tresor = tresorDocument.tresor
     result.document = tresorDocument
     
-    
-    
     if self.userList != nil && self.userList!.count > 0 {
       let userDeviceList = self.userList![Int(arc4random()) % self.userList!.count].userdevices!.allObjects as! [UserDevice]
       let index = Int(arc4random()) % userDeviceList.count
@@ -119,36 +120,6 @@ public class TresorDataModel {
     return result
   }
   
-  public func findTresorById(tresorId:String, usingContext context:NSManagedObjectContext) throws -> Tresor? {
-    let fetchRequest : NSFetchRequest<Tresor> = Tresor.fetchRequest()
-    
-    fetchRequest.predicate = NSPredicate(format: "id = %@", tresorId)
-    
-    let result = try context.fetch(fetchRequest)
-    
-    return result.count == 1 ? result[0] : nil
-  }
-  
-  public func findTresorDocumentById(docId:String, usingContext context:NSManagedObjectContext) throws -> TresorDocument? {
-    let fetchRequest : NSFetchRequest<TresorDocument> = TresorDocument.fetchRequest()
-    
-    fetchRequest.predicate = NSPredicate(format: "id = %@", docId)
-    
-    let result = try context.fetch(fetchRequest)
-    
-    return result.count == 1 ? result[0] : nil
-  }
-  
-  
-  public func findTresorDocumenItemtById(docItemId:String, usingContext context:NSManagedObjectContext) throws -> TresorDocumentItem? {
-    let fetchRequest : NSFetchRequest<TresorDocumentItem> = TresorDocumentItem.fetchRequest()
-    
-    fetchRequest.predicate = NSPredicate(format: "id = %@", docItemId)
-    
-    let result = try context.fetch(fetchRequest)
-    
-    return result.count == 1 ? result[0] : nil
-  }
   
   public func createTemporaryTresorDocumentItem(tresorDocument:TresorDocument) throws -> TresorDocumentItem {
     let tempManagedContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
@@ -160,7 +131,7 @@ public class TresorDataModel {
     result.id = String.uuid()
     result.status = "pending"
     
-    result.document = try findTresorDocumentById(docId: tresorDocument.id!, usingContext: tempManagedContext)
+    result.document = tempManagedContext.object(with: tresorDocument.objectID) as? TresorDocument
     result.tresor = result.document?.tresor
     
     let userFetchRequest: NSFetchRequest<User> = User.fetchRequest()
@@ -177,15 +148,18 @@ public class TresorDataModel {
   }
   
   
-  public func copyTemporaryTresorDocumentItem(tresorDocumentItem:TresorDocumentItem) throws -> TresorDocumentItem {
-    let tempManagedContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
-    tempManagedContext.parent = self.managedContext
-    
-    return try self.findTresorDocumenItemtById(docItemId: tresorDocumentItem.id!, usingContext: tempManagedContext)!
+  public func copyTemporaryTresorDocumentItem(tresorDocumentItem:TresorDocumentItem, onCompleted: ((TresorDocumentItem)->Void)? = nil) throws {
+    self.tempManagedContext?.perform {
+      let copiedTresorDocumentItem = self.tempManagedContext?.object(with: tresorDocumentItem.objectID) as! TresorDocumentItem
+      
+      onCompleted?(copiedTresorDocumentItem)
+    }
   }
   
   public func encryptAndSaveTemporaryTresorDocumentItem(masterKey:TresorKey, tresorDocumentItem:TresorDocumentItem, payload: Data) throws {
     let key = masterKey.accessToken!
+    let tdi = tresorDocumentItem
+    let moc = tdi.managedObjectContext!
     
     let operation = AES256EncryptionOperation(key:key, inputData: payload, iv:nil)
     try operation.createRandomIV()
@@ -193,15 +167,15 @@ public class TresorDataModel {
     operation.mainQueueCompletionBlock = { (cipherOperation) in
       celeturKitLogger.debug("encryptedText:\(String(describing: cipherOperation.outputData?.hexEncodedString()))")
       
-      tresorDocumentItem.managedObjectContext?.perform {
+      moc.perform {
         do {
-          tresorDocumentItem.type = "main"
-          tresorDocumentItem.mimetype = "application/json"
-          tresorDocumentItem.status = "encrypted"
-          tresorDocumentItem.payload = cipherOperation.outputData
-          tresorDocumentItem.nonce = cipherOperation.iv
+          tdi.type = "main"
+          tdi.mimetype = "application/json"
+          tdi.status = "encrypted"
+          tdi.payload = cipherOperation.outputData
+          tdi.nonce = cipherOperation.iv
           
-          try tresorDocumentItem.managedObjectContext?.save()
+          try moc.save()
           
           DispatchQueue.main.async {
             do {

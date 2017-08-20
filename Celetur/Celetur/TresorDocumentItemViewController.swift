@@ -91,9 +91,10 @@ class TresorDocumentItemViewController: UITableViewController {
         let controller = (segue.destination as! UINavigationController).topViewController as! EditTresorDocumentItemViewController
         
         controller.tresorAppState = self.tresorAppState
-        controller.tresorDocumentItem = try! self.tresorAppState?.tresorDataModel.copyTemporaryTresorDocumentItem(tresorDocumentItem: self.tresorDocumentItem!)
+        controller.tresorDocumentItem = self.tresorDocumentItem
         
-      default: break
+      default:
+        break
       }
     }
   }

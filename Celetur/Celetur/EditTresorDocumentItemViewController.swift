@@ -14,7 +14,6 @@ class EditTresorDocumentItemViewController: UITableViewController {
   
   @IBOutlet weak var activityView: UIActivityIndicatorView!
   
-  
   let dateFormatter = DateFormatter()
   var model = [String:Any]()
   var modelIndex = [String]()
@@ -22,13 +21,19 @@ class EditTresorDocumentItemViewController: UITableViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    self.decryptPayload()
-    
-    // Uncomment the following line to preserve selection between presentations
-    // self.clearsSelectionOnViewWillAppear = false
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem
+    self.configureView()
+  }
+  
+  func configureView() {
+    if let tdi = self.tresorDocumentItem {
+      self.activityView.startAnimating()
+      
+      try! self.tresorAppState?.tresorDataModel.copyTemporaryTresorDocumentItem(tresorDocumentItem: tdi) { newTresorDocumentItem in
+        self.tresorDocumentItem = newTresorDocumentItem
+        
+        self.decryptPayload(newTresorDocumentItem)
+      }
+    }
   }
   
   // MARK: - Actions
@@ -108,42 +113,26 @@ class EditTresorDocumentItemViewController: UITableViewController {
     }
   }
   
-  
-  /*
-   override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-   }
-   
-   override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-   return true
-   }
-   */
-  
-  func configureCell(_ cell: UITableViewCell, forKey key: String) {
+  fileprivate func configureCell(_ cell: UITableViewCell, forKey key: String) {
     cell.textLabel?.text = key
     cell.detailTextLabel?.text = self.model[key] as? String
   }
   
-  func decryptPayload() {
-    if let _ = tresorDocumentItem?.payload {
-      self.activityView.startAnimating()
+  fileprivate func decryptPayload(_ tdi:TresorDocumentItem) {
+    if let key = self.tresorAppState?.masterKey {
       
-      if let key = self.tresorAppState?.masterKey {
-        self.tresorAppState!.tresorDataModel.decryptTresorDocumentItemPayload(tresorDocumentItem: tresorDocumentItem!, masterKey:key) { (operation) in
-          if let d = operation.outputData {
+      self.tresorAppState!.tresorDataModel.decryptTresorDocumentItemPayload(tresorDocumentItem: tdi, masterKey:key) { (operation) in
+        if let d = operation.outputData {
+          do {
+            self.model = (try JSONSerialization.jsonObject(with: d, options: []) as? [String:Any])!
             
-            do {
-              self.model = (try JSONSerialization.jsonObject(with: d, options: []) as? [String:Any])!
-              
-              self.modelIndex = Array(self.model.keys)
-              
-              self.tableView.reloadData()
-            } catch {
-              celeturLogger.error("Error while parsing payload",error:error)
-            }
+            self.modelIndex = Array(self.model.keys)
             
+            self.tableView.reloadData()
+            self.activityView.stopAnimating()
+          } catch {
+            celeturLogger.error("Error while parsing payload",error:error)
           }
-          
-          self.activityView.stopAnimating()
         }
       }
     }

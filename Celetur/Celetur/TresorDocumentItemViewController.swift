@@ -9,9 +9,16 @@
 import UIKit
 import CeleturKit
 
-class DetailViewController: UITableViewController {
+class TresorDocumentItemViewController: UITableViewController {
   
   var tresorAppState: TresorAppState?
+  
+  var tresorDocumentItem: TresorDocumentItem? {
+    didSet {
+      // Update the view.
+      configureView()
+    }
+  }
   
   @IBOutlet weak var activityView: UIActivityIndicatorView!
   @IBOutlet weak var dataLabel: UILabel!
@@ -75,22 +82,29 @@ class DetailViewController: UITableViewController {
     }
   }
   
-  @IBAction func addItemAction(_ sender: Any) {
-    let key = "newKey" + String(Int(arc4random())%100)
-    
-    self.model[key] = "blafasel" + String(Int(arc4random())%10000)
-    
-    self.modelIndex = Array(self.model.keys)
-    self.tableView.reloadData()
-  }
+  // MARK: - Segue
   
-  var tresorDocumentItem: TresorDocumentItem? {
-    didSet {
-      // Update the view.
-      configureView()
+  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    if let ident = segue.identifier {
+      switch ident {
+      case "showEditTresorDocumentItem":
+        let controller = (segue.destination as! UINavigationController).topViewController as! EditTresorDocumentItemViewController
+        
+        controller.tresorAppState = self.tresorAppState
+        controller.tresorDocumentItem = tresorDocumentItem
+        
+      default: break
+      }
     }
   }
   
+  @IBAction func unwindToTresorDocumentItem(segue: UIStoryboardSegue) {
+    if "saveEditTresorDocumentItem" == segue.identifier {
+      celeturLogger.debug("saveEditTresorDocumentItem")
+      
+      let _ = (segue.source as? EditTresorDocumentItemViewController)?.tresorDocumentItem
+    }
+  }
   
   // MARK: - Table View
   
@@ -111,7 +125,7 @@ class DetailViewController: UITableViewController {
   }
   
   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-   
+    
   }
   
   override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {

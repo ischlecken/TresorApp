@@ -226,10 +226,10 @@
             </objects>
             <point key="canvasLocation" x="603" y="152"/>
         </scene>
-        <!--Detail View Controller-->
+        <!--Tresor Document Item View Controller-->
         <scene sceneID="1aD-WH-YCa">
             <objects>
-                <tableViewController id="ZU0-X8-UIE" customClass="DetailViewController" customModule="Celetur" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController id="ZU0-X8-UIE" customClass="TresorDocumentItemViewController" customModule="Celetur" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" id="0Xx-lQ-Tom">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -293,9 +293,9 @@
                     </tableView>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="Q4t-Uw-0NC">
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="3i6-9j-SIt">
+                        <barButtonItem key="rightBarButtonItem" systemItem="edit" id="3i6-9j-SIt">
                             <connections>
-                                <action selector="addItemAction:" destination="ZU0-X8-UIE" id="xRP-w7-u4a"/>
+                                <segue destination="r1A-GH-7mK" kind="presentation" identifier="showEditTresorDocumentItem" modalPresentationStyle="pageSheet" modalTransitionStyle="crossDissolve" id="xls-gL-P6o"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -309,6 +309,109 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3C5-tY-Ch9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1340.5797101449277" y="151.63043478260872"/>
+        </scene>
+        <!--Edit Document Item-->
+        <scene sceneID="rgp-uN-gba">
+            <objects>
+                <tableViewController id="AMh-AI-J6r" customClass="EditTresorDocumentItemViewController" customModule="Celetur" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" id="n4H-Lv-W7H">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <view key="tableHeaderView" contentMode="scaleToFill" id="adP-uu-uKH">
+                            <rect key="frame" x="0.0" y="0.0" width="414" height="44"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <subviews>
+                                <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="Teo-e7-bb4">
+                                    <rect key="frame" x="197" y="12" width="20" height="20"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <color key="color" red="1" green="0.5" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                </activityIndicatorView>
+                            </subviews>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        </view>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="editCell" textLabel="gis-zl-uVM" detailTextLabel="eSU-hw-DJn" style="IBUITableViewCellStyleValue2" id="daJ-J0-vp2">
+                                <rect key="frame" x="0.0" y="99.333333333333343" width="414" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="daJ-J0-vp2" id="8ge-WB-EC2">
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="43.666666666666664"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="gis-zl-uVM">
+                                            <rect key="frame" x="20" y="14" width="91" height="15.666666666666666"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Detail" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="eSU-hw-DJn">
+                                            <rect key="frame" x="117" y="14" width="35" height="15.666666666666666"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="addFieldCell" id="C5n-gT-a3C">
+                                <rect key="frame" x="0.0" y="143.33333333333334" width="414" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="C5n-gT-a3C" id="45l-DH-Gs6">
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="43.666666666666664"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MtQ-C1-7wb">
+                                            <rect key="frame" x="158" y="7" width="99" height="30"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <state key="normal" title="Add Field"/>
+                                        </button>
+                                    </subviews>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="AMh-AI-J6r" id="tYR-Tl-7Zf"/>
+                            <outlet property="delegate" destination="AMh-AI-J6r" id="ONl-aA-QM5"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Edit Document Item" id="FXB-qj-Cfq">
+                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="hkr-hO-fRC">
+                            <connections>
+                                <segue destination="TM2-bW-HDr" kind="unwind" identifier="cancelEditTresorDocumentItem" unwindAction="unwindToTresorDocumentItemWithSegue:" id="ZMM-1A-EAf"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="Egt-Iz-y0H">
+                            <connections>
+                                <segue destination="TM2-bW-HDr" kind="unwind" identifier="saveEditTresorDocumentItem" unwindAction="unwindToTresorDocumentItemWithSegue:" id="oAN-nV-Yma"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="activityView" destination="Teo-e7-bb4" id="PMK-Rl-LVx"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="tkg-yl-I3h" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="TM2-bW-HDr" userLabel="Exit" sceneMemberID="exit"/>
+            </objects>
+            <point key="canvasLocation" x="2976.811594202899" y="151.63043478260872"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="X4S-SI-Nbt">
+            <objects>
+                <navigationController id="r1A-GH-7mK" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="UsU-C4-6Q6">
+                        <rect key="frame" x="0.0" y="20" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="AMh-AI-J6r" kind="relationship" relationship="rootViewController" id="mP5-Ej-3Md"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Xff-Pj-cq6" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2194" y="152"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>

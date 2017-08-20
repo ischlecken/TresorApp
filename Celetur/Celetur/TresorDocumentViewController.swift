@@ -61,7 +61,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     if segue.identifier == "showTresorDocumentItemDetail" {
       if let indexPath = tableView.indexPathForSelectedRow {
         let object = fetchedResultsController.object(at: indexPath)
-        let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
+        let controller = (segue.destination as! UINavigationController).topViewController as! TresorDocumentItemViewController
         controller.tresorAppState = self.tresorAppState
         controller.tresorDocumentItem = object
         controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem

@@ -31,6 +31,26 @@ class EditTresorDocumentItemViewController: UITableViewController {
     // self.navigationItem.rightBarButtonItem = self.editButtonItem
   }
   
+  // MARK: - Actions
+  
+  
+  @IBAction func addFieldAction(_ sender: Any) {
+    let key = "key"+String(Int(arc4random())%100)
+    
+    self.model[key] = "value"+String(Int(arc4random())%1000)
+    
+    self.modelIndex = Array(self.model.keys)
+    
+    self.tableView.reloadData()
+  }
+  
+  @IBAction func deleteFieldsAction(_ sender: Any) {
+    self.model = [String:Any]()
+    
+    self.modelIndex = Array(self.model.keys)
+    
+    self.tableView.reloadData()
+  }
   
   // MARK: - Segue
   
@@ -50,7 +70,7 @@ class EditTresorDocumentItemViewController: UITableViewController {
     case 0:
       result = self.modelIndex.count
     case 1:
-      result = 1
+      result = 2
     default: break
     }
     
@@ -66,10 +86,10 @@ class EditTresorDocumentItemViewController: UITableViewController {
       cell = tableView.dequeueReusableCell(withIdentifier: "editCell", for: indexPath)
       
       configureCell(cell, forKey: self.modelIndex[indexPath.row])
-    case 1:
-      cell = tableView.dequeueReusableCell(withIdentifier: "addFieldCell", for: indexPath)
     default:
-      break
+      let cellIdentifier = indexPath.row == 0 ? "addFieldCell" : "deleteFieldsCell"
+      
+      cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
     }
     
     return cell

@@ -108,18 +108,118 @@ public class TresorDataModel {
     result.tresor = tresorDocument.tresor
     result.document = tresorDocument
     
+    
+    
     if self.userList != nil && self.userList!.count > 0 {
       let userDeviceList = self.userList![Int(arc4random()) % self.userList!.count].userdevices!.allObjects as! [UserDevice]
       let index = Int(arc4random()) % userDeviceList.count
-      celeturKitLogger.debug("userDeviceList.count:\(userDeviceList.count) index:\(index)")
       userDeviceList[index].addToDocumentitems(result)
     }
-    
     
     return result
   }
   
-  public func createTresorDocumentItem(tresorDocument:TresorDocument,masterKey:TresorKey, onCompleted:(()->Void)? = nil) throws {
+  public func findTresorById(tresorId:String, usingContext context:NSManagedObjectContext) throws -> Tresor? {
+    let fetchRequest : NSFetchRequest<Tresor> = Tresor.fetchRequest()
+    
+    fetchRequest.predicate = NSPredicate(format: "id = %@", tresorId)
+    
+    let result = try context.fetch(fetchRequest)
+    
+    return result.count == 1 ? result[0] : nil
+  }
+  
+  public func findTresorDocumentById(docId:String, usingContext context:NSManagedObjectContext) throws -> TresorDocument? {
+    let fetchRequest : NSFetchRequest<TresorDocument> = TresorDocument.fetchRequest()
+    
+    fetchRequest.predicate = NSPredicate(format: "id = %@", docId)
+    
+    let result = try context.fetch(fetchRequest)
+    
+    return result.count == 1 ? result[0] : nil
+  }
+  
+  
+  public func findTresorDocumenItemtById(docItemId:String, usingContext context:NSManagedObjectContext) throws -> TresorDocumentItem? {
+    let fetchRequest : NSFetchRequest<TresorDocumentItem> = TresorDocumentItem.fetchRequest()
+    
+    fetchRequest.predicate = NSPredicate(format: "id = %@", docItemId)
+    
+    let result = try context.fetch(fetchRequest)
+    
+    return result.count == 1 ? result[0] : nil
+  }
+  
+  public func createTemporaryTresorDocumentItem(tresorDocument:TresorDocument) throws -> TresorDocumentItem {
+    let tempManagedContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+    tempManagedContext.parent = self.managedContext
+    
+    let result = TresorDocumentItem(context: tempManagedContext)
+    
+    result.createts = Date()
+    result.id = String.uuid()
+    result.status = "pending"
+    
+    result.document = try findTresorDocumentById(docId: tresorDocument.id!, usingContext: tempManagedContext)
+    result.tresor = result.document?.tresor
+    
+    let userFetchRequest: NSFetchRequest<User> = User.fetchRequest()
+    
+    let userList = try tempManagedContext.fetch(userFetchRequest)
+    if userList.count > 0 {
+      let userDeviceList = userList[Int(arc4random()) % userList.count].userdevices!.allObjects as! [UserDevice]
+      let index = Int(arc4random()) % userDeviceList.count
+      
+      userDeviceList[index].addToDocumentitems(result)
+    }
+    
+    return result
+  }
+  
+  
+  public func copyTemporaryTresorDocumentItem(tresorDocumentItem:TresorDocumentItem) throws -> TresorDocumentItem {
+    let tempManagedContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+    tempManagedContext.parent = self.managedContext
+    
+    return try self.findTresorDocumenItemtById(docItemId: tresorDocumentItem.id!, usingContext: tempManagedContext)!
+  }
+  
+  public func encryptAndSaveTemporaryTresorDocumentItem(masterKey:TresorKey, tresorDocumentItem:TresorDocumentItem, payload: Data) throws {
+    let key = masterKey.accessToken!
+    
+    let operation = AES256EncryptionOperation(key:key, inputData: payload, iv:nil)
+    try operation.createRandomIV()
+    
+    operation.mainQueueCompletionBlock = { (cipherOperation) in
+      celeturKitLogger.debug("encryptedText:\(String(describing: cipherOperation.outputData?.hexEncodedString()))")
+      
+      tresorDocumentItem.managedObjectContext?.perform {
+        do {
+          tresorDocumentItem.type = "main"
+          tresorDocumentItem.mimetype = "application/json"
+          tresorDocumentItem.status = "encrypted"
+          tresorDocumentItem.payload = cipherOperation.outputData
+          tresorDocumentItem.nonce = cipherOperation.iv
+          
+          try tresorDocumentItem.managedObjectContext?.save()
+          
+          DispatchQueue.main.async {
+            do {
+              try self.saveContext()
+            } catch {
+              celeturKitLogger.error("Error while saving temp tresordocumentitem in main moc", error: error)
+            }
+          }
+        } catch {
+          celeturKitLogger.error("Error while temp tresordocumentitem using temp moc", error: error)
+        }
+      }
+    }
+    
+    self.cipherQueue.addOperation(operation)
+  }
+  
+  public func createTresorDocumentItem(tresorDocument:TresorDocument, masterKey:TresorKey, onCompleted:(()->Void)? = nil) throws {
     let newTresorDocumentItem = self.createPendingTresorDocumentItem(tresorDocument: tresorDocument)
     
     tresorDocument.tresor?.addToDocumentitems(newTresorDocumentItem)
@@ -128,10 +228,10 @@ public class TresorDataModel {
     do {
       try self.saveContext()
       
-      let key = masterKey.accessToken
+      let key = masterKey.accessToken!
       let plainText = "{ \"title\": \"gmx.de\",\"user\":\"bla@fasel.de\",\"password\":\"hugo\"}"
       
-      let operation = AES256EncryptionOperation(key:masterKey.accessToken!,inputString: plainText, iv:nil)
+      let operation = AES256EncryptionOperation(key:key,inputString: plainText, iv:nil)
       try operation.createRandomIV()
       
       operation.mainQueueCompletionBlock = { (cipherOperation) in
@@ -140,8 +240,8 @@ public class TresorDataModel {
         newTresorDocumentItem.status = "encrypted"
         newTresorDocumentItem.payload = cipherOperation.outputData
         newTresorDocumentItem.nonce = cipherOperation.iv
-    
-        celeturKitLogger.debug("plain:\(plainText) key:\(key!) encryptedText:\(String(describing: cipherOperation.outputData?.hexEncodedString()))")
+        
+        celeturKitLogger.debug("plain:\(plainText) key:\(key) encryptedText:\(String(describing: cipherOperation.outputData?.hexEncodedString()))")
         
         do {
           try self.saveContext()

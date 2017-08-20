@@ -91,7 +91,7 @@ class TresorDocumentItemViewController: UITableViewController {
         let controller = (segue.destination as! UINavigationController).topViewController as! EditTresorDocumentItemViewController
         
         controller.tresorAppState = self.tresorAppState
-        controller.tresorDocumentItem = tresorDocumentItem
+        controller.tresorDocumentItem = try! self.tresorAppState?.tresorDataModel.copyTemporaryTresorDocumentItem(tresorDocumentItem: self.tresorDocumentItem!)
         
       default: break
       }
@@ -102,7 +102,10 @@ class TresorDocumentItemViewController: UITableViewController {
     if "saveEditTresorDocumentItem" == segue.identifier {
       celeturLogger.debug("saveEditTresorDocumentItem")
       
-      let _ = (segue.source as? EditTresorDocumentItemViewController)?.tresorDocumentItem
+      let tresorDocumentItem = (segue.source as? EditTresorDocumentItemViewController)?.tresorDocumentItem
+      let payload = try! JSONSerialization.data( withJSONObject: (segue.source as? EditTresorDocumentItemViewController)?.model as Any, options: [])
+      
+      try! self.tresorAppState?.tresorDataModel.encryptAndSaveTemporaryTresorDocumentItem(masterKey: (self.tresorAppState?.masterKey)!, tresorDocumentItem: tresorDocumentItem!, payload: payload)
     }
   }
   

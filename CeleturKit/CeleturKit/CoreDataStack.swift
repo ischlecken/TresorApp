@@ -63,8 +63,7 @@ public class CoreDataStack {
           try self.context.save()
         }
       } catch {
-        print("Could not save: \(error)")
-        abort()
+        celeturKitLogger.error("Could not save",error:error)
       }
     }
   }

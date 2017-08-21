@@ -10,9 +10,6 @@ import CeleturKit
 class EditTresorDocumentItemViewController: UITableViewController {
   
   var tresorAppState: TresorAppState?
-  var tresorDocumentItem: TresorDocumentItem?
-  
-  @IBOutlet weak var activityView: UIActivityIndicatorView!
   
   let dateFormatter = DateFormatter()
   var model = [String:Any]()
@@ -20,21 +17,9 @@ class EditTresorDocumentItemViewController: UITableViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    
-    self.configureView()
+  
   }
   
-  func configureView() {
-    if let tdi = self.tresorDocumentItem {
-      self.activityView.startAnimating()
-      
-      try! self.tresorAppState?.tresorDataModel.copyTemporaryTresorDocumentItem(tresorDocumentItem: tdi) { newTresorDocumentItem in
-        self.tresorDocumentItem = newTresorDocumentItem
-        
-        self.decryptPayload(newTresorDocumentItem)
-      }
-    }
-  }
   
   // MARK: - Actions
   
@@ -118,23 +103,4 @@ class EditTresorDocumentItemViewController: UITableViewController {
     cell.detailTextLabel?.text = self.model[key] as? String
   }
   
-  fileprivate func decryptPayload(_ tdi:TresorDocumentItem) {
-    if let key = self.tresorAppState?.masterKey {
-      
-      self.tresorAppState!.tresorDataModel.decryptTresorDocumentItemPayload(tresorDocumentItem: tdi, masterKey:key) { (operation) in
-        if let d = operation.outputData {
-          do {
-            self.model = (try JSONSerialization.jsonObject(with: d, options: []) as? [String:Any])!
-            
-            self.modelIndex = Array(self.model.keys)
-            
-            self.tableView.reloadData()
-            self.activityView.stopAnimating()
-          } catch {
-            celeturLogger.error("Error while parsing payload",error:error)
-          }
-        }
-      }
-    }
-  }
 }

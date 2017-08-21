@@ -6,15 +6,11 @@
 import Foundation
 import CKCommonCrypto
 
-public typealias SymmetricCipherCompletionType = (SymmetricCipherOperation) -> Void
-
 public class SymmetricCipherOperation : Operation {
   
   public let key: Data
   public let inputData: Data
   public var iv: Data?
-  
-  public var mainQueueCompletionBlock: SymmetricCipherCompletionType? = nil
   public var outputData: Data?
   public var error: Error?
   
@@ -22,22 +18,6 @@ public class SymmetricCipherOperation : Operation {
     self.key = key
     self.inputData = inputData
     self.iv = iv
-  }
-  
-  public override func start() {
-    print("SymmetricCipherOperation.start()")
-    
-    self.completionBlock = { 
-      guard !self.isCancelled else { return }
-      
-      if let mqcb = self.mainQueueCompletionBlock {
-        OperationQueue.main.addOperation {
-          mqcb(self)
-        }
-      }
-    }
-    
-    super.start()
   }
   
   public convenience init(key:Data, inputString:String, iv: Data?) {
@@ -55,7 +35,7 @@ public class SymmetricCipherOperation : Operation {
       return
     }
     
-    print("SymmetricCipherOperation.cryptoOperation() key:\(self.key.hexEncodedString())")
+    celeturKitLogger.debug("SymmetricCipherOperation.cryptoOperation() key:\(self.key.hexEncodedString())")
     
     // Prepare data parameters
     let keyData: Data! = self.key

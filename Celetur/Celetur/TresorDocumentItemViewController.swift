@@ -15,7 +15,6 @@ class TresorDocumentItemViewController: UITableViewController {
   
   var tresorDocumentItem: TresorDocumentItem? {
     didSet {
-      // Update the view.
       configureView()
     }
   }
@@ -49,34 +48,43 @@ class TresorDocumentItemViewController: UITableViewController {
         label.text = ""
         
         if let payload = item.payload {
-          self.activityView.startAnimating()
           label.text = payload.hexEncodedString()
           
-          if let key = self.tresorAppState?.masterKey {
-            self.tresorAppState!.tresorDataModel.decryptTresorDocumentItemPayload(tresorDocumentItem: item, masterKey:key) { (operation) in
-              if let d = operation.outputData {
-                label.text = String(data: d, encoding: String.Encoding.utf8)
-                
-                do {
-                  self.model = (try JSONSerialization.jsonObject(with: d, options: []) as? [String:Any])!
-                  
-                  self.modelIndex = Array(self.model.keys)
-                  
-                  self.tableView.reloadData()
-                } catch {
-                  celeturLogger.error("Error while parsing payload",error:error)
-                }
-                
-              } else {
-                label.text = "Failed to decrypt payload: \(String(describing: operation.error))"
-              }
-              
-              self.activityView.stopAnimating()
-            }
-          } else {
+          let key = self.tresorAppState?.masterKey
+          if key == nil {
             label.text = "Masterkey not set, could not decrypt payload..."
-            self.activityView.stopAnimating()
+            
+            return
           }
+          
+          self.activityView.startAnimating()
+        
+          let decryptOperation = self.tresorAppState!.tresorDataModel.decryptTresorDocumentItemPayload(tresorDocumentItem: item, masterKey:key!)
+          
+          if decryptOperation == nil {
+            self.activityView.stopAnimating()
+            return
+          }
+          
+          decryptOperation!.completionBlock = {
+            if let d = decryptOperation!.outputData {
+              
+              do {
+                self.model = (try JSONSerialization.jsonObject(with: d, options: []) as? [String:Any])!
+                self.modelIndex = Array(self.model.keys)
+                
+                DispatchQueue.main.async {
+                  label.text = String(data: d, encoding: String.Encoding.utf8)
+                  self.tableView.reloadData()
+                  self.activityView.stopAnimating()
+                }
+              } catch {
+                celeturLogger.error("Error while decoding json",error:error)
+              }
+            }
+          }
+          
+          self.tresorAppState!.tresorDataModel.addToCipherQueue(decryptOperation!)
         }
       }
     }
@@ -91,7 +99,8 @@ class TresorDocumentItemViewController: UITableViewController {
         let controller = (segue.destination as! UINavigationController).topViewController as! EditTresorDocumentItemViewController
         
         controller.tresorAppState = self.tresorAppState
-        controller.tresorDocumentItem = self.tresorDocumentItem
+        controller.model = self.model
+        controller.modelIndex = self.modelIndex
         
       default:
         break
@@ -103,10 +112,16 @@ class TresorDocumentItemViewController: UITableViewController {
     if "saveEditTresorDocumentItem" == segue.identifier {
       celeturLogger.debug("saveEditTresorDocumentItem")
       
-      let tresorDocumentItem = (segue.source as? EditTresorDocumentItemViewController)?.tresorDocumentItem
-      let payload = try! JSONSerialization.data( withJSONObject: (segue.source as? EditTresorDocumentItemViewController)?.model as Any, options: [])
+      let model = (segue.source as? EditTresorDocumentItemViewController)?.model
+      let scratchpadContext = self.tresorAppState?.tresorDataModel.createScratchPadContext()
       
-      try! self.tresorAppState?.tresorDataModel.encryptAndSaveTemporaryTresorDocumentItem(masterKey: (self.tresorAppState?.masterKey)!, tresorDocumentItem: tresorDocumentItem!, payload: payload)
+      scratchpadContext?.perform {
+        
+        self.tresorAppState?.tresorDataModel.encryptAndSaveTresorDocumentItem(tempManagedContext: scratchpadContext!,
+                                                                              masterKey: (self.tresorAppState?.masterKey)!,
+                                                                              tresorDocumentItem: self.tresorDocumentItem!,
+                                                                              payload: model!)
+      }
     }
   }
   
@@ -139,13 +154,11 @@ class TresorDocumentItemViewController: UITableViewController {
   override func tableView(_ tableView: UITableView, editActionsForRowAt: IndexPath) -> [UITableViewRowAction]? {
     
     let editAction = UITableViewRowAction(style: .normal, title: "Edit") { action, index in
-      print("edit button tapped")
       
     }
     editAction.backgroundColor = .orange
     
     let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { action, index in
-      _ = self.tresorAppState?.persistentContainer.context
       
     }
     

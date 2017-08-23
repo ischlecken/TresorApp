@@ -6,34 +6,13 @@
 import UIKit
 import CeleturKit
 
-class EditTresorViewController: UIViewController {
+class EditTresorViewController: UITableViewController {
   
   var tresorAppState: TresorAppState?
-  weak var tresor: Tresor?
+  var tresor: Tresor?
   
   @IBOutlet weak var nameTextfield: UITextField!
   @IBOutlet weak var descriptionTextfield: UITextField!
-  
-  
-  @IBAction func saveAction(_ sender: Any) {
-    
-      do {
-        if let t = self.tresor {
-          t.name = nameTextfield.text!
-          t.tresordescription = descriptionTextfield.text
-          t.changets = Date()
-          
-          try self.tresorAppState?.tresorDataModel.saveContext()
-        } else {
-          self.tresor = try self.tresorAppState?.tresorDataModel.createTresor(name:nameTextfield.text!,description:descriptionTextfield.text)
-        }
-        
-        self.performSegue(withIdentifier: "unwindToTresor", sender: self)
-      } catch {
-        celeturLogger.error("saving tresor failed", error: error)
-      }
-    
-  }
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -47,14 +26,63 @@ class EditTresorViewController: UIViewController {
     
   }
   
-  /*
-   // MARK: - Navigation
-   
-   // In a storyboard-based application, you will often want to do a little preparation before navigation
-   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-   // Get the new view controller using segue.destinationViewController.
-   // Pass the selected object to the new view controller.
-   }
-   */
+  
+  // MARK: - Table View
+  
+  override func numberOfSections(in tableView: UITableView) -> Int {
+    return (self.tresorAppState?.tresorDataModel.userList?.count)!
+  }
+  
+  override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    return (self.tresorAppState?.tresorDataModel.userList?[section].userdevices!.count)!
+  }
+  
+  override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    let user = self.tresorAppState?.tresorDataModel.userList?[section]
+    
+    return user?.appleid
+  }
+  
+  override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    let cell = tableView.dequeueReusableCell(withIdentifier: "editTresorCell", for: indexPath)
+    
+    let userDevice = self.tresorAppState?.tresorDataModel.userList?[indexPath.section].userdevices?.allObjects[indexPath.row] as! UserDevice
+    
+    configureCell(cell, withUserDevice: userDevice)
+    
+    return cell
+  }
+  
+  override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    
+  }
+  
+  override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+    return true
+  }
+  
+  override func tableView(_ tableView: UITableView, editActionsForRowAt: IndexPath) -> [UITableViewRowAction]? {
+    let editAction = UITableViewRowAction(style: .normal, title: "Edit") { action, index in
+      
+    }
+    editAction.backgroundColor = .orange
+    
+    let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { action, index in
+      
+    }
+    
+    return [editAction, deleteAction]
+  }
+  
+  override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+    if editingStyle == .delete {
+      
+    }
+  }
+  
+  func configureCell(_ cell: UITableViewCell, withUserDevice userDevice: UserDevice) {
+    cell.textLabel?.text = userDevice.devicename
+    cell.detailTextLabel?.text = userDevice.id
+  }
   
 }

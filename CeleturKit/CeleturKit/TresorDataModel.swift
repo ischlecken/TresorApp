@@ -12,7 +12,8 @@ public class TresorDataModel {
   
   let managedContext : NSManagedObjectContext
   let cipherQueue = OperationQueue()
-  var userList : [User]?
+  
+  public var userList : [User]?
   
   public init(_ coreDataStack:CoreDataStack) {
     self.managedContext = coreDataStack.context
@@ -74,15 +75,13 @@ public class TresorDataModel {
     }
   }
   
-  public func createTresor(name:String, description:String?) throws -> Tresor {
-    let newTresor = Tresor(context: self.managedContext)
+  public func createTempTresor(tempManagedContext: NSManagedObjectContext, name:String, description:String?) throws -> Tresor {
+    let newTresor = Tresor(context: tempManagedContext)
     newTresor.createts = Date()
     newTresor.id = String.uuid()
     newTresor.name = name
     newTresor.tresordescription = description
     newTresor.nonce = try Data(withRandomData: SymmetricCipherAlgorithm.aes_256.requiredBlockSize())
-    
-    try self.saveContext()
     
     return newTresor
   }

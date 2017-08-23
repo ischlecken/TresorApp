@@ -178,13 +178,13 @@
 				85EEE1FD1F1A68A2002CE85E /* Celetur.entitlements */,
 				85F9080D1F12D9E30062BD63 /* AppDelegate.swift */,
 				85F908121F12D9E30062BD63 /* TresorViewController.swift */,
+				85FBDD4A1F42E0F0006B4271 /* EditTresorViewController.swift */,
 				850B80F21F35DFF10078F042 /* TresorDocumentViewController.swift */,
 				85F908141F12D9E30062BD63 /* TresorDocumentItemViewController.swift */,
 				85EE8DA11F497D3600F6409D /* EditTresorDocumentItemViewController.swift */,
 				85F9081E1F12D9E30062BD63 /* Info.plist */,
 				852C26601F37CCDB0041273F /* TresorAppState.swift */,
 				852C26631F37CD850041273F /* TresorConstants.swift */,
-				85FBDD4A1F42E0F0006B4271 /* EditTresorViewController.swift */,
 			);
 			path = Celetur;
 			sourceTree = "<group>";

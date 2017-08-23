@@ -11,6 +11,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   
   var tresorAppState: TresorAppState?
   let dateFormatter = DateFormatter()
+  var editScratchpadContext : NSManagedObjectContext?
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -47,21 +48,43 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
         let controller = (segue.destination as! UINavigationController).topViewController as! EditTresorViewController
         controller.tresorAppState = self.tresorAppState
         
+        self.editScratchpadContext = self.tresorAppState?.tresorDataModel.createScratchPadContext()
         if let t = sender as? Tresor {
-          controller.tresor = t
+          controller.tresor = self.editScratchpadContext?.object(with: t.objectID) as? Tresor
         }
       
       default: break
       }
     }
-    
-    
   }
   
   @IBAction func unwindToTresor(segue: UIStoryboardSegue) {
     print("unwindToTresor:\(String(describing: segue.identifier))")
     
+    if segue.identifier == "saveUnwindToTresor" {
+      do {
+        let controller = segue.source as! EditTresorViewController
+       
+        if let esc = self.editScratchpadContext {
+          if controller.tresor == nil {
+            let _ = try self.tresorAppState?.tresorDataModel.createTempTresor(tempManagedContext: esc,
+                                                                              name: controller.nameTextfield.text!,
+                                                                              description: controller.descriptionTextfield.text)
+          } else {
+            controller.tresor?.name = controller.nameTextfield.text!
+            controller.tresor?.tresordescription = controller.descriptionTextfield.text
+          }
+          
+          try esc.save()
+        }
+        
+        try self.tresorAppState?.tresorDataModel.saveContext()
+      } catch {
+        celeturLogger.error("Error while saving tresor object",error:error)
+      }
+    }
     
+    self.editScratchpadContext = nil
   }
   
   // MARK: - Table View

@@ -48,9 +48,15 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
         let controller = (segue.destination as! UINavigationController).topViewController as! EditTresorViewController
         controller.tresorAppState = self.tresorAppState
         
-        self.editScratchpadContext = self.tresorAppState?.tresorDataModel.createScratchPadContext()
-        if let t = sender as? Tresor {
-          controller.tresor = self.editScratchpadContext?.object(with: t.objectID) as? Tresor
+        do {
+          self.editScratchpadContext = self.tresorAppState?.tresorDataModel.createScratchPadContext()
+          if let t = sender as? Tresor {
+            controller.tresor = self.editScratchpadContext?.object(with: t.objectID) as? Tresor
+          } else {
+            controller.tresor = try self.tresorAppState?.tresorDataModel.createTempTresor(tempManagedContext: self.editScratchpadContext!)
+          }
+        } catch {
+          celeturLogger.error("Error creating temp tresor object",error:error)
         }
       
       default: break
@@ -62,26 +68,21 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     print("unwindToTresor:\(String(describing: segue.identifier))")
     
     if segue.identifier == "saveUnwindToTresor" {
-      do {
         let controller = segue.source as! EditTresorViewController
        
         if let esc = self.editScratchpadContext {
-          if controller.tresor == nil {
-            let _ = try self.tresorAppState?.tresorDataModel.createTempTresor(tempManagedContext: esc,
-                                                                              name: controller.nameTextfield.text!,
-                                                                              description: controller.descriptionTextfield.text)
-          } else {
-            controller.tresor?.name = controller.nameTextfield.text!
-            controller.tresor?.tresordescription = controller.descriptionTextfield.text
-          }
+          let _ = controller.getUpdatedModel()
           
-          try esc.save()
+          esc.perform {
+            do {
+              try esc.save()
+              
+              self.tresorAppState?.tresorDataModel.saveContextInMainThread()
+            } catch {
+              celeturLogger.error("Error while saving tresor object",error:error)
+            }
+          }
         }
-        
-        try self.tresorAppState?.tresorDataModel.saveContext()
-      } catch {
-        celeturLogger.error("Error while saving tresor object",error:error)
-      }
     }
     
     self.editScratchpadContext = nil

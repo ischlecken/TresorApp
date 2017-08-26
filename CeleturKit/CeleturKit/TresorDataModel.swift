@@ -1,7 +1,4 @@
 //
-//  TresorDataModel.swift
-//  CeleturKit
-//
 //  Created by Feldmaus on 06.08.17.
 //  Copyright © 2017 prisnoc. All rights reserved.
 //
@@ -29,23 +26,26 @@ public class TresorDataModel {
     newUserDevice.apndevicetoken = String.uuid()
     newUserDevice.user = user
     user.addToUserdevices(newUserDevice)
+  }
+  
+  fileprivate func createUser(firstName:String, lastName: String, appleid: String) -> User {
+    let newUser = User(context: self.managedContext)
+    newUser.abfirstname = firstName
+    newUser.ablastname = lastName
+    newUser.appleid = appleid
+    newUser.abrecordid = 0
+    newUser.createts = Date()
+    newUser.id = String.uuid()
     
+    return newUser
   }
   
   func initObjects() {
     do {
-      let userFetchRequest: NSFetchRequest<User> = User.fetchRequest()
-      
-      self.userList = try self.managedContext.fetch(userFetchRequest)
+      self.userList = try self.managedContext.fetch(User.fetchRequest())
       
       if self.userList == nil || self.userList!.count == 0 {
-        var newUser = User(context: self.managedContext)
-        newUser.abfirstname = "Hugo"
-        newUser.ablastname = "Müller"
-        newUser.appleid = "bla@fasel.de"
-        newUser.abrecordid = 0
-        newUser.createts = Date()
-        newUser.id = String.uuid()
+        var newUser = createUser(firstName: "Hugo",lastName: "Müller",appleid: "bla@fasel.de")
         
         self.createUserDevice(user: newUser, deviceName: "Hugos iPhone")
         self.createUserDevice(user: newUser, deviceName: "Hugos iPad")
@@ -53,13 +53,7 @@ public class TresorDataModel {
         
         self.userList?.append(newUser)
         
-        newUser = User(context: self.managedContext)
-        newUser.abfirstname = "Manfred"
-        newUser.ablastname = "Schmidt"
-        newUser.appleid = "manne@gmx.de"
-        newUser.abrecordid = 1
-        newUser.createts = Date()
-        newUser.id = String.uuid()
+        newUser = createUser(firstName: "Manfred",lastName: "Schmid",appleid: "mane@gmx.de")
         
         self.createUserDevice(user: newUser, deviceName: "Manfreds iPhone")
         self.createUserDevice(user: newUser, deviceName: "Manfreds iPad")
@@ -75,44 +69,43 @@ public class TresorDataModel {
     }
   }
   
-  public func createTempTresor(tempManagedContext: NSManagedObjectContext, name:String, description:String?) throws -> Tresor {
+  public func createTempTresor(tempManagedContext: NSManagedObjectContext) throws -> Tresor {
     let newTresor = Tresor(context: tempManagedContext)
     newTresor.createts = Date()
     newTresor.id = String.uuid()
-    newTresor.name = name
-    newTresor.tresordescription = description
     newTresor.nonce = try Data(withRandomData: SymmetricCipherAlgorithm.aes_256.requiredBlockSize())
     
     return newTresor
   }
   
-  public func createTresorDocument(tresor:Tresor) throws -> TresorDocument {
+  public func createTresorDocument(tresor:Tresor,masterKey: TresorKey?) throws -> TresorDocument {
     let newTresorDocument = TresorDocument(context: self.managedContext)
     newTresorDocument.createts = Date()
     newTresorDocument.id = String.uuid()
     newTresorDocument.tresor = tresor
     newTresorDocument.nonce = try Data(withRandomData:SymmetricCipherAlgorithm.aes_256.requiredBlockSize())
     
-    try self.saveContext()
+    for ud in tresor.userdevices! {
+      let userdevice = ud as! UserDevice
+      
+      let item = try self.createTresorDocumentItem(tresorDocument: newTresorDocument,userDevice: userdevice,masterKey: masterKey!)
+      
+      newTresorDocument.addToDocumentitems(item)
+      userdevice.addToDocumentitems(item)
+    }
     
     return newTresorDocument
   }
   
-  fileprivate func createPendingTresorDocumentItem(tresorDocument:TresorDocument) -> TresorDocumentItem {
+  fileprivate func createPendingTresorDocumentItem(tresorDocument:TresorDocument,userDevice:UserDevice) -> TresorDocumentItem {
     let result = TresorDocumentItem(context: self.managedContext)
     
     result.createts = Date()
     result.id = String.uuid()
     result.status = "pending"
-    result.tresor = tresorDocument.tresor
     result.document = tresorDocument
-    
-    if self.userList != nil && self.userList!.count > 0 {
-      let userDeviceList = self.userList![Int(arc4random()) % self.userList!.count].userdevices!.allObjects as! [UserDevice]
-      let index = Int(arc4random()) % userDeviceList.count
-      userDeviceList[index].addToDocumentitems(result)
-    }
-    
+    result.userdevice = userDevice
+  
     return result
   }
  
@@ -169,15 +162,14 @@ public class TresorDataModel {
     }
   }
   
-  public func createTresorDocumentItem(tresorDocument:TresorDocument, masterKey:TresorKey) throws {
-    let newTresorDocumentItem = self.createPendingTresorDocumentItem(tresorDocument: tresorDocument)
+  public func createTresorDocumentItem(tresorDocument:TresorDocument, userDevice:UserDevice, masterKey:TresorKey) throws -> TresorDocumentItem {
+    let newTresorDocumentItem = self.createPendingTresorDocumentItem(tresorDocument: tresorDocument,userDevice:userDevice)
     
-    tresorDocument.tresor?.addToDocumentitems(newTresorDocumentItem)
     tresorDocument.addToDocumentitems(newTresorDocumentItem)
+    userDevice.addToDocumentitems(newTresorDocumentItem)
     
     do {
       try self.saveContext()
-      
       
       let key = masterKey.accessToken!
       let plainText = "{ \"title\": \"gmx.de\",\"user\":\"bla@fasel.de\",\"password\":\"hugo\"}"
@@ -207,6 +199,8 @@ public class TresorDataModel {
     } catch {
       celeturKitLogger.error("Error while saving tresordocumentitem", error: error)
     }
+    
+    return newTresorDocumentItem
   }
   
   public func decryptTresorDocumentItemPayload(tresorDocumentItem:TresorDocumentItem,masterKey:TresorKey) -> SymmetricCipherOperation? {
@@ -235,6 +229,19 @@ public class TresorDataModel {
     }
   }
   
+  
+  public func saveContextInMainThread() {
+    DispatchQueue.main.async {
+      do {
+        if self.managedContext.hasChanges {
+          try self.managedContext.save()
+        }
+      } catch {
+        celeturKitLogger.error("Error while saving tresor object",error:error)
+      }
+    }
+    
+  }
   
   public func createAndFetchTresorFetchedResultsController() throws -> NSFetchedResultsController<Tresor> {
     let fetchRequest: NSFetchRequest<Tresor> = Tresor.fetchRequest()
@@ -268,7 +275,7 @@ public class TresorDataModel {
     
     // Set the batch size to a suitable number.
     fetchRequest.fetchBatchSize = 20
-    fetchRequest.predicate = NSPredicate(format: "tresor.id = %@", (tresor?.id)!)
+    fetchRequest.predicate = NSPredicate(format: "document.tresor.id = %@", (tresor?.id)!)
     
     
     // Edit the sort key as appropriate.

@@ -39,15 +39,9 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   
   @IBAction func insertNewObject(_ sender: Any) {
     do {
-      let tresorDocument = try self.tresorAppState?.tresorDataModel.createTresorDocument(tresor: self.tresor!)
+      let _ = try self.tresorAppState?.tresorDataModel.createTresorDocument(tresor: self.tresor!,masterKey:self.tresorAppState?.masterKey)
       
-      var noItems = 1+(Int(arc4random()) % 4)
-      
-      while noItems>0 {
-        try self.tresorAppState?.tresorDataModel.createTresorDocumentItem(tresorDocument: tresorDocument!,masterKey: (self.tresorAppState?.masterKey)!)
-        
-        noItems -= 1
-      }
+      try self.tresorAppState?.tresorDataModel.saveContext()
     } catch let celeturKitError as CeleturKitError {
       celeturLogger.error("CeleturKitError while creating tresor document",error:celeturKitError)
     } catch {

@@ -9,7 +9,8 @@ import CeleturKit
 class EditTresorViewController: UITableViewController {
   
   var tresorAppState: TresorAppState?
-  var tresor: Tresor?
+  var tresor: Tresor!
+  var userList : [User]?
   
   @IBOutlet weak var nameTextfield: UITextField!
   @IBOutlet weak var descriptionTextfield: UITextField!
@@ -17,8 +18,17 @@ class EditTresorViewController: UITableViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    self.nameTextfield.becomeFirstResponder()
+    do {
+      self.userList = try self.tresor!.managedObjectContext?.fetch(User.fetchRequest())
+      
+      if self.tresor.owneduser == nil {
+        self.tresor.owneduser = self.userList?[0]
+      }
+    } catch {
+      celeturLogger.error("Error loading userlist",error:error)
+    }
     
+    self.nameTextfield.becomeFirstResponder()
     if let t  = self.tresor {
       self.nameTextfield.text = t.name
       self.descriptionTextfield.text = t.tresordescription
@@ -26,34 +36,65 @@ class EditTresorViewController: UITableViewController {
     
   }
   
+  func getUpdatedModel() -> Tresor {
+    self.tresor?.name = self.nameTextfield!.text
+    self.tresor?.tresordescription = self.descriptionTextfield!.text
+    
+    return self.tresor!
+  }
+  
   
   // MARK: - Table View
   
   override func numberOfSections(in tableView: UITableView) -> Int {
-    return (self.tresorAppState?.tresorDataModel.userList?.count)!
+    return (self.userList?.count)!
   }
   
   override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return (self.tresorAppState?.tresorDataModel.userList?[section].userdevices!.count)!
+    return (self.userList?[section].userdevices!.count)! + 1
   }
   
   override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-    let user = self.tresorAppState?.tresorDataModel.userList?[section]
+    let user = self.userList?[section]
     
-    return user?.appleid
+    return user?.id
   }
   
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "editTresorCell", for: indexPath)
     
-    let userDevice = self.tresorAppState?.tresorDataModel.userList?[indexPath.section].userdevices?.allObjects[indexPath.row] as! UserDevice
-    
-    configureCell(cell, withUserDevice: userDevice)
+    if indexPath.row == 0 {
+      let user = self.getUser(forPath: indexPath)
+      
+      configureCell(cell, withUser: user)
+      
+    } else {
+      let userDevice = self.getUserDevice(forPath: indexPath)
+      
+      configureCell(cell, withUserDevice: userDevice)
+    }
     
     return cell
   }
   
   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    if indexPath.row == 0 {
+      let user = self.getUser(forPath: indexPath)
+      
+      self.tresor!.owneduser = user
+      self.tableView.reloadData()
+    } else {
+      let userDevice = self.getUserDevice(forPath: indexPath)
+      let contains = self.tresor!.userdevices?.contains(userDevice)
+      
+      if contains != nil && contains! {
+        self.tresor.removeFromUserdevices(userDevice)
+      } else {
+        self.tresor.addToUserdevices(userDevice)
+      }
+    
+      self.tableView.reloadRows(at:[indexPath] , with: UITableViewRowAnimation.fade)
+    }
     
   }
   
@@ -83,6 +124,27 @@ class EditTresorViewController: UITableViewController {
   func configureCell(_ cell: UITableViewCell, withUserDevice userDevice: UserDevice) {
     cell.textLabel?.text = userDevice.devicename
     cell.detailTextLabel?.text = userDevice.id
+    
+    let contains = self.tresor!.userdevices?.contains(userDevice)
+    
+    cell.accessoryType = contains != nil && contains! ? .checkmark : .none
+    cell.indentationLevel = 1
+  }
+  
+  func configureCell(_ cell: UITableViewCell, withUser user: User) {
+    cell.textLabel?.text = user.abfirstname! + " " + user.ablastname!
+    cell.detailTextLabel?.text = user.appleid
+    
+    cell.accessoryType = self.tresor!.owneduser == user ? .checkmark : .none
+    cell.indentationLevel = 0
+  }
+  
+  func getUserDevice(forPath indexPath:IndexPath) -> UserDevice {
+    return self.userList?[indexPath.section].userdevices?.allObjects[indexPath.row-1] as! UserDevice
+  }
+  
+  func getUser(forPath indexPath:IndexPath) -> User {
+    return (self.userList?[indexPath.section])!
   }
   
 }

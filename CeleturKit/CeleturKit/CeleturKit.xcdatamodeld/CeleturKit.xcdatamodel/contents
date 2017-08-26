@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="13221.4" systemVersion="16G29" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="13233.4" systemVersion="16G29" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Audit" representedClassName="Audit" syncable="YES" codeGenerationType="class">
         <attribute name="createts" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="message" optional="YES" attributeType="String" syncable="YES"/>
@@ -40,9 +40,9 @@
         <attribute name="name" attributeType="String" syncable="YES"/>
         <attribute name="nonce" optional="YES" attributeType="Binary" syncable="YES"/>
         <attribute name="tresordescription" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="documentitems" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TresorDocumentItem" inverseName="tresor" inverseEntity="TresorDocumentItem" syncable="YES"/>
         <relationship name="documents" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TresorDocument" inverseName="tresor" inverseEntity="TresorDocument" syncable="YES"/>
-        <relationship name="ownedbyusers" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="User" inverseName="ownedtresors" inverseEntity="User" syncable="YES"/>
+        <relationship name="owneduser" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="ownedtresors" inverseEntity="User" syncable="YES"/>
+        <relationship name="userdevices" toMany="YES" deletionRule="Nullify" destinationEntity="UserDevice" inverseName="tresors" inverseEntity="UserDevice" syncable="YES"/>
         <relationship name="userpermissions" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TresorPermission" inverseName="tresor" inverseEntity="TresorPermission" syncable="YES"/>
     </entity>
     <entity name="TresorDocument" representedClassName="TresorDocument" syncable="YES" codeGenerationType="class">
@@ -58,6 +58,7 @@
         <relationship name="tresor" maxCount="1" deletionRule="Nullify" destinationEntity="Tresor" inverseName="documents" inverseEntity="Tresor" syncable="YES"/>
     </entity>
     <entity name="TresorDocumentItem" representedClassName="TresorDocumentItem" syncable="YES" codeGenerationType="class">
+        <attribute name="changed" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="createts" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="deletets" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="id" attributeType="String" syncable="YES"/>
@@ -67,8 +68,7 @@
         <attribute name="status" attributeType="String" syncable="YES"/>
         <attribute name="type" optional="YES" attributeType="String" defaultValueString="document" syncable="YES"/>
         <relationship name="document" maxCount="1" deletionRule="Nullify" destinationEntity="TresorDocument" inverseName="documentitems" inverseEntity="TresorDocument" syncable="YES"/>
-        <relationship name="tresor" maxCount="1" deletionRule="Nullify" destinationEntity="Tresor" inverseName="documentitems" inverseEntity="Tresor" syncable="YES"/>
-        <relationship name="userdevice" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UserDevice" inverseName="documentitems" inverseEntity="UserDevice" syncable="YES"/>
+        <relationship name="userdevice" maxCount="1" deletionRule="Nullify" destinationEntity="UserDevice" inverseName="documentitems" inverseEntity="UserDevice" syncable="YES"/>
     </entity>
     <entity name="TresorPermission" representedClassName="TresorPermission" syncable="YES" codeGenerationType="class">
         <attribute name="approvedelete" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
@@ -89,7 +89,7 @@
         <attribute name="changets" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="createts" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="id" attributeType="String" syncable="YES"/>
-        <relationship name="ownedtresors" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tresor" inverseName="ownedbyusers" inverseEntity="Tresor" syncable="YES"/>
+        <relationship name="ownedtresors" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tresor" inverseName="owneduser" inverseEntity="Tresor" syncable="YES"/>
         <relationship name="tresorpermissions" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TresorPermission" inverseName="user" inverseEntity="TresorPermission" syncable="YES"/>
         <relationship name="userdevices" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="UserDevice" inverseName="user" inverseEntity="UserDevice" syncable="YES"/>
     </entity>
@@ -99,17 +99,18 @@
         <attribute name="devicename" attributeType="String" syncable="YES"/>
         <attribute name="id" attributeType="String" syncable="YES"/>
         <relationship name="documentitems" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TresorDocumentItem" inverseName="userdevice" inverseEntity="TresorDocumentItem" syncable="YES"/>
-        <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="userdevices" inverseEntity="User" syncable="YES"/>
+        <relationship name="tresors" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tresor" inverseName="userdevices" inverseEntity="Tresor" syncable="YES"/>
+        <relationship name="user" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="userdevices" inverseEntity="User" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Audit" positionX="187" positionY="116" width="128" height="208"/>
-        <element name="Commandqueue" positionX="187" positionY="-180" width="128" height="223"/>
-        <element name="Schemaversion" positionX="187" positionY="-333" width="128" height="88"/>
-        <element name="Tresor" positionX="-423" positionY="135" width="128" height="208"/>
-        <element name="TresorDocument" positionX="-207" positionY="639" width="128" height="193"/>
-        <element name="TresorDocumentItem" positionX="-108" positionY="203" width="128" height="210"/>
-        <element name="TresorPermission" positionX="-515" positionY="-135" width="128" height="178"/>
-        <element name="User" positionX="-317" positionY="-135" width="128" height="193"/>
-        <element name="UserDevice" positionX="-119" positionY="-79" width="128" height="133"/>
+        <element name="Audit" positionX="-261" positionY="-99" width="128" height="208"/>
+        <element name="Commandqueue" positionX="-117" positionY="-207" width="128" height="223"/>
+        <element name="Schemaversion" positionX="-261" positionY="-207" width="128" height="88"/>
+        <element name="Tresor" positionX="-812" positionY="191" width="128" height="208"/>
+        <element name="TresorDocument" positionX="-720" positionY="482" width="128" height="193"/>
+        <element name="TresorDocumentItem" positionX="-540" positionY="482" width="126" height="208"/>
+        <element name="TresorPermission" positionX="-900" positionY="-142" width="128" height="178"/>
+        <element name="User" positionX="-711" positionY="-148" width="128" height="193"/>
+        <element name="UserDevice" positionX="-612" positionY="252" width="128" height="148"/>
     </elements>
 </model>

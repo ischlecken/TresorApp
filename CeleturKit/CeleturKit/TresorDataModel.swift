@@ -18,11 +18,47 @@ public class TresorDataModel {
     self.initObjects()
   }
   
+  public func getMOC() -> NSManagedObjectContext {
+    return self.managedContext
+  }
+  
+  public func getCurrentUserDevice() -> UserDevice? {
+    var result:UserDevice? = nil
+    
+    let vendorDeviceId = UIDevice.current.identifierForVendor?.uuidString
+    for u in self.userList! {
+      for ud in u.userdevices! {
+        let userDevice = ud as! UserDevice
+        
+        if let udi = userDevice.id, let vdi = vendorDeviceId, udi == vdi {
+          result = userDevice
+          break;
+        }
+      }
+      
+      if result != nil {
+        break
+      }
+    }
+    
+    return result
+  }
+  
   fileprivate func createUserDevice(user:User, deviceName:String) {
     let newUserDevice = UserDevice(context:self.managedContext)
     newUserDevice.createts = Date()
     newUserDevice.devicename = deviceName
     newUserDevice.id = String.uuid()
+    newUserDevice.apndevicetoken = String.uuid()
+    newUserDevice.user = user
+    user.addToUserdevices(newUserDevice)
+  }
+  
+  fileprivate func createCurrentUserDevice(user:User) {
+    let newUserDevice = UserDevice(context:self.managedContext)
+    newUserDevice.createts = Date()
+    newUserDevice.devicename = UIDevice.current.name
+    newUserDevice.id = UIDevice.current.identifierForVendor?.uuidString
     newUserDevice.apndevicetoken = String.uuid()
     newUserDevice.user = user
     user.addToUserdevices(newUserDevice)
@@ -47,6 +83,7 @@ public class TresorDataModel {
       if self.userList == nil || self.userList!.count == 0 {
         var newUser = createUser(firstName: "Hugo",lastName: "Müller",appleid: "bla@fasel.de")
         
+        self.createCurrentUserDevice(user: newUser)
         self.createUserDevice(user: newUser, deviceName: "Hugos iPhone")
         self.createUserDevice(user: newUser, deviceName: "Hugos iPad")
         self.createUserDevice(user: newUser, deviceName: "Hugos iWatch")

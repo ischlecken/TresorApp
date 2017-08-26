@@ -34,6 +34,20 @@ class TresorDocumentItemViewController: UITableViewController {
     self.dateFormatter.timeStyle = DateFormatter.Style.short
     
     configureView()
+    
+    NotificationCenter.default.addObserver(self, selector: #selector(contextDidSave(_:)),
+                                           name: Notification.Name.NSManagedObjectContextDidSave,
+                                           object:self.tresorAppState?.tresorDataModel.getMOC())
+  }
+  
+  deinit {
+    NotificationCenter.default.removeObserver(self)
+  }
+  
+  @objc func contextDidSave(_ notification: Notification) {
+    celeturLogger.debug("contextDidSave")
+    
+    self.tableView.reloadData()
   }
   
   func configureView() {

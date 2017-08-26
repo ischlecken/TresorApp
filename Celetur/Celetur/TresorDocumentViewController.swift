@@ -14,6 +14,8 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   
   let dateFormatter = DateFormatter()
   
+  var currentUserDevice: UserDevice?
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     // Do any additional setup after loading the view, typically from a nib.
@@ -25,6 +27,8 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     self.title = tresor?.tresordescription
     self.dateFormatter.dateStyle = DateFormatter.Style.short
     self.dateFormatter.timeStyle = DateFormatter.Style.short
+    
+    self.currentUserDevice = self.tresorAppState?.tresorDataModel.getCurrentUserDevice()
   }
   
   override func viewWillAppear(_ animated: Bool) {
@@ -118,6 +122,12 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     cell.textLabel!.text = "Id:\(tresorDocumentItem.id!)"
     
     cell.textLabel?.textColor = tresorDocumentItem.status == "encrypted" ? UIColor.black : UIColor.red
+    
+    let tdiUserDevice = tresorDocumentItem.userdevice
+    
+    if tdiUserDevice?.id == self.currentUserDevice?.id && tresorDocumentItem.status == "encrypted" {
+      cell.textLabel?.textColor = UIColor.blue
+    }
     
     let formatedCreatets = self.dateFormatter.string(from: tresorDocumentItem.createts!)
     cell.detailTextLabel!.text = "Device:"+(tresorDocumentItem.userdevice?.devicename ?? "-") + " " + formatedCreatets

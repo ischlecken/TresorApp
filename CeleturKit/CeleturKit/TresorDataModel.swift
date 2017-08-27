@@ -66,10 +66,9 @@ public class TresorDataModel {
   
   fileprivate func createUser(firstName:String, lastName: String, appleid: String) -> User {
     let newUser = User(context: self.managedContext)
-    newUser.abfirstname = firstName
-    newUser.ablastname = lastName
-    newUser.appleid = appleid
-    newUser.abrecordid = 0
+    newUser.firstname = firstName
+    newUser.lastname = lastName
+    newUser.email = appleid
     newUser.createts = Date()
     newUser.id = String.uuid()
     
@@ -336,7 +335,7 @@ public class TresorDataModel {
     
     fetchRequest.sortDescriptors = [sortDescriptor]
     
-    let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedContext, sectionNameKeyPath: "user.appleid", cacheName: nil)
+    let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedContext, sectionNameKeyPath: "user.email", cacheName: nil)
     
     do {
       try aFetchedResultsController.performFetch()

@@ -82,13 +82,12 @@
         <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="tresorpermissions" inverseEntity="User" syncable="YES"/>
     </entity>
     <entity name="User" representedClassName="User" syncable="YES" codeGenerationType="class">
-        <attribute name="abfirstname" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="ablastname" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="abrecordid" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
-        <attribute name="appleid" attributeType="String" syncable="YES"/>
         <attribute name="changets" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="createts" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="email" attributeType="String" syncable="YES"/>
+        <attribute name="firstname" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="id" attributeType="String" syncable="YES"/>
+        <attribute name="lastname" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="ownedtresors" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tresor" inverseName="owneduser" inverseEntity="Tresor" syncable="YES"/>
         <relationship name="tresorpermissions" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TresorPermission" inverseName="user" inverseEntity="TresorPermission" syncable="YES"/>
         <relationship name="userdevices" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="UserDevice" inverseName="user" inverseEntity="UserDevice" syncable="YES"/>
@@ -110,7 +109,7 @@
         <element name="TresorDocument" positionX="-720" positionY="482" width="128" height="193"/>
         <element name="TresorDocumentItem" positionX="-540" positionY="482" width="126" height="208"/>
         <element name="TresorPermission" positionX="-900" positionY="-142" width="128" height="178"/>
-        <element name="User" positionX="-711" positionY="-148" width="128" height="193"/>
+        <element name="User" positionX="-711" positionY="-148" width="128" height="178"/>
         <element name="UserDevice" positionX="-612" positionY="252" width="128" height="148"/>
     </elements>
 </model>

@@ -59,8 +59,8 @@ class UserViewController: UITableViewController, NSFetchedResultsControllerDeleg
   
   
   func configureCell(_ cell: UITableViewCell, withUser user: User) {
-    cell.textLabel!.text = "\(user.abfirstname ?? "") \(user.ablastname ?? "")"
-    cell.detailTextLabel!.text = user.appleid
+    cell.textLabel!.text = "\(user.firstname ?? "") \(user.lastname ?? "")"
+    cell.detailTextLabel!.text = user.email
   }
   
   /*

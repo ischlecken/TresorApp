@@ -302,8 +302,49 @@ public class TresorDataModel {
     return aFetchedResultsController
   }
   
-  public func flushFetchedResultsControllerCache() {
+  
+  public func createAndFetchUserFetchedResultsController() throws -> NSFetchedResultsController<User> {
+    let fetchRequest: NSFetchRequest<User> = User.fetchRequest()
     
+    // Set the batch size to a suitable number.
+    fetchRequest.fetchBatchSize = 20
+    
+    // Edit the sort key as appropriate.
+    let sortDescriptor = NSSortDescriptor(key: "createts", ascending: false)
+    
+    fetchRequest.sortDescriptors = [sortDescriptor]
+    
+    let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedContext, sectionNameKeyPath: nil, cacheName: nil)
+    
+    do {
+      try aFetchedResultsController.performFetch()
+    } catch {
+      throw CeleturKitError.creationOfFetchResultsControllerFailed(coreDataError: error as NSError)
+    }
+    
+    return aFetchedResultsController
+  }
+  
+  public func createAndFetchUserdeviceFetchedResultsController() throws -> NSFetchedResultsController<UserDevice> {
+    let fetchRequest: NSFetchRequest<UserDevice> = UserDevice.fetchRequest()
+    
+    // Set the batch size to a suitable number.
+    fetchRequest.fetchBatchSize = 20
+    
+    // Edit the sort key as appropriate.
+    let sortDescriptor = NSSortDescriptor(key: "createts", ascending: false)
+    
+    fetchRequest.sortDescriptors = [sortDescriptor]
+    
+    let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedContext, sectionNameKeyPath: "user.appleid", cacheName: nil)
+    
+    do {
+      try aFetchedResultsController.performFetch()
+    } catch {
+      throw CeleturKitError.creationOfFetchResultsControllerFailed(coreDataError: error as NSError)
+    }
+    
+    return aFetchedResultsController
   }
   
   

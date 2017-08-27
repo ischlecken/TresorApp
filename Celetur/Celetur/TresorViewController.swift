@@ -58,6 +58,11 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
         } catch {
           celeturLogger.error("Error creating temp tresor object",error:error)
         }
+        
+      case "showSettings":
+        let controller = (segue.destination as! UINavigationController).topViewController as! SettingsViewController
+        controller.tresorAppState = self.tresorAppState
+        
       
       default: break
       }
@@ -136,7 +141,6 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
       } catch {
         celeturLogger.error("Error while deleting tresor object",error:error)
         
-        self.tresorAppState?.tresorDataModel.flushFetchedResultsControllerCache()
         do {
           try self._fetchedResultsController?.performFetch()
           self.tableView.reloadData()

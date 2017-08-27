@@ -12,6 +12,9 @@
 		852C26641F37CD850041273F /* TresorConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 852C26631F37CD850041273F /* TresorConstants.swift */; };
 		8576D77A1F255F5200D9328A /* CeleturKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85EEE2361F1B5215002CE85E /* CeleturKit.framework */; };
 		8576D77B1F255F5200D9328A /* CeleturKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 85EEE2361F1B5215002CE85E /* CeleturKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		85D95E411F5305720044DFA0 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85D95E401F5305720044DFA0 /* SettingsViewController.swift */; };
+		85D95E441F5308380044DFA0 /* UserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85D95E431F5308380044DFA0 /* UserViewController.swift */; };
+		85D95E461F530A740044DFA0 /* UserDeviceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85D95E451F530A740044DFA0 /* UserDeviceViewController.swift */; };
 		85DC68CF1F40FA26004AFAAC /* TresorCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 85DC68CE1F40FA26004AFAAC /* TresorCell.xib */; };
 		85EE8DA21F497D3600F6409D /* EditTresorDocumentItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EE8DA11F497D3600F6409D /* EditTresorDocumentItemViewController.swift */; };
 		85EEE1FF1F1A68A9002CE85E /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85EEE1FE1F1A68A9002CE85E /* CloudKit.framework */; };
@@ -78,6 +81,9 @@
 		850B80F21F35DFF10078F042 /* TresorDocumentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TresorDocumentViewController.swift; sourceTree = "<group>"; };
 		852C26601F37CCDB0041273F /* TresorAppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TresorAppState.swift; sourceTree = "<group>"; };
 		852C26631F37CD850041273F /* TresorConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TresorConstants.swift; sourceTree = "<group>"; };
+		85D95E401F5305720044DFA0 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		85D95E431F5308380044DFA0 /* UserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserViewController.swift; sourceTree = "<group>"; };
+		85D95E451F530A740044DFA0 /* UserDeviceViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserDeviceViewController.swift; sourceTree = "<group>"; };
 		85DC68CE1F40FA26004AFAAC /* TresorCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TresorCell.xib; sourceTree = "<group>"; };
 		85EE8DA11F497D3600F6409D /* EditTresorDocumentItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditTresorDocumentItemViewController.swift; sourceTree = "<group>"; };
 		85EEE1FD1F1A68A2002CE85E /* Celetur.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Celetur.entitlements; sourceTree = "<group>"; };
@@ -177,6 +183,9 @@
 				8501E5BD1F42DB5600F6B95A /* UI */,
 				85EEE1FD1F1A68A2002CE85E /* Celetur.entitlements */,
 				85F9080D1F12D9E30062BD63 /* AppDelegate.swift */,
+				85D95E401F5305720044DFA0 /* SettingsViewController.swift */,
+				85D95E431F5308380044DFA0 /* UserViewController.swift */,
+				85D95E451F530A740044DFA0 /* UserDeviceViewController.swift */,
 				85F908121F12D9E30062BD63 /* TresorViewController.swift */,
 				85FBDD4A1F42E0F0006B4271 /* EditTresorViewController.swift */,
 				850B80F21F35DFF10078F042 /* TresorDocumentViewController.swift */,
@@ -369,6 +378,9 @@
 				85F9080E1F12D9E30062BD63 /* AppDelegate.swift in Sources */,
 				852C26641F37CD850041273F /* TresorConstants.swift in Sources */,
 				85F908131F12D9E30062BD63 /* TresorViewController.swift in Sources */,
+				85D95E461F530A740044DFA0 /* UserDeviceViewController.swift in Sources */,
+				85D95E441F5308380044DFA0 /* UserViewController.swift in Sources */,
+				85D95E411F5305720044DFA0 /* SettingsViewController.swift in Sources */,
 				85EE8DA21F497D3600F6409D /* EditTresorDocumentItemViewController.swift in Sources */,
 				850B80F31F35DFF10078F042 /* TresorDocumentViewController.swift in Sources */,
 				852C26611F37CCDB0041273F /* TresorAppState.swift in Sources */,

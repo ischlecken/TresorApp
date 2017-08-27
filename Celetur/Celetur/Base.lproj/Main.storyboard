@@ -67,7 +67,7 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Tresor" id="Zdf-7t-Un8">
-                        <barButtonItem key="leftBarButtonItem" title="Settings" image="shield" landscapeImage="shield" largeContentSizeImage="shield" id="Pj2-sc-7hL">
+                        <barButtonItem key="leftBarButtonItem" title="Settings" image="setting" landscapeImage="setting" largeContentSizeImage="setting" id="Pj2-sc-7hL">
                             <connections>
                                 <segue destination="pJ0-67-nGs" kind="presentation" modalPresentationStyle="pageSheet" modalTransitionStyle="flipHorizontal" id="58A-Nb-Rnc"/>
                             </connections>
@@ -523,7 +523,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="shield" width="32" height="32"/>
+        <image name="setting" width="24" height="24"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="HYG-qW-h72"/>

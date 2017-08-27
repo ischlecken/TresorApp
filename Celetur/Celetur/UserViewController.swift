@@ -6,14 +6,50 @@
 import UIKit
 import CoreData
 import CeleturKit
+import Contacts
+import ContactsUI
 
-class UserViewController: UITableViewController, NSFetchedResultsControllerDelegate {
+class UserViewController: UITableViewController, NSFetchedResultsControllerDelegate, CNContactPickerDelegate {
   
   var tresorAppState: TresorAppState?
   
   override func viewDidLoad() {
     super.viewDidLoad()
     
+  }
+
+  
+  @IBAction func addUsers(_ sender: Any) {
+    let contactPicker = CNContactPickerViewController()
+    
+    contactPicker.delegate = self
+    
+    self.present(contactPicker, animated: true)
+  }
+  
+  func contactPicker(_ picker: CNContactPickerViewController, didSelect contacts: [CNContact]) {
+    self.tresorAppState?.tresorDataModel.saveContacts(contacts: contacts)
+  }
+  
+  func presentPermissionErrorAlert() {
+    DispatchQueue.main.async {
+      let alert =
+        UIAlertController(title: "Could Not Save Contact",
+                          message: "How am I supposed to add the contact if you didn't give me permission?",
+                          preferredStyle: .alert)
+      
+      let openSettingsAction = UIAlertAction(title: "Settings",
+                                             style: .default,
+                                             handler: { alert in
+                                              UIApplication.shared.open(URL(string: UIApplicationOpenSettingsURLString)!)
+                                              
+      })
+      let dismissAction = UIAlertAction(title: "OK",style: .cancel, handler: nil)
+      alert.addAction(openSettingsAction)
+      alert.addAction(dismissAction)
+      
+      self.present(alert, animated: true,completion: nil)
+    }
   }
   
   // MARK: - Table view data source

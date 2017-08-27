@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import Contacts
 
 public class TresorDataModel {
   
@@ -114,6 +115,36 @@ public class TresorDataModel {
     return newTresor
   }
   
+  public func createTempUser(tempManagedContext: NSManagedObjectContext, contact: CNContact) -> User {
+    let result = User(context:tempManagedContext)
+    
+    result.createts = Date()
+    result.id = String.uuid()
+    
+    result.firstname = contact.givenName
+    result.lastname = contact.familyName
+    result.email = contact.emailAddresses.first!.value as String
+    result.profilepicture = contact.imageData
+    
+    return result
+  }
+  
+  public func saveContacts(contacts:[CNContact]) {
+    let tempMOC = self.createScratchPadContext()
+    let _ = contacts.map { self.createTempUser(tempManagedContext: tempMOC,contact: $0) }
+    
+    tempMOC.perform {
+      do {
+        try tempMOC.save()
+        
+        self.saveContextInMainThread()
+        
+      } catch {
+        celeturKitLogger.error("Error saving contacts",error:error)
+      }
+    }
+  }
+  
   public func createTresorDocument(tresor:Tresor,masterKey: TresorKey?) throws -> TresorDocument {
     let newTresorDocument = TresorDocument(context: self.managedContext)
     newTresorDocument.createts = Date()
@@ -141,17 +172,17 @@ public class TresorDataModel {
     result.status = "pending"
     result.document = tresorDocument
     result.userdevice = userDevice
-  
+    
     return result
   }
- 
+  
   public func createScratchPadContext() -> NSManagedObjectContext {
     let tempManagedContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
     tempManagedContext.parent = self.managedContext
-   
+    
     return tempManagedContext
   }
-    
+  
   
   public func encryptAndSaveTresorDocumentItem(tempManagedContext: NSManagedObjectContext,
                                                masterKey:TresorKey,

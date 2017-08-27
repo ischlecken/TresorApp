@@ -224,7 +224,11 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="User" id="3f4-2s-J1t">
-                        <barButtonItem key="rightBarButtonItem" style="plain" systemItem="add" id="OGx-tS-9LF"/>
+                        <barButtonItem key="rightBarButtonItem" style="plain" systemItem="add" id="OGx-tS-9LF">
+                            <connections>
+                                <action selector="addUsers:" destination="Foc-WI-65m" id="0Sn-m9-qqk"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tja-fX-pmp" userLabel="First Responder" sceneMemberID="firstResponder"/>

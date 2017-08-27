@@ -22,6 +22,7 @@ class UserViewController: UITableViewController, NSFetchedResultsControllerDeleg
   @IBAction func addUsers(_ sender: Any) {
     let contactPicker = CNContactPickerViewController()
     
+   contactPicker.predicateForEnablingContact = NSPredicate(format: "emailAddresses.@count > 0")
     contactPicker.delegate = self
     
     self.present(contactPicker, animated: true)

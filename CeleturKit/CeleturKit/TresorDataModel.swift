@@ -123,7 +123,7 @@ public class TresorDataModel {
     
     result.firstname = contact.givenName
     result.lastname = contact.familyName
-    result.email = contact.emailAddresses.first!.value as String
+    result.email = contact.emailAddresses.first?.value as String?
     result.profilepicture = contact.imageData
     
     return result

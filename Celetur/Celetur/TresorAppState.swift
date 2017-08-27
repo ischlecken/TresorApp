@@ -21,13 +21,13 @@ class TresorAppState {
     self.tresorDataModel = TresorDataModel(self.persistentContainer)
     
     /*
-     do {
-     try tresorAppState.tresorKeys.removeMasterKey()
-     } catch CeleturKitError.keychainError(let keychainError){
-     celeturLogger.debug("error fetching tresor masterkey: \(keychainError)")
-     } catch {
-     celeturLogger.error("error fetching tresor masterkey",error:error)
-     } */
+    do {
+      try tresorKeys.removeMasterKey()
+    } catch CeleturKitError.keychainError(let keychainError){
+      celeturLogger.debug("error fetching tresor masterkey: \(keychainError)")
+    } catch {
+      celeturLogger.error("error fetching tresor masterkey",error:error)
+    }*/
     
     tresorKeys.getMasterKey(masterKeyCompletion:{ (masterKey:TresorKey?, error:Error?) -> Void in
       if let e = error {

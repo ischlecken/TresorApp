@@ -83,6 +83,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
             }
           }
         }
+    } else if segue.identifier == "settingsUnwindToTresor" {
     }
     
     self.editScratchpadContext = nil

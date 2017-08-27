@@ -36,7 +36,7 @@ class TresorDocumentItemViewController: UITableViewController {
     configureView()
     
     NotificationCenter.default.addObserver(self, selector: #selector(contextDidSave(_:)),
-                                           name: Notification.Name.NSManagedObjectContextDidSave,
+                                           name: Notification.Name.NSManagedObjectContextObjectsDidChange,
                                            object:self.tresorAppState?.tresorDataModel.getMOC())
   }
   
@@ -45,9 +45,32 @@ class TresorDocumentItemViewController: UITableViewController {
   }
   
   @objc func contextDidSave(_ notification: Notification) {
-    celeturLogger.debug("contextDidSave")
+    /*
+    celeturLogger.debug("MOCObjectsDidChange")
     
-    self.tableView.reloadData()
+    guard let userInfo = notification.userInfo else { return }
+    
+    if let inserts = userInfo[NSInsertedObjectsKey] as? Set<NSManagedObject>, inserts.count > 0 {
+      for insert in inserts {
+        celeturLogger.debug("inserts:"+String(describing:insert))
+      }
+    }
+    
+    if let updates = userInfo[NSUpdatedObjectsKey] as? Set<NSManagedObject>, updates.count > 0 {
+      for update in updates {
+        celeturLogger.debug("updates:"+String(describing:update))
+      }
+     
+    }
+    
+    if let deletes = userInfo[NSDeletedObjectsKey] as? Set<NSManagedObject>, deletes.count > 0 {
+      for delete in deletes {
+        celeturLogger.debug("delete:"+String(describing:delete))
+      }
+    }
+ */
+    
+    self.configureView()
   }
   
   func configureView() {

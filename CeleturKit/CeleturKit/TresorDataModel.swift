@@ -11,11 +11,33 @@ public class TresorDataModel {
   
   let managedContext : NSManagedObjectContext
   let cipherQueue = OperationQueue()
+  let privateDB : CKDatabase
+  let sharedDB : CKDatabase
+  let createZoneGroup : DispatchGroup
+  
+  let tresorusersGroup = "Tresorusers"
+  let tresoruserType = "Tresoruser"
+  let privateSubscriptionId = "private-changes"
+  let sharedSubscriptionId = "shared-changes"
+  
+  var privateDBChangeToken : CKServerChangeToken?
+  var sharedDBChangeToken : CKServerChangeToken?
+  var tresorusersChangeToken : CKServerChangeToken?
   
   public var userList : [TresorUser]?
   
   public init(_ coreDataStack:CoreDataStack) {
     self.managedContext = coreDataStack.context
+    
+    self.privateDB = CKContainer.default().privateCloudDatabase
+    self.sharedDB = CKContainer.default().sharedCloudDatabase
+    self.createZoneGroup = DispatchGroup()
+    
+    self.createZones(zoneName: tresorusersGroup)
+    
+    self.privateDBChangeToken = self.getCloudKitCKServerChangeToken(name: "private")
+    self.sharedDBChangeToken = self.getCloudKitCKServerChangeToken(name: "shared")
+    self.tresorusersChangeToken = self.getCloudKitCKServerChangeToken(name: tresorusersGroup)
     
     self.initObjects()
   }
@@ -75,6 +97,28 @@ public class TresorDataModel {
     newUser.id = String.uuid()
     
     return newUser
+  }
+  
+  func getTresorUser(withId id:String, tempMOC:NSManagedObjectContext) -> TresorUser? {
+    var result : TresorUser?
+    
+    let fetchRequest: NSFetchRequest<TresorUser> = TresorUser.fetchRequest()
+    
+    // Set the batch size to a suitable number.
+    fetchRequest.fetchBatchSize = 1
+    fetchRequest.predicate = NSPredicate(format: "id = %@", id)
+    
+    do {
+      let records = try tempMOC.fetch(fetchRequest)
+      
+      if records.count>0 {
+        result = records[0]
+      }
+    } catch {
+      celeturKitLogger.error("Error while fetching tresoruser",error:error)
+    }
+    
+    return result
   }
   
   func initObjects() {
@@ -153,7 +197,7 @@ public class TresorDataModel {
           }
         }
         
-        CKContainer.default().privateCloudDatabase.add(modifyOperation)
+        self.privateDB.add(modifyOperation)
       } catch {
         celeturKitLogger.error("Error saving contacts",error:error)
         
@@ -181,7 +225,7 @@ public class TresorDataModel {
         }
       }
       
-      CKContainer.default().privateCloudDatabase.add(modifyOperation)
+      self.privateDB.add(modifyOperation)
     } catch {
       celeturKitLogger.error("Error while deleting TresorUser", error: error)
       
@@ -446,8 +490,17 @@ public class TresorDataModel {
     return aFetchedResultsController
   }
   
+  
+  // MARK: - CloudKit
+  
+  
+  
+  public func getPrivateDB() -> CKDatabase {
+    return self.privateDB
+  }
+  
   func saveTresorUsersToCloudKit(tresorUsers:[TresorUser]) -> CKModifyRecordsOperation {
-    let zoneId = CKRecordZoneID(zoneName: "Tresorusers", ownerName: CKCurrentUserDefaultName)
+    let zoneId = CKRecordZoneID(zoneName: tresorusersGroup, ownerName: CKCurrentUserDefaultName)
     
     var records = [CKRecord]()
     for tresorUser in tresorUsers {
@@ -455,6 +508,7 @@ public class TresorDataModel {
       
       let record = CKRecord(recordType: "Tresoruser", recordID: recordId)
       
+      record["id"] = tresorUser.id as CKRecordValue?
       record["firstname"] = tresorUser.firstname as CKRecordValue?
       record["lastname"] = tresorUser.lastname as CKRecordValue?
       record["email"] = tresorUser.email as CKRecordValue?
@@ -466,9 +520,296 @@ public class TresorDataModel {
   }
   
   func deleteTresorUserFromCloudKit(tresorUserId:String) -> CKModifyRecordsOperation {
-    let zoneId = CKRecordZoneID(zoneName: "Tresorusers", ownerName: CKCurrentUserDefaultName)
+    let zoneId = CKRecordZoneID(zoneName: tresorusersGroup, ownerName: CKCurrentUserDefaultName)
     let recordId = CKRecordID(recordName: tresorUserId, zoneID: zoneId)
       
     return CKModifyRecordsOperation(recordsToSave: nil, recordIDsToDelete: [recordId])
+  }
+  
+  
+  
+  func createDatabaseSubscriptionOperation(subscriptionId: String) -> CKModifySubscriptionsOperation {
+    let subscription = CKDatabaseSubscription(subscriptionID: subscriptionId)
+    
+    let notificationInfo = CKNotificationInfo()
+    // send a silent notification
+    notificationInfo.shouldSendContentAvailable = true
+    subscription.notificationInfo = notificationInfo
+    
+    let operation = CKModifySubscriptionsOperation(subscriptionsToSave: [subscription], subscriptionIDsToDelete: [])
+    operation.qualityOfService = .utility
+    
+    return operation
+  }
+  
+  
+  public func createCloudKitSubscription() {
+    let createSubscriptionOperation = self.createDatabaseSubscriptionOperation(subscriptionId: privateSubscriptionId)
+    createSubscriptionOperation.modifySubscriptionsCompletionBlock = { (subscriptions, deletedIds, error) in
+      if let e = error {
+        celeturKitLogger.error("Error creating privateSubscriptionId subscription",error:e)
+      }
+    }
+    self.privateDB.add(createSubscriptionOperation)
+    
+    /*
+      let createSubscriptionOperation = self.createDatabaseSubscriptionOperation(subscriptionId: sharedSubscriptionId)
+      createSubscriptionOperation.modifySubscriptionsCompletionBlock = { (subscriptions, deletedIds, error) in
+        if let e = error {
+          celeturKitLogger.error("Error creating sharedSubscriptionId subscription",error:e)
+        }
+      }
+      self.sharedDB.add(createSubscriptionOperation)
+ */
+    
+    self.createZoneGroup.notify(queue: DispatchQueue.global()) {
+      self.fetchChanges(in: .private) {}
+     // self.fetchChanges(in: .shared) {}
+    }
+  }
+  
+  public func fetchChanges(in databaseScope: CKDatabaseScope, completion: @escaping () -> Void) {
+    switch databaseScope {
+    case .private:
+      fetchDatabaseChanges(database: self.privateDB, databaseTokenKey: "private", completion: completion)
+    case .shared:
+      fetchDatabaseChanges(database: self.sharedDB, databaseTokenKey: "shared", completion: completion)
+    case .public:
+      break
+    }
+  }
+  
+  func getChangeToken(tokenName:String) -> CKServerChangeToken? {
+    if tokenName == "private" {
+      return self.privateDBChangeToken
+    } else if tokenName == "shared" {
+      return self.sharedDBChangeToken
+    } else if tokenName == tresorusersGroup {
+      return self.sharedDBChangeToken
+    }
+    
+    return nil
+  }
+  
+  func setChangeToken(tokenName:String, changeToken: CKServerChangeToken) {
+    if tokenName == "private" {
+      self.privateDBChangeToken = changeToken
+      self.saveCloudKitServerChangeToken(name: tokenName, changeToken: changeToken)
+    } else if tokenName == "shared" {
+      self.sharedDBChangeToken = changeToken
+      self.saveCloudKitServerChangeToken(name: tokenName, changeToken: changeToken)
+    } else if tokenName == tresorusersGroup {
+      self.sharedDBChangeToken = changeToken
+      self.saveCloudKitServerChangeToken(name: tokenName, changeToken: changeToken)
+    }
+  }
+  
+  func fetchDatabaseChanges(database: CKDatabase, databaseTokenKey: String, completion: @escaping () -> Void) {
+    var changedZoneIDs: [CKRecordZoneID] = []
+    
+    let operation = CKFetchDatabaseChangesOperation(previousServerChangeToken: self.getChangeToken(tokenName: databaseTokenKey))
+    
+    operation.recordZoneWithIDChangedBlock = { (zoneID) in
+      changedZoneIDs.append(zoneID)
+    }
+    
+    operation.recordZoneWithIDWasDeletedBlock = { (zoneID) in
+      // Write this zone deletion to memory
+    }
+    
+    operation.changeTokenUpdatedBlock = { (token) in
+      // Flush zone deletions for this database to disk
+      // Write this new database change token to memory
+      
+      celeturKitLogger.debug("changeTokenUpdatedBlock:\(token)")
+      self.setChangeToken(tokenName: databaseTokenKey, changeToken: token)
+    }
+    
+    operation.fetchDatabaseChangesCompletionBlock = { (token, moreComing, error) in
+      if let e = error {
+        celeturKitLogger.error("Error during fetch shared database changes operation", error:e)
+        completion()
+        return
+      }
+      
+      // Flush zone deletions for this database to disk
+      // Write this new database change token to memory
+      
+      if let c = token {
+        celeturKitLogger.debug("fetchDatabaseChangesCompletionBlock:\(c)")
+        self.setChangeToken(tokenName: databaseTokenKey, changeToken: c)
+      }
+      
+      if changedZoneIDs.count>0 {
+        self.fetchZoneChanges(database: database, databaseTokenKey: databaseTokenKey, zoneIDs: changedZoneIDs) {
+          // Flush in-memory database change token to disk
+          completion()
+        }
+      } else {
+        completion()
+      }
+    }
+    operation.qualityOfService = .userInitiated
+    
+    database.add(operation)
+  }
+  
+  func fetchZoneChanges(database: CKDatabase, databaseTokenKey: String, zoneIDs: [CKRecordZoneID], completion: @escaping () -> Void) {
+    
+    // Look up the previous change token for each zone
+    var optionsByRecordZoneID = [CKRecordZoneID: CKFetchRecordZoneChangesOptions]()
+    for zoneID in zoneIDs {
+      let options = CKFetchRecordZoneChangesOptions()
+      
+      options.previousServerChangeToken = self.getChangeToken(tokenName: zoneID.zoneName)
+      optionsByRecordZoneID[zoneID] = options
+    }
+    let operation = CKFetchRecordZoneChangesOperation(recordZoneIDs: zoneIDs, optionsByRecordZoneID: optionsByRecordZoneID)
+    
+    
+    let tempMOC = self.createScratchPadContext()
+    
+    operation.recordChangedBlock = { (record) in
+      celeturKitLogger.debug("Record changed:\(record)")
+      
+      if record.recordType == self.tresoruserType {
+        var user = self.getTresorUser(withId: record["id"] as! String,tempMOC: tempMOC)
+        
+        if user == nil {
+          user = TresorUser(context:tempMOC)
+          user?.createts = Date()
+          user?.id = String.uuid()
+        }
+        
+        user?.firstname = record["firstname"] as? String
+        user?.lastname = record["lastname"] as? String
+        user?.email = record["email"] as? String
+      }
+    }
+    
+    operation.recordWithIDWasDeletedBlock = { (recordId,recordType) in
+      celeturKitLogger.debug("Record deleted:\(recordId)")
+      
+      let user = self.getTresorUser(withId: recordId.recordName ,tempMOC: tempMOC)
+      
+      if let u = user {
+        tempMOC.delete(u)
+      }
+    }
+    
+    operation.recordZoneChangeTokensUpdatedBlock = { (zoneId, token, data) in
+      if let c = token {
+        celeturKitLogger.debug("recordZone:\(zoneId) changeToken:\(c)")
+        
+        self.setChangeToken(tokenName: zoneId.zoneName, changeToken: c)
+      }
+    }
+    
+    operation.recordZoneFetchCompletionBlock = { (zoneId, changeToken, _, _, error) in
+      if let e = error {
+        celeturKitLogger.error("Error fetching zone changes for \(databaseTokenKey) database:", error: e)
+        return
+      }
+    }
+    
+    operation.fetchRecordZoneChangesCompletionBlock = { (error) in
+      if let e = error {
+        celeturKitLogger.error("Error fetching zone changes for \(databaseTokenKey) database:", error: e)
+      } else {
+        tempMOC.perform {
+          do {
+            try tempMOC.save()
+            
+            self.saveContextInMainThread()
+          } catch {
+            celeturKitLogger.error("error saving ck changes to core data",error:error)
+          }
+        }
+      }
+      completion()
+    }
+    
+    database.add(operation)
+  }
+  
+  public func createZones(zoneName:String) {
+    self.createZoneGroup.enter()
+    
+    let zoneID = CKRecordZoneID(zoneName: zoneName, ownerName: CKCurrentUserDefaultName)
+    let customZone = CKRecordZone(zoneID: zoneID)
+    
+    let createZoneOperation = CKModifyRecordZonesOperation(recordZonesToSave: [customZone], recordZoneIDsToDelete: [] )
+    
+    createZoneOperation.modifyRecordZonesCompletionBlock = { (saved, deleted, error) in
+      if let e = error {
+        celeturKitLogger.error("Error creating custom zone \(zoneID)", error: e)
+        return
+      }
+      
+      self.createZoneGroup.leave()
+    }
+    createZoneOperation.qualityOfService = .userInitiated
+    
+    self.privateDB.add(createZoneOperation)
+    
+  }
+  
+  func createCloudKitServerChangeToken(name:String, changeToken:CKServerChangeToken) -> CloudKitServerChangeToken {
+    let result = CloudKitServerChangeToken(context: self.managedContext)
+    
+    result.name = name
+    result.createts = Date()
+    result.data = NSKeyedArchiver.archivedData(withRootObject: changeToken)
+    
+    return result
+  }
+  
+  func saveCloudKitServerChangeToken(name:String, changeToken:CKServerChangeToken) {
+    let record = self.getCloudKitServerChangeToken(name: name)
+    
+    if let r = record {
+      r.data = NSKeyedArchiver.archivedData(withRootObject: changeToken)
+      r.createts = Date()
+    } else {
+      let _ = self.createCloudKitServerChangeToken(name:name,changeToken: changeToken)
+    }
+    
+    do {
+      try self.saveContext()
+    } catch {
+      celeturKitLogger.error("Error saving serverchangetoken",error:error)
+    }
+  }
+  
+  func getCloudKitServerChangeToken(name:String) -> CloudKitServerChangeToken? {
+    var result : CloudKitServerChangeToken?
+    
+    let fetchRequest: NSFetchRequest<CloudKitServerChangeToken> = CloudKitServerChangeToken.fetchRequest()
+    
+    // Set the batch size to a suitable number.
+    fetchRequest.fetchBatchSize = 1
+    fetchRequest.predicate = NSPredicate(format: "name = %@", name)
+    
+    do {
+      let records = try self.managedContext.fetch(fetchRequest)
+      
+      if records.count>0 {
+        result = records[0]
+      }
+    } catch {
+      celeturKitLogger.error("Error while fetching serverchangetoken",error:error)
+    }
+    
+    return result
+  }
+  
+  func getCloudKitCKServerChangeToken(name:String) -> CKServerChangeToken? {
+    let result = self.getCloudKitServerChangeToken(name: name)
+    
+    if let r = result {
+      return NSKeyedUnarchiver.unarchiveObject(with: r.data!) as? CKServerChangeToken
+    }
+    
+    return nil
   }
 }

@@ -13,6 +13,11 @@
         <attribute name="userdeviceid" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="userid" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
+    <entity name="CloudKitServerChangeToken" representedClassName="CloudKitServerChangeToken" syncable="YES" codeGenerationType="class">
+        <attribute name="createts" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="data" attributeType="Binary" syncable="YES"/>
+        <attribute name="name" attributeType="String" syncable="YES"/>
+    </entity>
     <entity name="Commandqueue" representedClassName="Commandqueue" syncable="YES" codeGenerationType="class">
         <attribute name="command" attributeType="String" syncable="YES"/>
         <attribute name="createts" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
@@ -104,6 +109,7 @@
     </entity>
     <elements>
         <element name="Audit" positionX="-261" positionY="-99" width="128" height="208"/>
+        <element name="CloudKitServerChangeToken" positionX="-254" positionY="144" width="128" height="88"/>
         <element name="Commandqueue" positionX="-117" positionY="-207" width="128" height="223"/>
         <element name="Schemaversion" positionX="-261" positionY="-207" width="128" height="88"/>
         <element name="Tresor" positionX="-812" positionY="191" width="128" height="208"/>

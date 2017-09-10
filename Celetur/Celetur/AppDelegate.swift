@@ -9,6 +9,7 @@
 import UIKit
 import CoreData
 import CeleturKit
+import CloudKit
 
 let celeturLogger = Logger("Celetur")
 
@@ -29,9 +30,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     let controller = masterNavigationController.topViewController as! TresorViewController
     controller.tresorAppState = self.tresorAppState
     
+    application.registerForRemoteNotifications()
+    
+    self.tresorAppState.tresorDataModel.createCloudKitSubscription()
+    
     return true
   }
-
+  
+  
+  
   func applicationWillResignActive(_ application: UIApplication) {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
@@ -68,6 +75,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
       return false
   }
   
-
+  // MARK: - Remote Notification
+  
+  func application(_ application: UIApplication,didFailToRegisterForRemoteNotificationsWithError error: Error) {
+    celeturLogger.error("Registration for remote notifications failed", error:error)
+  }
+  // 2
+  func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+    celeturLogger.debug("Registration for remote notifications successfull with token \(deviceToken.hexEncodedString())")
+  }
+  
+  func application(_ application: UIApplication,
+                   didReceiveRemoteNotification userInfo: [AnyHashable : Any],
+                   fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+    celeturLogger.debug("Received notification!")
+    
+    let dict = userInfo as! [String: NSObject]
+    guard let notification:CKDatabaseNotification = CKNotification(fromRemoteNotificationDictionary:dict) as? CKDatabaseNotification else { return }
+    
+    self.tresorAppState.tresorDataModel.fetchChanges(in: notification.databaseScope) {
+      completionHandler( .newData )
+    }
+  }
+  
 }
 

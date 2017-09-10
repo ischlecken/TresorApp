@@ -29,7 +29,17 @@ class UserViewController: UITableViewController, NSFetchedResultsControllerDeleg
   }
   
   func contactPicker(_ picker: CNContactPickerViewController, didSelect contacts: [CNContact]) {
-    self.tresorAppState?.tresorDataModel.saveContacts(contacts: contacts)
+    self.tresorAppState?.tresorDataModel.saveTresorUsersUsingContacts(contacts: contacts) { inner in
+      do {
+        let result = try inner()
+        
+        celeturLogger.debug("result=\(result)")
+      } catch {
+        celeturLogger.error("Error while saving contacts", error: error)
+        
+        self.presentErrorAlert(title:"Error while saving users",message: error.localizedDescription)
+      }
+    }
   }
   
   func presentPermissionErrorAlert() {
@@ -47,6 +57,20 @@ class UserViewController: UITableViewController, NSFetchedResultsControllerDeleg
       })
       let dismissAction = UIAlertAction(title: "OK",style: .cancel, handler: nil)
       alert.addAction(openSettingsAction)
+      alert.addAction(dismissAction)
+      
+      self.present(alert, animated: true,completion: nil)
+    }
+  }
+  
+  func presentErrorAlert(title:String, message:String) {
+    DispatchQueue.main.async {
+      let alert =
+        UIAlertController(title: title,
+                          message: message,
+                          preferredStyle: .alert)
+      
+      let dismissAction = UIAlertAction(title: "OK",style: .cancel, handler: nil)
       alert.addAction(dismissAction)
       
       self.present(alert, animated: true,completion: nil)
@@ -82,20 +106,21 @@ class UserViewController: UITableViewController, NSFetchedResultsControllerDeleg
   override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
     if editingStyle == .delete {
       let user = fetchedResultsController.object(at: indexPath)
-      let context = self.tresorAppState?.persistentContainer.context
       
-      context?.delete(user)
-      
-      do {
-        try context?.save()
-      } catch {
-        celeturLogger.error("Error while deleting User", error: error)
+      self.tresorAppState?.tresorDataModel.deleteTresorUser(user: user) { inner in
+        do {
+          try inner()
+        } catch {
+          celeturLogger.error("Error while deleting tresur user", error: error)
+          
+          self.presentErrorAlert(title:"Error while deleting user",message: error.localizedDescription)
+        }
       }
     }
   }
   
   
-  func configureCell(_ cell: UITableViewCell, withUser user: User) {
+  func configureCell(_ cell: UITableViewCell, withUser user: TresorUser) {
     cell.textLabel!.text = "\(user.firstname ?? "") \(user.lastname ?? "")"
     cell.detailTextLabel!.text = user.email
   }
@@ -127,7 +152,7 @@ class UserViewController: UITableViewController, NSFetchedResultsControllerDeleg
   
   // MARK: - Fetched results controller
   
-  var fetchedResultsController: NSFetchedResultsController<User> {
+  var fetchedResultsController: NSFetchedResultsController<TresorUser> {
     if _fetchedResultsController != nil {
       return _fetchedResultsController!
     }
@@ -142,7 +167,7 @@ class UserViewController: UITableViewController, NSFetchedResultsControllerDeleg
     
     return _fetchedResultsController!
   }
-  var _fetchedResultsController: NSFetchedResultsController<User>? = nil
+  var _fetchedResultsController: NSFetchedResultsController<TresorUser>? = nil
   
   func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
     tableView.beginUpdates()
@@ -167,11 +192,11 @@ class UserViewController: UITableViewController, NSFetchedResultsControllerDeleg
       tableView.deleteRows(at: [indexPath!], with: .fade)
     case .update:
       let cell = tableView.cellForRow(at: indexPath!)
-      configureCell(cell!, withUser: (anObject as? User)!)
+      configureCell(cell!, withUser: (anObject as? TresorUser)!)
     case .move:
       let cell = tableView.cellForRow(at: indexPath!)
       
-      configureCell(cell!, withUser: (anObject as? User)!)
+      configureCell(cell!, withUser: (anObject as? TresorUser)!)
       tableView.moveRow(at: indexPath!, to: newIndexPath!)
     }
   }

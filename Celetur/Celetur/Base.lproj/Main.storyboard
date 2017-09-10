@@ -67,7 +67,7 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Tresor" id="Zdf-7t-Un8">
-                        <barButtonItem key="leftBarButtonItem" title="Settings" image="setting" landscapeImage="setting" largeContentSizeImage="setting" id="Pj2-sc-7hL">
+                        <barButtonItem key="leftBarButtonItem" image="setting" landscapeImage="setting" largeContentSizeImage="setting" id="Pj2-sc-7hL">
                             <connections>
                                 <segue destination="pJ0-67-nGs" kind="presentation" identifier="showSettings" modalPresentationStyle="pageSheet" modalTransitionStyle="flipHorizontal" id="58A-Nb-Rnc"/>
                             </connections>
@@ -184,7 +184,7 @@
             </objects>
             <point key="canvasLocation" x="2193" y="-2552"/>
         </scene>
-        <!--User-->
+        <!--TresorUser-->
         <scene sceneID="i7p-fY-9hE">
             <objects>
                 <tableViewController id="Foc-WI-65m" customClass="UserViewController" customModule="Celetur" customModuleProvider="target" sceneMemberID="viewController">
@@ -223,8 +223,8 @@
                             <outlet property="delegate" destination="Foc-WI-65m" id="nkn-Co-KNa"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="User" id="3f4-2s-J1t">
-                        <barButtonItem key="rightBarButtonItem" style="plain" systemItem="add" id="OGx-tS-9LF">
+                    <navigationItem key="navigationItem" title="TresorUser" id="3f4-2s-J1t">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="OGx-tS-9LF">
                             <connections>
                                 <action selector="addUsers:" destination="Foc-WI-65m" id="0Sn-m9-qqk"/>
                             </connections>
@@ -235,7 +235,7 @@
             </objects>
             <point key="canvasLocation" x="3087" y="-3148"/>
         </scene>
-        <!--User Devices-->
+        <!--TresorUser Devices-->
         <scene sceneID="zgw-ON-Nm8">
             <objects>
                 <tableViewController id="nDm-uu-6ec" customClass="UserDeviceViewController" customModule="Celetur" customModuleProvider="target" sceneMemberID="viewController">
@@ -274,7 +274,7 @@
                             <outlet property="delegate" destination="nDm-uu-6ec" id="nR0-sM-jOE"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="User Devices" id="0i5-at-qqG">
+                    <navigationItem key="navigationItem" title="TresorUser Devices" id="0i5-at-qqG">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="tR7-Ib-rFQ"/>
                     </navigationItem>
                 </tableViewController>
@@ -489,7 +489,7 @@
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YQa-zI-kqj">
                                     <rect key="frame" x="54" y="9" width="352" height="46"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <fontDescription key="fontDescription" type="system" weight="light" pointSize="12"/>
+                                    <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                     <nil key="textColor"/>
                                     <nil key="highlightedColor"/>
                                 </label>

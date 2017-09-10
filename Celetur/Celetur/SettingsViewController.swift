@@ -40,11 +40,11 @@ class SettingsViewController: UITableViewController {
     
     switch indexPath.row {
     case 0:
-      cell.textLabel?.text = "User"
+      cell.textLabel?.text = "TresorUser"
       cell.detailTextLabel?.text = "edit the list of known users"
       
     case 1:
-      cell.textLabel?.text = "User Devices"
+      cell.textLabel?.text = "TresorUser Devices"
       cell.detailTextLabel?.text = "edit the list of known user devices"
     default:
       cell.textLabel?.text = "Settings"

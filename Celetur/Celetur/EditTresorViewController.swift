@@ -10,7 +10,7 @@ class EditTresorViewController: UITableViewController {
   
   var tresorAppState: TresorAppState?
   var tresor: Tresor!
-  var userList : [User]?
+  var userList : [TresorUser]?
   
   @IBOutlet weak var nameTextfield: UITextField!
   @IBOutlet weak var descriptionTextfield: UITextField!
@@ -19,7 +19,7 @@ class EditTresorViewController: UITableViewController {
     super.viewDidLoad()
     
     do {
-      self.userList = try self.tresor!.managedObjectContext?.fetch(User.fetchRequest())
+      self.userList = try self.tresor!.managedObjectContext?.fetch(TresorUser.fetchRequest())
       
       if self.tresor.owneduser == nil {
         self.tresor.owneduser = self.userList?[0]
@@ -121,7 +121,7 @@ class EditTresorViewController: UITableViewController {
     }
   }
   
-  func configureCell(_ cell: UITableViewCell, withUserDevice userDevice: UserDevice) {
+  func configureCell(_ cell: UITableViewCell, withUserDevice userDevice: TresorUserDevice) {
     cell.textLabel?.text = userDevice.devicename
     cell.detailTextLabel?.text = userDevice.id
     
@@ -131,7 +131,7 @@ class EditTresorViewController: UITableViewController {
     cell.indentationLevel = 1
   }
   
-  func configureCell(_ cell: UITableViewCell, withUser user: User) {
+  func configureCell(_ cell: UITableViewCell, withUser user: TresorUser) {
     cell.textLabel?.text = user.firstname! + " " + user.lastname!
     cell.detailTextLabel?.text = user.email
     
@@ -139,11 +139,11 @@ class EditTresorViewController: UITableViewController {
     cell.indentationLevel = 0
   }
   
-  func getUserDevice(forPath indexPath:IndexPath) -> UserDevice {
-    return self.userList?[indexPath.section].userdevices?.allObjects[indexPath.row-1] as! UserDevice
+  func getUserDevice(forPath indexPath:IndexPath) -> TresorUserDevice {
+    return self.userList?[indexPath.section].userdevices?.allObjects[indexPath.row-1] as! TresorUserDevice
   }
   
-  func getUser(forPath indexPath:IndexPath) -> User {
+  func getUser(forPath indexPath:IndexPath) -> TresorUser {
     return (self.userList?[indexPath.section])!
   }
   

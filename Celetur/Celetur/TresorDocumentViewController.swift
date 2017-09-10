@@ -14,7 +14,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   
   let dateFormatter = DateFormatter()
   
-  var currentUserDevice: UserDevice?
+  var currentUserDevice: TresorUserDevice?
   
   override func viewDidLoad() {
     super.viewDidLoad()

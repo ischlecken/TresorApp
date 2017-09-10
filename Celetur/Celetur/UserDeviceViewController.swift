@@ -62,12 +62,12 @@ class UserDeviceViewController: UITableViewController, NSFetchedResultsControlle
       do {
         try context?.save()
       } catch {
-        celeturLogger.error("Error while deleting User", error: error)
+        celeturLogger.error("Error while deleting TresorUser", error: error)
       }
     }
   }
   
-  func configureCell(_ cell: UITableViewCell, withUserdevice userdevice: UserDevice) {
+  func configureCell(_ cell: UITableViewCell, withUserdevice userdevice: TresorUserDevice) {
     cell.textLabel!.text = userdevice.devicename
     cell.detailTextLabel!.text = userdevice.id
   }
@@ -99,7 +99,7 @@ class UserDeviceViewController: UITableViewController, NSFetchedResultsControlle
   
   // MARK: - Fetched results controller
   
-  var fetchedResultsController: NSFetchedResultsController<UserDevice> {
+  var fetchedResultsController: NSFetchedResultsController<TresorUserDevice> {
     if _fetchedResultsController != nil {
       return _fetchedResultsController!
     }
@@ -114,7 +114,7 @@ class UserDeviceViewController: UITableViewController, NSFetchedResultsControlle
     
     return _fetchedResultsController!
   }
-  var _fetchedResultsController: NSFetchedResultsController<UserDevice>? = nil
+  var _fetchedResultsController: NSFetchedResultsController<TresorUserDevice>? = nil
   
   func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
     tableView.beginUpdates()
@@ -139,11 +139,11 @@ class UserDeviceViewController: UITableViewController, NSFetchedResultsControlle
       tableView.deleteRows(at: [indexPath!], with: .fade)
     case .update:
       let cell = tableView.cellForRow(at: indexPath!)
-      configureCell(cell!, withUserdevice: (anObject as? UserDevice)!)
+      configureCell(cell!, withUserdevice: (anObject as? TresorUserDevice)!)
     case .move:
       let cell = tableView.cellForRow(at: indexPath!)
       
-      configureCell(cell!, withUserdevice: (anObject as? UserDevice)!)
+      configureCell(cell!, withUserdevice: (anObject as? TresorUserDevice)!)
       tableView.moveRow(at: indexPath!, to: newIndexPath!)
     }
   }

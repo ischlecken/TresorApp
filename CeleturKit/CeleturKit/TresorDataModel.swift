@@ -5,13 +5,14 @@
 
 import Foundation
 import Contacts
+import CloudKit
 
 public class TresorDataModel {
   
   let managedContext : NSManagedObjectContext
   let cipherQueue = OperationQueue()
   
-  public var userList : [User]?
+  public var userList : [TresorUser]?
   
   public init(_ coreDataStack:CoreDataStack) {
     self.managedContext = coreDataStack.context
@@ -23,13 +24,13 @@ public class TresorDataModel {
     return self.managedContext
   }
   
-  public func getCurrentUserDevice() -> UserDevice? {
-    var result:UserDevice? = nil
+  public func getCurrentUserDevice() -> TresorUserDevice? {
+    var result:TresorUserDevice? = nil
     
     let vendorDeviceId = UIDevice.current.identifierForVendor?.uuidString
     for u in self.userList! {
       for ud in u.userdevices! {
-        let userDevice = ud as! UserDevice
+        let userDevice = ud as! TresorUserDevice
         
         if let udi = userDevice.id, let vdi = vendorDeviceId, udi == vdi {
           result = userDevice
@@ -45,8 +46,8 @@ public class TresorDataModel {
     return result
   }
   
-  fileprivate func createUserDevice(user:User, deviceName:String) {
-    let newUserDevice = UserDevice(context:self.managedContext)
+  fileprivate func createUserDevice(user:TresorUser, deviceName:String) {
+    let newUserDevice = TresorUserDevice(context:self.managedContext)
     newUserDevice.createts = Date()
     newUserDevice.devicename = deviceName
     newUserDevice.id = String.uuid()
@@ -55,8 +56,8 @@ public class TresorDataModel {
     user.addToUserdevices(newUserDevice)
   }
   
-  fileprivate func createCurrentUserDevice(user:User) {
-    let newUserDevice = UserDevice(context:self.managedContext)
+  fileprivate func createCurrentUserDevice(user:TresorUser) {
+    let newUserDevice = TresorUserDevice(context:self.managedContext)
     newUserDevice.createts = Date()
     newUserDevice.devicename = UIDevice.current.name
     newUserDevice.id = UIDevice.current.identifierForVendor?.uuidString
@@ -65,8 +66,8 @@ public class TresorDataModel {
     user.addToUserdevices(newUserDevice)
   }
   
-  fileprivate func createUser(firstName:String, lastName: String, appleid: String) -> User {
-    let newUser = User(context: self.managedContext)
+  fileprivate func createUser(firstName:String, lastName: String, appleid: String) -> TresorUser {
+    let newUser = TresorUser(context: self.managedContext)
     newUser.firstname = firstName
     newUser.lastname = lastName
     newUser.email = appleid
@@ -78,7 +79,7 @@ public class TresorDataModel {
   
   func initObjects() {
     do {
-      self.userList = try self.managedContext.fetch(User.fetchRequest())
+      self.userList = try self.managedContext.fetch(TresorUser.fetchRequest())
       
       if self.userList == nil || self.userList!.count == 0 {
         var newUser = createUser(firstName: "Hugo",lastName: "Müller",appleid: "bla@fasel.de")
@@ -115,8 +116,8 @@ public class TresorDataModel {
     return newTresor
   }
   
-  public func createTempUser(tempManagedContext: NSManagedObjectContext, contact: CNContact) -> User {
-    let result = User(context:tempManagedContext)
+  public func createTempUser(tempManagedContext: NSManagedObjectContext, contact: CNContact) -> TresorUser {
+    let result = TresorUser(context:tempManagedContext)
     
     result.createts = Date()
     result.id = String.uuid()
@@ -129,9 +130,9 @@ public class TresorDataModel {
     return result
   }
   
-  public func saveContacts(contacts:[CNContact]) {
+  public func saveTresorUsersUsingContacts(contacts:[CNContact], completion: @escaping (_ inner:() throws -> [TresorUser]) -> Void) {
     let tempMOC = self.createScratchPadContext()
-    let _ = contacts.map { self.createTempUser(tempManagedContext: tempMOC,contact: $0) }
+    let users = contacts.map { self.createTempUser(tempManagedContext: tempMOC,contact: $0) }
     
     tempMOC.perform {
       do {
@@ -139,9 +140,52 @@ public class TresorDataModel {
         
         self.saveContextInMainThread()
         
+        let modifyOperation = self.saveTresorUsersToCloudKit(tresorUsers: users)
+        modifyOperation.completionBlock = {
+          celeturKitLogger.debug("modify finished")
+        }
+        modifyOperation.modifyRecordsCompletionBlock = { savedRecords, deletedRecordIDs, error in
+          if let e = error {
+            celeturKitLogger.error("Error while saving users in cloudkit", error: e)
+            completion( {throw e} )
+          } else {
+            completion( {return users} )
+          }
+        }
+        
+        CKContainer.default().privateCloudDatabase.add(modifyOperation)
       } catch {
         celeturKitLogger.error("Error saving contacts",error:error)
+        
+        completion( {throw error} )
       }
+    }
+  }
+  
+  public func deleteTresorUser(user:TresorUser, completion: @escaping (_ inner:() throws -> Void) -> Void) {
+    let userId = user.id!
+    
+    self.managedContext.delete(user)
+    
+    do {
+      try self.managedContext.save()
+      
+      let modifyOperation = self.deleteTresorUserFromCloudKit(tresorUserId: userId)
+      
+      modifyOperation.modifyRecordsCompletionBlock = {savedRecords, deletedRecordIDs, error in
+        if let e = error {
+          celeturKitLogger.error("Error while deleting tresor user from cloudkit", error: e)
+          completion( {throw e} )
+        } else {
+          completion( {} )
+        }
+      }
+      
+      CKContainer.default().privateCloudDatabase.add(modifyOperation)
+    } catch {
+      celeturKitLogger.error("Error while deleting TresorUser", error: error)
+      
+      completion( {throw error} )
     }
   }
   
@@ -153,7 +197,7 @@ public class TresorDataModel {
     newTresorDocument.nonce = try Data(withRandomData:SymmetricCipherAlgorithm.aes_256.requiredBlockSize())
     
     for ud in tresor.userdevices! {
-      let userdevice = ud as! UserDevice
+      let userdevice = ud as! TresorUserDevice
       
       let item = try self.createTresorDocumentItem(tresorDocument: newTresorDocument,userDevice: userdevice,masterKey: masterKey!)
       
@@ -164,7 +208,7 @@ public class TresorDataModel {
     return newTresorDocument
   }
   
-  fileprivate func createPendingTresorDocumentItem(tresorDocument:TresorDocument,userDevice:UserDevice) -> TresorDocumentItem {
+  fileprivate func createPendingTresorDocumentItem(tresorDocument:TresorDocument,userDevice:TresorUserDevice) -> TresorDocumentItem {
     let result = TresorDocumentItem(context: self.managedContext)
     
     result.createts = Date()
@@ -229,7 +273,7 @@ public class TresorDataModel {
     }
   }
   
-  public func createTresorDocumentItem(tresorDocument:TresorDocument, userDevice:UserDevice, masterKey:TresorKey) throws -> TresorDocumentItem {
+  public func createTresorDocumentItem(tresorDocument:TresorDocument, userDevice:TresorUserDevice, masterKey:TresorKey) throws -> TresorDocumentItem {
     let newTresorDocumentItem = self.createPendingTresorDocumentItem(tresorDocument: tresorDocument,userDevice:userDevice)
     
     tresorDocument.addToDocumentitems(newTresorDocumentItem)
@@ -333,8 +377,8 @@ public class TresorDataModel {
   }
   
   
-  public func createAndFetchUserFetchedResultsController() throws -> NSFetchedResultsController<User> {
-    let fetchRequest: NSFetchRequest<User> = User.fetchRequest()
+  public func createAndFetchUserFetchedResultsController() throws -> NSFetchedResultsController<TresorUser> {
+    let fetchRequest: NSFetchRequest<TresorUser> = TresorUser.fetchRequest()
     
     // Set the batch size to a suitable number.
     fetchRequest.fetchBatchSize = 20
@@ -355,8 +399,8 @@ public class TresorDataModel {
     return aFetchedResultsController
   }
   
-  public func createAndFetchUserdeviceFetchedResultsController() throws -> NSFetchedResultsController<UserDevice> {
-    let fetchRequest: NSFetchRequest<UserDevice> = UserDevice.fetchRequest()
+  public func createAndFetchUserdeviceFetchedResultsController() throws -> NSFetchedResultsController<TresorUserDevice> {
+    let fetchRequest: NSFetchRequest<TresorUserDevice> = TresorUserDevice.fetchRequest()
     
     // Set the batch size to a suitable number.
     fetchRequest.fetchBatchSize = 20
@@ -400,5 +444,31 @@ public class TresorDataModel {
     }
     
     return aFetchedResultsController
+  }
+  
+  func saveTresorUsersToCloudKit(tresorUsers:[TresorUser]) -> CKModifyRecordsOperation {
+    let zoneId = CKRecordZoneID(zoneName: "Tresorusers", ownerName: CKCurrentUserDefaultName)
+    
+    var records = [CKRecord]()
+    for tresorUser in tresorUsers {
+      let recordId = CKRecordID(recordName: tresorUser.id!, zoneID: zoneId)
+      
+      let record = CKRecord(recordType: "Tresoruser", recordID: recordId)
+      
+      record["firstname"] = tresorUser.firstname as CKRecordValue?
+      record["lastname"] = tresorUser.lastname as CKRecordValue?
+      record["email"] = tresorUser.email as CKRecordValue?
+      
+      records.append(record)
+    }
+    
+    return CKModifyRecordsOperation(recordsToSave: records, recordIDsToDelete: nil)
+  }
+  
+  func deleteTresorUserFromCloudKit(tresorUserId:String) -> CKModifyRecordsOperation {
+    let zoneId = CKRecordZoneID(zoneName: "Tresorusers", ownerName: CKCurrentUserDefaultName)
+    let recordId = CKRecordID(recordName: tresorUserId, zoneID: zoneId)
+      
+    return CKModifyRecordsOperation(recordsToSave: nil, recordIDsToDelete: [recordId])
   }
 }

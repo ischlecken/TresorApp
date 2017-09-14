@@ -33,6 +33,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     application.registerForRemoteNotifications()
     
     self.tresorAppState.tresorDataModel.createCloudKitSubscription()
+    self.tresorAppState.tresorDataModel.requestUserDiscoverabilityPermission()
     
     return true
   }

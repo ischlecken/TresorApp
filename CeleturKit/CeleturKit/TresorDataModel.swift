@@ -812,4 +812,36 @@ public class TresorDataModel {
     
     return nil
   }
+  
+  public func requestUserDiscoverabilityPermission() {
+    CKContainer.default().requestApplicationPermission(CKApplicationPermissions.userDiscoverability) { (status, error) in
+      if let error=error {
+        celeturKitLogger.error("Error requesting UserDiscoverabilityPermission", error: error)
+      }
+      
+      celeturKitLogger.debug("status:\(status.rawValue)")
+      
+      if status == CKApplicationPermissionStatus.granted {
+        CKContainer.default().fetchUserRecordID(completionHandler: { (recordID, error) in
+          if let r = recordID {
+            celeturKitLogger.debug("recordID:\(r)")
+            
+            CKContainer.default().discoverUserIdentity(withUserRecordID: r, completionHandler: { (userIdentity, error) in
+              if let u = userIdentity?.nameComponents {
+                celeturKitLogger.debug("nameComponents:\(u)")
+                
+                let formatter = PersonNameComponentsFormatter()
+                
+                formatter.style = PersonNameComponentsFormatter.Style.long
+                
+                let displayName = formatter.string(from: u)
+                
+                celeturKitLogger.debug("user:\(displayName)")
+              }
+            })
+          }
+        })
+      }
+    }
+  }
 }

@@ -12,19 +12,19 @@ import CeleturKit
 class TresorAppModel {
   let coreDataManager: CoreDataManager
   let tresorKeys: TresorKeys
-  let tresorModel: TresorModel
-  let ckManager: CloudKitManager
   
+  var tresorModel: TresorModel
+  var ckManager: CloudKitManager
   var masterKey: TresorKey?
   
   init() {
     self.coreDataManager = CoreDataManager(modelName: "CeleturKit", using:Bundle(identifier:celeturKitIdentifier)!, inAppGroupContainer:appGroup) {
     }
     
-    self.tresorKeys = TresorKeys(appGroup: appGroup)
     self.tresorModel = TresorModel(self.coreDataManager)
-    
     self.ckManager = CloudKitManager(tresorModel: self.tresorModel)
+    
+    self.tresorKeys = TresorKeys(appGroup: appGroup)
     
     /*
     do {
@@ -35,7 +35,7 @@ class TresorAppModel {
       celeturLogger.error("error fetching tresor masterkey",error:error)
     }*/
     
-    tresorKeys.getMasterKey(masterKeyCompletion:{ (masterKey:TresorKey?, error:Error?) -> Void in
+    self.tresorKeys.getMasterKey(masterKeyCompletion:{ (masterKey:TresorKey?, error:Error?) -> Void in
       if let e = error {
         celeturLogger.debug("error:\(e)")
       } else if let mk = masterKey {
@@ -44,6 +44,8 @@ class TresorAppModel {
         self.masterKey = mk
       }
     })
+  
+   
   }
   
   func mainManagedObjectContext() -> NSManagedObjectContext {

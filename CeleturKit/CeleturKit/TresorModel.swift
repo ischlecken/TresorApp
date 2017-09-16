@@ -12,12 +12,45 @@ public class TresorModel {
   let cdm : CoreDataManager
   let cipherQueue = OperationQueue()
   
-  public var userList : [TresorUser]?
+  fileprivate var userList : [TresorUser]?
+  fileprivate var userListInited = false
+  
+  public func getUserList() -> [TresorUser]? {
+    guard !self.userListInited else { return self.userList }
+    
+    self.userListInited = true
+    
+    do {
+      self.userList = try self.cdm.mainManagedObjectContext.fetch(TresorUser.fetchRequest())
+      
+      if userList == nil || userList!.count == 0 {
+        var newUser = TresorUser.createUser(context: self.cdm.mainManagedObjectContext, firstName: "Hugo",lastName: "Müller",appleid: "bla@fasel.de")
+        
+        TresorUserDevice.createCurrentUserDevice(context: self.cdm.mainManagedObjectContext, user: newUser)
+        TresorUserDevice.createUserDevice(context: self.cdm.mainManagedObjectContext, user: newUser, deviceName: "Hugos iPhone")
+        TresorUserDevice.createUserDevice(context: self.cdm.mainManagedObjectContext, user: newUser, deviceName: "Hugos iPad")
+        TresorUserDevice.createUserDevice(context: self.cdm.mainManagedObjectContext, user: newUser, deviceName: "Hugos iWatch")
+        
+        self.userList?.append(newUser)
+        
+        newUser = TresorUser.createUser(context: self.cdm.mainManagedObjectContext, firstName: "Manfred",lastName: "Schmid",appleid: "mane@gmx.de")
+        
+        TresorUserDevice.createUserDevice(context: self.cdm.mainManagedObjectContext, user: newUser, deviceName: "Manfreds iPhone")
+        TresorUserDevice.createUserDevice(context: self.cdm.mainManagedObjectContext, user: newUser, deviceName: "Manfreds iPad")
+        TresorUserDevice.createUserDevice(context: self.cdm.mainManagedObjectContext, user: newUser, deviceName: "Manfreds iWatch")
+        TresorUserDevice.createUserDevice(context: self.cdm.mainManagedObjectContext, user: newUser, deviceName: "Manfreds iTV")
+        
+        self.userList?.append(newUser)
+      }
+    } catch {
+      celeturKitLogger.error("Error while create objects...",error:error)
+    }
+  
+    return self.userList
+  }
   
   public init(_ coreDataManager:CoreDataManager) {
     self.cdm = coreDataManager
-    
-    self.initObjects()
   }
   
   public var managedContext : NSManagedObjectContext {
@@ -28,6 +61,8 @@ public class TresorModel {
     var result:TresorUserDevice? = nil
     
     let vendorDeviceId = UIDevice.current.identifierForVendor?.uuidString
+    let _ = self.getUserList()
+    
     for u in self.userList! {
       for ud in u.userdevices! {
         let userDevice = ud as! TresorUserDevice
@@ -46,36 +81,6 @@ public class TresorModel {
     return result
   }
   
-  fileprivate func createUserDevice(user:TresorUser, deviceName:String) {
-    let newUserDevice = TresorUserDevice(context:self.cdm.mainManagedObjectContext)
-    newUserDevice.createts = Date()
-    newUserDevice.devicename = deviceName
-    newUserDevice.id = String.uuid()
-    newUserDevice.apndevicetoken = String.uuid()
-    newUserDevice.user = user
-    user.addToUserdevices(newUserDevice)
-  }
-  
-  fileprivate func createCurrentUserDevice(user:TresorUser) {
-    let newUserDevice = TresorUserDevice(context:self.cdm.mainManagedObjectContext)
-    newUserDevice.createts = Date()
-    newUserDevice.devicename = UIDevice.current.name
-    newUserDevice.id = UIDevice.current.identifierForVendor?.uuidString
-    newUserDevice.apndevicetoken = String.uuid()
-    newUserDevice.user = user
-    user.addToUserdevices(newUserDevice)
-  }
-  
-  fileprivate func createUser(firstName:String, lastName: String, appleid: String) -> TresorUser {
-    let newUser = TresorUser(context: self.cdm.mainManagedObjectContext)
-    newUser.firstname = firstName
-    newUser.lastname = lastName
-    newUser.email = appleid
-    newUser.createts = Date()
-    newUser.id = String.uuid()
-    
-    return newUser
-  }
   
   func getTresorUser(withId id:String, tempMOC:NSManagedObjectContext) -> TresorUser? {
     var result : TresorUser?
@@ -97,34 +102,6 @@ public class TresorModel {
     }
     
     return result
-  }
-  
-  func initObjects() {
-    do {
-      self.userList = try self.cdm.mainManagedObjectContext.fetch(TresorUser.fetchRequest())
-      
-      if self.userList == nil || self.userList!.count == 0 {
-        var newUser = createUser(firstName: "Hugo",lastName: "Müller",appleid: "bla@fasel.de")
-        
-        self.createCurrentUserDevice(user: newUser)
-        self.createUserDevice(user: newUser, deviceName: "Hugos iPhone")
-        self.createUserDevice(user: newUser, deviceName: "Hugos iPad")
-        self.createUserDevice(user: newUser, deviceName: "Hugos iWatch")
-        
-        self.userList?.append(newUser)
-        
-        newUser = createUser(firstName: "Manfred",lastName: "Schmid",appleid: "mane@gmx.de")
-        
-        self.createUserDevice(user: newUser, deviceName: "Manfreds iPhone")
-        self.createUserDevice(user: newUser, deviceName: "Manfreds iPad")
-        self.createUserDevice(user: newUser, deviceName: "Manfreds iWatch")
-        self.createUserDevice(user: newUser, deviceName: "Manfreds iTV")
-        
-        self.userList?.append(newUser)
-      }
-    } catch {
-      celeturKitLogger.error("Error while create objects...",error:error)
-    }
   }
   
   public func createTempTresor(tempManagedContext: NSManagedObjectContext) throws -> Tresor {
@@ -235,18 +212,6 @@ public class TresorModel {
     return newTresorDocument
   }
   
-  fileprivate func createPendingTresorDocumentItem(tresorDocument:TresorDocument,userDevice:TresorUserDevice) -> TresorDocumentItem {
-    let result = TresorDocumentItem(context: self.cdm.mainManagedObjectContext)
-    
-    result.createts = Date()
-    result.id = String.uuid()
-    result.status = "pending"
-    result.document = tresorDocument
-    result.userdevice = userDevice
-    
-    return result
-  }
-  
   public func createScratchPadContext() -> NSManagedObjectContext {
     return self.cdm.privateChildManagedObjectContext()
   }
@@ -288,7 +253,9 @@ public class TresorModel {
   }
   
   public func createTresorDocumentItem(tresorDocument:TresorDocument, userDevice:TresorUserDevice, masterKey:TresorKey) throws -> TresorDocumentItem {
-    let newTresorDocumentItem = self.createPendingTresorDocumentItem(tresorDocument: tresorDocument,userDevice:userDevice)
+    let newTresorDocumentItem = TresorDocumentItem.createPendingTresorDocumentItem(context:self.cdm.mainManagedObjectContext,
+                                                                                   tresorDocument: tresorDocument,
+                                                                                   userDevice:userDevice)
     
     tresorDocument.addToDocumentitems(newTresorDocumentItem)
     userDevice.addToDocumentitems(newTresorDocumentItem)

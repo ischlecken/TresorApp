@@ -98,6 +98,8 @@ public class CoreDataManager {
     privateManagedObjectContext.perform({
       do {
         if self.privateManagedObjectContext.hasChanges {
+          self.dumpManagedObjectContext(moc: self.privateManagedObjectContext)
+          
           try self.privateManagedObjectContext.save()
           
           celeturKitLogger.debug("Changes of Private Managed Object Context saved.")
@@ -106,6 +108,20 @@ public class CoreDataManager {
         celeturKitLogger.error("Unable to Save Changes of Private Managed Object Context", error:error)
       }
     })
+  }
+  
+  fileprivate func dumpManagedObjectContext(moc:NSManagedObjectContext) {
+    for o in moc.insertedObjects {
+      celeturKitLogger.debug("inserted:\(o)")
+    }
+    
+    for o in moc.updatedObjects {
+      celeturKitLogger.debug("updated:\(o)")
+    }
+    
+    for o in moc.deletedObjects {
+      celeturKitLogger.debug("deleted:\(o)")
+    }
   }
   
   // MARK: - Private Helper Methods

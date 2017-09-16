@@ -12,13 +12,14 @@
 		8517BDF11F24F95D009DB663 /* Data+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8517BDF01F24F95D009DB663 /* Data+Extension.swift */; };
 		855462FA1F3F449A00C001F6 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 855462F91F3F449900C001F6 /* String+Extension.swift */; };
 		855462FC1F40854000C001F6 /* SymmetricCipherOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 855462FB1F40853F00C001F6 /* SymmetricCipherOperation.swift */; };
-		85C5C5861F36E6C100DE7EBC /* TresorDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85C5C5851F36E6C100DE7EBC /* TresorDataModel.swift */; };
+		85C5C5861F36E6C100DE7EBC /* TresorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85C5C5851F36E6C100DE7EBC /* TresorModel.swift */; };
 		85C5C58C1F370E1F00DE7EBC /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85C5C5891F370E1E00DE7EBC /* Keychain.swift */; };
 		85C5C58E1F37190C00DE7EBC /* TresorKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85C5C58D1F37190C00DE7EBC /* TresorKeys.swift */; };
+		85E312741F6D408300EB8AD8 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85E312731F6D408300EB8AD8 /* CoreDataManager.swift */; };
+		85E312761F6D453500EB8AD8 /* CloudKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85E312751F6D453500EB8AD8 /* CloudKitManager.swift */; };
 		85EEE21A1F1B4E4B002CE85E /* CeleturKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85EEE2101F1B4E4B002CE85E /* CeleturKit.framework */; };
 		85EEE21F1F1B4E4B002CE85E /* CeleturKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EEE21E1F1B4E4B002CE85E /* CeleturKitTests.swift */; };
 		85EEE2211F1B4E4B002CE85E /* CeleturKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 85EEE2131F1B4E4B002CE85E /* CeleturKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		85EEE22E1F1B4F0C002CE85E /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EEE22B1F1B4F0C002CE85E /* CoreDataStack.swift */; };
 		85EEE23A1F1B52DE002CE85E /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EEE2391F1B52DE002CE85E /* Logger.swift */; };
 		85EEE23E1F1B67CE002CE85E /* CeleturKit.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 85EEE23C1F1B67CE002CE85E /* CeleturKit.xcdatamodeld */; };
 /* End PBXBuildFile section */
@@ -39,17 +40,18 @@
 		8517BDF01F24F95D009DB663 /* Data+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Extension.swift"; sourceTree = "<group>"; };
 		855462F91F3F449900C001F6 /* String+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
 		855462FB1F40853F00C001F6 /* SymmetricCipherOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SymmetricCipherOperation.swift; sourceTree = "<group>"; };
-		85C5C5851F36E6C100DE7EBC /* TresorDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TresorDataModel.swift; sourceTree = "<group>"; };
+		85C5C5851F36E6C100DE7EBC /* TresorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TresorModel.swift; sourceTree = "<group>"; };
 		85C5C5891F370E1E00DE7EBC /* Keychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		85C5C58D1F37190C00DE7EBC /* TresorKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TresorKeys.swift; sourceTree = "<group>"; };
 		85C5C5901F3778F500DE7EBC /* LocalAuthentication.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = LocalAuthentication.framework; path = System/Library/Frameworks/LocalAuthentication.framework; sourceTree = SDKROOT; };
+		85E312731F6D408300EB8AD8 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
+		85E312751F6D453500EB8AD8 /* CloudKitManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudKitManager.swift; sourceTree = "<group>"; };
 		85EEE2101F1B4E4B002CE85E /* CeleturKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CeleturKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		85EEE2131F1B4E4B002CE85E /* CeleturKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CeleturKit.h; sourceTree = "<group>"; };
 		85EEE2141F1B4E4B002CE85E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		85EEE2191F1B4E4B002CE85E /* CeleturKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CeleturKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		85EEE21E1F1B4E4B002CE85E /* CeleturKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CeleturKitTests.swift; sourceTree = "<group>"; };
 		85EEE2201F1B4E4B002CE85E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		85EEE22B1F1B4F0C002CE85E /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		85EEE2391F1B52DE002CE85E /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		85EEE23D1F1B67CE002CE85E /* CeleturKit.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CeleturKit.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -81,6 +83,29 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		85E312791F6D491800EB8AD8 /* DataManagement */ = {
+			isa = PBXGroup;
+			children = (
+				85E312751F6D453500EB8AD8 /* CloudKitManager.swift */,
+				85C5C5851F36E6C100DE7EBC /* TresorModel.swift */,
+				85E312731F6D408300EB8AD8 /* CoreDataManager.swift */,
+			);
+			name = DataManagement;
+			sourceTree = "<group>";
+		};
+		85E3127C1F6D49BD00EB8AD8 /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				85EEE2131F1B4E4B002CE85E /* CeleturKit.h */,
+				85EEE2391F1B52DE002CE85E /* Logger.swift */,
+				8517BDE61F24947A009DB663 /* CipherEnums.swift */,
+				8517BDF01F24F95D009DB663 /* Data+Extension.swift */,
+				855462F91F3F449900C001F6 /* String+Extension.swift */,
+				85C5C5891F370E1E00DE7EBC /* Keychain.swift */,
+			);
+			name = Util;
+			sourceTree = "<group>";
+		};
 		85EEE2061F1B4E4B002CE85E = {
 			isa = PBXGroup;
 			children = (
@@ -103,18 +128,12 @@
 		85EEE2121F1B4E4B002CE85E /* CeleturKit */ = {
 			isa = PBXGroup;
 			children = (
+				85E3127C1F6D49BD00EB8AD8 /* Util */,
+				85E312791F6D491800EB8AD8 /* DataManagement */,
 				855462FB1F40853F00C001F6 /* SymmetricCipherOperation.swift */,
-				85C5C5891F370E1E00DE7EBC /* Keychain.swift */,
-				85EEE22B1F1B4F0C002CE85E /* CoreDataStack.swift */,
-				85EEE2391F1B52DE002CE85E /* Logger.swift */,
-				85EEE2131F1B4E4B002CE85E /* CeleturKit.h */,
 				85EEE2141F1B4E4B002CE85E /* Info.plist */,
 				85EEE23C1F1B67CE002CE85E /* CeleturKit.xcdatamodeld */,
 				8517BDE41F2493FC009DB663 /* CeleturKitError.swift */,
-				8517BDE61F24947A009DB663 /* CipherEnums.swift */,
-				8517BDF01F24F95D009DB663 /* Data+Extension.swift */,
-				855462F91F3F449900C001F6 /* String+Extension.swift */,
-				85C5C5851F36E6C100DE7EBC /* TresorDataModel.swift */,
 				85C5C58D1F37190C00DE7EBC /* TresorKeys.swift */,
 			);
 			path = CeleturKit;
@@ -242,13 +261,14 @@
 				8517BDE71F24947A009DB663 /* CipherEnums.swift in Sources */,
 				85C5C58E1F37190C00DE7EBC /* TresorKeys.swift in Sources */,
 				85C5C58C1F370E1F00DE7EBC /* Keychain.swift in Sources */,
-				85EEE22E1F1B4F0C002CE85E /* CoreDataStack.swift in Sources */,
 				855462FA1F3F449A00C001F6 /* String+Extension.swift in Sources */,
-				85C5C5861F36E6C100DE7EBC /* TresorDataModel.swift in Sources */,
+				85E312741F6D408300EB8AD8 /* CoreDataManager.swift in Sources */,
+				85C5C5861F36E6C100DE7EBC /* TresorModel.swift in Sources */,
 				85EEE23A1F1B52DE002CE85E /* Logger.swift in Sources */,
 				8517BDF11F24F95D009DB663 /* Data+Extension.swift in Sources */,
 				85EEE23E1F1B67CE002CE85E /* CeleturKit.xcdatamodeld in Sources */,
 				855462FC1F40854000C001F6 /* SymmetricCipherOperation.swift in Sources */,
+				85E312761F6D453500EB8AD8 /* CloudKitManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

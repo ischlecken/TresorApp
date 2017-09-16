@@ -9,7 +9,7 @@ import CeleturKit
 
 class EditTresorDocumentItemViewController: UITableViewController {
   
-  var tresorAppState: TresorAppState?
+  var tresorAppState: TresorAppModel?
   
   let dateFormatter = DateFormatter()
   var model = [String:Any]()

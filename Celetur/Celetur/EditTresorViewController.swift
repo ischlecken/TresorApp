@@ -8,7 +8,7 @@ import CeleturKit
 
 class EditTresorViewController: UITableViewController {
   
-  var tresorAppState: TresorAppState?
+  var tresorAppState: TresorAppModel?
   var tresor: Tresor!
   var userList : [TresorUser]?
   

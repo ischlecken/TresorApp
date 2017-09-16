@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		850B80F31F35DFF10078F042 /* TresorDocumentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 850B80F21F35DFF10078F042 /* TresorDocumentViewController.swift */; };
-		852C26611F37CCDB0041273F /* TresorAppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 852C26601F37CCDB0041273F /* TresorAppState.swift */; };
+		852C26611F37CCDB0041273F /* TresorAppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 852C26601F37CCDB0041273F /* TresorAppModel.swift */; };
 		852C26641F37CD850041273F /* TresorConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 852C26631F37CD850041273F /* TresorConstants.swift */; };
 		8576D77A1F255F5200D9328A /* CeleturKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85EEE2361F1B5215002CE85E /* CeleturKit.framework */; };
 		8576D77B1F255F5200D9328A /* CeleturKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 85EEE2361F1B5215002CE85E /* CeleturKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -79,7 +79,7 @@
 
 /* Begin PBXFileReference section */
 		850B80F21F35DFF10078F042 /* TresorDocumentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TresorDocumentViewController.swift; sourceTree = "<group>"; };
-		852C26601F37CCDB0041273F /* TresorAppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TresorAppState.swift; sourceTree = "<group>"; };
+		852C26601F37CCDB0041273F /* TresorAppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TresorAppModel.swift; sourceTree = "<group>"; };
 		852C26631F37CD850041273F /* TresorConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TresorConstants.swift; sourceTree = "<group>"; };
 		85D95E401F5305720044DFA0 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		85D95E431F5308380044DFA0 /* UserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserViewController.swift; sourceTree = "<group>"; };
@@ -192,7 +192,7 @@
 				85F908141F12D9E30062BD63 /* TresorDocumentItemViewController.swift */,
 				85EE8DA11F497D3600F6409D /* EditTresorDocumentItemViewController.swift */,
 				85F9081E1F12D9E30062BD63 /* Info.plist */,
-				852C26601F37CCDB0041273F /* TresorAppState.swift */,
+				852C26601F37CCDB0041273F /* TresorAppModel.swift */,
 				852C26631F37CD850041273F /* TresorConstants.swift */,
 			);
 			path = Celetur;
@@ -386,7 +386,7 @@
 				85D95E411F5305720044DFA0 /* SettingsViewController.swift in Sources */,
 				85EE8DA21F497D3600F6409D /* EditTresorDocumentItemViewController.swift in Sources */,
 				850B80F31F35DFF10078F042 /* TresorDocumentViewController.swift in Sources */,
-				852C26611F37CCDB0041273F /* TresorAppState.swift in Sources */,
+				852C26611F37CCDB0041273F /* TresorAppModel.swift in Sources */,
 				85F151EA1F40FBBB008F8C85 /* TresorTableViewCell.swift in Sources */,
 				85F908151F12D9E30062BD63 /* TresorDocumentItemViewController.swift in Sources */,
 				85FBDD4B1F42E0F0006B4271 /* EditTresorViewController.swift in Sources */,

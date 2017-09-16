@@ -9,16 +9,22 @@
 import Foundation
 import CeleturKit
 
-class TresorAppState {
-  var persistentContainer: CoreDataStack
-  var tresorKeys: TresorKeys
-  var tresorDataModel: TresorDataModel
+class TresorAppModel {
+  let coreDataManager: CoreDataManager
+  let tresorKeys: TresorKeys
+  let tresorModel: TresorModel
+  let ckManager: CloudKitManager
+  
   var masterKey: TresorKey?
   
   init() {
-    self.persistentContainer = CoreDataStack("CeleturKit",using:Bundle(identifier:celeturKitIdentifier)!,inAppGroupContainer:appGroup)
+    self.coreDataManager = CoreDataManager(modelName: "CeleturKit", using:Bundle(identifier:celeturKitIdentifier)!, inAppGroupContainer:appGroup) {
+    }
+    
     self.tresorKeys = TresorKeys(appGroup: appGroup)
-    self.tresorDataModel = TresorDataModel(self.persistentContainer)
+    self.tresorModel = TresorModel(self.coreDataManager)
+    
+    self.ckManager = CloudKitManager(tresorModel: self.tresorModel)
     
     /*
     do {
@@ -38,6 +44,10 @@ class TresorAppState {
         self.masterKey = mk
       }
     })
+  }
+  
+  func mainManagedObjectContext() -> NSManagedObjectContext {
+    return self.coreDataManager.mainManagedObjectContext
   }
   
 }

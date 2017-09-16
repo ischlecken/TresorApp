@@ -17,7 +17,7 @@ let celeturLogger = Logger("Celetur")
 class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDelegate {
 
   var window: UIWindow?
-  var tresorAppState = TresorAppState()
+  var tresorAppModel = TresorAppModel()
   
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
     // Override point for customization after application launch.
@@ -28,12 +28,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
 
     let masterNavigationController = splitViewController.viewControllers[0] as! UINavigationController
     let controller = masterNavigationController.topViewController as! TresorViewController
-    controller.tresorAppState = self.tresorAppState
+    controller.tresorAppState = self.tresorAppModel
     
     application.registerForRemoteNotifications()
     
-    self.tresorAppState.tresorDataModel.createCloudKitSubscription()
-    self.tresorAppState.tresorDataModel.requestUserDiscoverabilityPermission()
+    self.tresorAppModel.ckManager.createCloudKitSubscription()
+    self.tresorAppModel.ckManager.requestUserDiscoverabilityPermission()
     
     return true
   }
@@ -61,7 +61,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
   func applicationWillTerminate(_ application: UIApplication) {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     // Saves changes in the application's managed object context before the application terminates.
-    tresorAppState.persistentContainer.saveContext()
+   
   }
 
   // MARK: - Split view
@@ -94,7 +94,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     let dict = userInfo as! [String: NSObject]
     guard let notification:CKDatabaseNotification = CKNotification(fromRemoteNotificationDictionary:dict) as? CKDatabaseNotification else { return }
     
-    self.tresorAppState.tresorDataModel.fetchChanges(in: notification.databaseScope) {
+    self.tresorAppModel.ckManager.fetchChanges(in: notification.databaseScope) {
       completionHandler( .newData )
     }
   }

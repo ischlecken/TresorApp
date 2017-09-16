@@ -9,7 +9,7 @@ import CeleturKit
 
 class TresorViewController: UITableViewController, NSFetchedResultsControllerDelegate {
   
-  var tresorAppState: TresorAppState?
+  var tresorAppState: TresorAppModel?
   let dateFormatter = DateFormatter()
   var editScratchpadContext : NSManagedObjectContext?
   
@@ -49,11 +49,11 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
         controller.tresorAppState = self.tresorAppState
         
         do {
-          self.editScratchpadContext = self.tresorAppState?.tresorDataModel.createScratchPadContext()
+          self.editScratchpadContext = self.tresorAppState?.tresorModel.createScratchPadContext()
           if let t = sender as? Tresor {
             controller.tresor = self.editScratchpadContext?.object(with: t.objectID) as? Tresor
           } else {
-            controller.tresor = try self.tresorAppState?.tresorDataModel.createTempTresor(tempManagedContext: self.editScratchpadContext!)
+            controller.tresor = try self.tresorAppState?.tresorModel.createTempTresor(tempManagedContext: self.editScratchpadContext!)
           }
         } catch {
           celeturLogger.error("Error creating temp tresor object",error:error)
@@ -70,7 +70,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   }
   
   @IBAction func unwindToTresor(segue: UIStoryboardSegue) {
-    print("unwindToTresor:\(String(describing: segue.identifier))")
+    celeturLogger.debug("unwindToTresor:\(String(describing: segue.identifier))")
     
     if segue.identifier == "saveUnwindToTresor" {
         let controller = segue.source as! EditTresorViewController
@@ -82,7 +82,6 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
             do {
               try esc.save()
               
-              self.tresorAppState?.tresorDataModel.saveContextInMainThread()
             } catch {
               celeturLogger.error("Error while saving tresor object",error:error)
             }
@@ -126,13 +125,13 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   override func tableView(_ tableView: UITableView, editActionsForRowAt: IndexPath) -> [UITableViewRowAction]? {
     
     let editAction = UITableViewRowAction(style: .normal, title: "Edit") { action, index in
-      print("edit button tapped")
+      celeturLogger.debug("edit button tapped")
       self.performSegue(withIdentifier: "showEditTresor", sender: self.fetchedResultsController.object(at: editActionsForRowAt))
     }
     editAction.backgroundColor = .orange
     
     let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { action, index in
-      let context = self.tresorAppState?.persistentContainer.context
+      let context = self.tresorAppState?.mainManagedObjectContext()
       
       context?.delete(self.fetchedResultsController.object(at: index))
       
@@ -182,7 +181,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     }
     
     do {
-      try _fetchedResultsController = self.tresorAppState?.tresorDataModel.createAndFetchTresorFetchedResultsController()
+      try _fetchedResultsController = self.tresorAppState?.tresorModel.createAndFetchTresorFetchedResultsController()
       
       _fetchedResultsController?.delegate = self
     } catch {

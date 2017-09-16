@@ -7,7 +7,7 @@ import UIKit
 
 class SettingsViewController: UITableViewController {
   
-  var tresorAppState: TresorAppState?
+  var tresorAppState: TresorAppModel?
   
   override func viewDidLoad() {
     super.viewDidLoad()

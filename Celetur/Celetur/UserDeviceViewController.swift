@@ -9,7 +9,7 @@ import CeleturKit
 
 class UserDeviceViewController: UITableViewController, NSFetchedResultsControllerDelegate {
   
-  var tresorAppState: TresorAppState?
+  var tresorAppState: TresorAppModel?
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -55,7 +55,7 @@ class UserDeviceViewController: UITableViewController, NSFetchedResultsControlle
   override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
     if editingStyle == .delete {
       let userdevice = fetchedResultsController.object(at: indexPath)
-      let context = self.tresorAppState?.persistentContainer.context
+      let context = self.tresorAppState?.mainManagedObjectContext()
       
       context?.delete(userdevice)
       
@@ -105,7 +105,7 @@ class UserDeviceViewController: UITableViewController, NSFetchedResultsControlle
     }
     
     do {
-      try _fetchedResultsController = self.tresorAppState?.tresorDataModel.createAndFetchUserdeviceFetchedResultsController()
+      try _fetchedResultsController = self.tresorAppState?.tresorModel.createAndFetchUserdeviceFetchedResultsController()
       
       _fetchedResultsController?.delegate = self
     } catch {

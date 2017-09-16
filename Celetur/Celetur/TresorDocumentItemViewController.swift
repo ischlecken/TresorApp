@@ -11,7 +11,7 @@ import CeleturKit
 
 class TresorDocumentItemViewController: UITableViewController {
   
-  var tresorAppState: TresorAppState?
+  var tresorAppState: TresorAppModel?
   
   var tresorDocumentItem: TresorDocumentItem? {
     didSet {
@@ -37,7 +37,7 @@ class TresorDocumentItemViewController: UITableViewController {
     
     NotificationCenter.default.addObserver(self, selector: #selector(contextDidSave(_:)),
                                            name: Notification.Name.NSManagedObjectContextObjectsDidChange,
-                                           object:self.tresorAppState?.tresorDataModel.getMOC())
+                                           object:self.tresorAppState?.mainManagedObjectContext())
   }
   
   deinit {
@@ -96,7 +96,7 @@ class TresorDocumentItemViewController: UITableViewController {
           
           self.activityView.startAnimating()
         
-          let decryptOperation = self.tresorAppState!.tresorDataModel.decryptTresorDocumentItemPayload(tresorDocumentItem: item, masterKey:key!)
+          let decryptOperation = self.tresorAppState!.tresorModel.decryptTresorDocumentItemPayload(tresorDocumentItem: item, masterKey:key!)
           
           if decryptOperation == nil {
             self.activityView.stopAnimating()
@@ -121,7 +121,7 @@ class TresorDocumentItemViewController: UITableViewController {
             }
           }
           
-          self.tresorAppState!.tresorDataModel.addToCipherQueue(decryptOperation!)
+          self.tresorAppState!.tresorModel.addToCipherQueue(decryptOperation!)
         }
       }
     }
@@ -150,11 +150,11 @@ class TresorDocumentItemViewController: UITableViewController {
       celeturLogger.debug("saveEditTresorDocumentItem")
       
       let model = (segue.source as? EditTresorDocumentItemViewController)?.model
-      let scratchpadContext = self.tresorAppState?.tresorDataModel.createScratchPadContext()
+      let scratchpadContext = self.tresorAppState?.tresorModel.createScratchPadContext()
       
       scratchpadContext?.perform {
         
-        self.tresorAppState?.tresorDataModel.encryptAndSaveTresorDocumentItem(tempManagedContext: scratchpadContext!,
+        self.tresorAppState?.tresorModel.encryptAndSaveTresorDocumentItem(tempManagedContext: scratchpadContext!,
                                                                               masterKey: (self.tresorAppState?.masterKey)!,
                                                                               tresorDocumentItem: self.tresorDocumentItem!,
                                                                               payload: model!)

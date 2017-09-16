@@ -10,10 +10,16 @@ import Foundation
 
 public class Logger
 {
-  var prefix: String
+  var name: String
   
-  public init(_ prefix: String) {
-    self.prefix = prefix
+  public init(_ name: String) {
+    self.name = name
+  }
+  
+  private var prefix : String {
+    let threadName = Thread.current.isMainThread ? "M" : "B"
+    
+    return "\(self.name) [\(threadName)]"
   }
   
   public func info<T>(_ object: T) {
@@ -30,6 +36,12 @@ public class Logger
 
   public func error<T>(_ object: T, error:Error) {
     print("ERROR", self.prefix, String(describing:object)+":"+String(describing:error))
+  }
+
+  public func fatal<T>(_ object: T) -> Never {
+    print("FATAL", self.prefix, object)
+    
+    fatalError()
   }
 }
 

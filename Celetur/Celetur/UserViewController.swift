@@ -11,7 +11,7 @@ import ContactsUI
 
 class UserViewController: UITableViewController, NSFetchedResultsControllerDelegate, CNContactPickerDelegate {
   
-  var tresorAppState: TresorAppState?
+  var tresorAppState: TresorAppModel?
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -29,7 +29,7 @@ class UserViewController: UITableViewController, NSFetchedResultsControllerDeleg
   }
   
   func contactPicker(_ picker: CNContactPickerViewController, didSelect contacts: [CNContact]) {
-    self.tresorAppState?.tresorDataModel.saveTresorUsersUsingContacts(contacts: contacts) { inner in
+    self.tresorAppState?.tresorModel.saveTresorUsersUsingContacts(contacts: contacts) { inner in
       do {
         let result = try inner()
         
@@ -107,7 +107,7 @@ class UserViewController: UITableViewController, NSFetchedResultsControllerDeleg
     if editingStyle == .delete {
       let user = fetchedResultsController.object(at: indexPath)
       
-      self.tresorAppState?.tresorDataModel.deleteTresorUser(user: user) { inner in
+      self.tresorAppState?.tresorModel.deleteTresorUser(user: user) { inner in
         do {
           try inner()
         } catch {
@@ -158,7 +158,7 @@ class UserViewController: UITableViewController, NSFetchedResultsControllerDeleg
     }
     
     do {
-      try _fetchedResultsController = self.tresorAppState?.tresorDataModel.createAndFetchUserFetchedResultsController()
+      try _fetchedResultsController = self.tresorAppState?.tresorModel.createAndFetchUserFetchedResultsController()
       
       _fetchedResultsController?.delegate = self
     } catch {

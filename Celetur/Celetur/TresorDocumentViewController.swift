@@ -10,7 +10,7 @@ import CeleturKit
 class TresorDocumentViewController: UITableViewController, NSFetchedResultsControllerDelegate {
   
   var tresor: Tresor?
-  var tresorAppState: TresorAppState?
+  var tresorAppState: TresorAppModel?
   
   let dateFormatter = DateFormatter()
   
@@ -28,7 +28,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     self.dateFormatter.dateStyle = DateFormatter.Style.short
     self.dateFormatter.timeStyle = DateFormatter.Style.short
     
-    self.currentUserDevice = self.tresorAppState?.tresorDataModel.getCurrentUserDevice()
+    self.currentUserDevice = self.tresorAppState?.tresorModel.getCurrentUserDevice()
   }
   
   override func viewWillAppear(_ animated: Bool) {
@@ -43,11 +43,8 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   
   @IBAction func insertNewObject(_ sender: Any) {
     do {
-      let _ = try self.tresorAppState?.tresorDataModel.createTresorDocument(tresor: self.tresor!,masterKey:self.tresorAppState?.masterKey)
+      let _ = try self.tresorAppState?.tresorModel.createTresorDocument(tresor: self.tresor!,masterKey:self.tresorAppState?.masterKey)
       
-      try self.tresorAppState?.tresorDataModel.saveContext()
-    } catch let celeturKitError as CeleturKitError {
-      celeturLogger.error("CeleturKitError while creating tresor document",error:celeturKitError)
     } catch {
       celeturLogger.error("Error while creating tresor  document",error:error)
     }
@@ -106,15 +103,9 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
     if editingStyle == .delete {
       let tresorDocumentItem = fetchedResultsController.object(at: indexPath)
-      let context = self.tresorAppState?.persistentContainer.context
+      let context = self.tresorAppState?.mainManagedObjectContext()
       
       context?.delete(tresorDocumentItem)
-      
-      do {
-        try context?.save()
-      } catch {
-        celeturLogger.error("Error while deleting TresorDocument", error: error)
-      }
     }
   }
   
@@ -142,7 +133,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     }
     
     do {
-      try _fetchedResultsController = self.tresorAppState?.tresorDataModel.createAndFetchTresorDocumentItemFetchedResultsController(tresor: tresor)
+      try _fetchedResultsController = self.tresorAppState?.tresorModel.createAndFetchTresorDocumentItemFetchedResultsController(tresor: tresor)
       
       _fetchedResultsController?.delegate = self
     } catch {

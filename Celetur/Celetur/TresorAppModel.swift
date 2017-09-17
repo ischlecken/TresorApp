@@ -10,6 +10,7 @@ import Foundation
 import CeleturKit
 
 class TresorAppModel {
+  
   let coreDataManager: CoreDataManager
   let tresorKeys: TresorKeys
   

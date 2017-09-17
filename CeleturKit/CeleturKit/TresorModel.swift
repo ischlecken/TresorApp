@@ -142,13 +142,16 @@ public class TresorModel {
  */
   }
   
-  public func createTresorDocument(tresor:Tresor, masterKey: TresorKey?) throws -> TresorDocument {
+  public func createTresorDocument(tresor:Tresor, plainText: String, masterKey: TresorKey?) throws -> TresorDocument {
     let newTresorDocument = try TresorDocument.createTresorDocument(context: self.mainManagedContext, tresor: tresor)
     
     for ud in tresor.userdevices! {
       let userdevice = ud as! TresorUserDevice
       
-      let item = try self.createTresorDocumentItem(tresorDocument: newTresorDocument,userDevice: userdevice,masterKey: masterKey!)
+      let item = try self.createTresorDocumentItem(tresorDocument: newTresorDocument,
+                                                   plainText: plainText,
+                                                   userDevice: userdevice,
+                                                   masterKey: masterKey!)
       
       newTresorDocument.addToDocumentitems(item)
       userdevice.addToDocumentitems(item)
@@ -194,7 +197,12 @@ public class TresorModel {
     }
   }
   
-  public func createTresorDocumentItem(tresorDocument:TresorDocument, userDevice:TresorUserDevice, masterKey:TresorKey) throws -> TresorDocumentItem {
+  // "{ \"title\": \"gmx.de\",\"user\":\"bla@fasel.de\",\"password\":\"hugo\"}"
+  
+  public func createTresorDocumentItem(tresorDocument:TresorDocument,
+                                       plainText: String,
+                                       userDevice:TresorUserDevice,
+                                       masterKey:TresorKey) throws -> TresorDocumentItem {
     let newTresorDocumentItem = TresorDocumentItem.createPendingTresorDocumentItem(context:self.mainManagedContext,
                                                                                    tresorDocument: tresorDocument,
                                                                                    userDevice:userDevice)
@@ -204,8 +212,6 @@ public class TresorModel {
     
     do {
       let key = masterKey.accessToken!
-      let plainText = "{ \"title\": \"gmx.de\",\"user\":\"bla@fasel.de\",\"password\":\"hugo\"}"
-      
       let operation = AES256EncryptionOperation(key:key,inputString: plainText, iv:nil)
       try operation.createRandomIV()
       

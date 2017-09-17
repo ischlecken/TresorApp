@@ -14,6 +14,7 @@
 		855462FC1F40854000C001F6 /* SymmetricCipherOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 855462FB1F40853F00C001F6 /* SymmetricCipherOperation.swift */; };
 		85BADF931F6E5F3200DAC130 /* Tresor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BADF921F6E5F3200DAC130 /* Tresor+Extension.swift */; };
 		85BADF951F6E616B00DAC130 /* TresorDocument+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BADF941F6E616B00DAC130 /* TresorDocument+Extension.swift */; };
+		85BADF971F6E8F9000DAC130 /* CloudKitServerChangeToken+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BADF961F6E8F9000DAC130 /* CloudKitServerChangeToken+Extension.swift */; };
 		85BF77031F6DD66700FA9460 /* TresorDocumentItem+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BF77021F6DD66700FA9460 /* TresorDocumentItem+Extension.swift */; };
 		85BF77051F6DD8E400FA9460 /* TresorUser+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BF77041F6DD8E400FA9460 /* TresorUser+Extension.swift */; };
 		85BF77071F6DD8F700FA9460 /* TresorUserDevice+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BF77061F6DD8F700FA9460 /* TresorUserDevice+Extension.swift */; };
@@ -47,6 +48,7 @@
 		855462FB1F40853F00C001F6 /* SymmetricCipherOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SymmetricCipherOperation.swift; sourceTree = "<group>"; };
 		85BADF921F6E5F3200DAC130 /* Tresor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Tresor+Extension.swift"; sourceTree = "<group>"; };
 		85BADF941F6E616B00DAC130 /* TresorDocument+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TresorDocument+Extension.swift"; sourceTree = "<group>"; };
+		85BADF961F6E8F9000DAC130 /* CloudKitServerChangeToken+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CloudKitServerChangeToken+Extension.swift"; sourceTree = "<group>"; };
 		85BF77021F6DD66700FA9460 /* TresorDocumentItem+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TresorDocumentItem+Extension.swift"; sourceTree = "<group>"; };
 		85BF77041F6DD8E400FA9460 /* TresorUser+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TresorUser+Extension.swift"; sourceTree = "<group>"; };
 		85BF77061F6DD8F700FA9460 /* TresorUserDevice+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TresorUserDevice+Extension.swift"; sourceTree = "<group>"; };
@@ -104,6 +106,7 @@
 				85BF77061F6DD8F700FA9460 /* TresorUserDevice+Extension.swift */,
 				85BADF941F6E616B00DAC130 /* TresorDocument+Extension.swift */,
 				85BF77021F6DD66700FA9460 /* TresorDocumentItem+Extension.swift */,
+				85BADF961F6E8F9000DAC130 /* CloudKitServerChangeToken+Extension.swift */,
 			);
 			name = DataManagement;
 			sourceTree = "<group>";
@@ -275,6 +278,7 @@
 				8517BDE51F2493FC009DB663 /* CeleturKitError.swift in Sources */,
 				8517BDE71F24947A009DB663 /* CipherEnums.swift in Sources */,
 				85C5C58E1F37190C00DE7EBC /* TresorKeys.swift in Sources */,
+				85BADF971F6E8F9000DAC130 /* CloudKitServerChangeToken+Extension.swift in Sources */,
 				85C5C58C1F370E1F00DE7EBC /* Keychain.swift in Sources */,
 				855462FA1F3F449A00C001F6 /* String+Extension.swift in Sources */,
 				85BF77051F6DD8E400FA9460 /* TresorUser+Extension.swift in Sources */,

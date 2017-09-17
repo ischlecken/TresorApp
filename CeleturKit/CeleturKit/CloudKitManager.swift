@@ -19,9 +19,15 @@ public class CloudKitManager {
   let privateSubscriptionId = "private-changes"
   let sharedSubscriptionId = "shared-changes"
   
-  var privateDBChangeToken : CKServerChangeToken?
-  var sharedDBChangeToken : CKServerChangeToken?
-  var tresorusersChangeToken : CKServerChangeToken?
+  lazy var privateDBChangeToken : CKServerChangeToken? = {
+    return CloudKitServerChangeToken.getCloudKitCKServerChangeToken(context: self.tresorModel.mainManagedContext, name: "private")
+  }()
+  lazy var sharedDBChangeToken : CKServerChangeToken? = {
+    return CloudKitServerChangeToken.getCloudKitCKServerChangeToken(context: self.tresorModel.mainManagedContext, name: "shared")
+  }()
+  lazy var tresorusersChangeToken : CKServerChangeToken? = {
+    return CloudKitServerChangeToken.getCloudKitCKServerChangeToken(context: self.tresorModel.mainManagedContext, name: tresorusersGroup)
+  }()
   
   
   public init(tresorModel:TresorModel) {
@@ -32,10 +38,6 @@ public class CloudKitManager {
     self.createZoneGroup = DispatchGroup()
     
     self.createZones(zoneName: tresorusersGroup)
-    
-    self.privateDBChangeToken = self.getCloudKitCKServerChangeToken(name: "private")
-    self.sharedDBChangeToken = self.getCloudKitCKServerChangeToken(name: "shared")
-    self.tresorusersChangeToken = self.getCloudKitCKServerChangeToken(name: tresorusersGroup)
   }
   
   
@@ -138,13 +140,13 @@ public class CloudKitManager {
   func setChangeToken(tokenName:String, changeToken: CKServerChangeToken) {
     if tokenName == "private" {
       self.privateDBChangeToken = changeToken
-      self.saveCloudKitServerChangeToken(name: tokenName, changeToken: changeToken)
+      CloudKitServerChangeToken.saveCloudKitServerChangeToken(context: self.tresorModel.mainManagedContext, name: tokenName, changeToken: changeToken)
     } else if tokenName == "shared" {
       self.sharedDBChangeToken = changeToken
-      self.saveCloudKitServerChangeToken(name: tokenName, changeToken: changeToken)
+      CloudKitServerChangeToken.saveCloudKitServerChangeToken(context: self.tresorModel.mainManagedContext,name: tokenName, changeToken: changeToken)
     } else if tokenName == tresorusersGroup {
       self.sharedDBChangeToken = changeToken
-      self.saveCloudKitServerChangeToken(name: tokenName, changeToken: changeToken)
+      CloudKitServerChangeToken.saveCloudKitServerChangeToken(context: self.tresorModel.mainManagedContext,name: tokenName, changeToken: changeToken)
     }
   }
   
@@ -297,59 +299,6 @@ public class CloudKitManager {
     
   }
   
-  func createCloudKitServerChangeToken(name:String, changeToken:CKServerChangeToken) -> CloudKitServerChangeToken {
-    let result = CloudKitServerChangeToken(context: self.tresorModel.mainManagedContext)
-    
-    result.name = name
-    result.createts = Date()
-    result.data = NSKeyedArchiver.archivedData(withRootObject: changeToken)
-    
-    return result
-  }
-  
-  func saveCloudKitServerChangeToken(name:String, changeToken:CKServerChangeToken) {
-    let record = self.getCloudKitServerChangeToken(name: name)
-    
-    if let r = record {
-      r.data = NSKeyedArchiver.archivedData(withRootObject: changeToken)
-      r.createts = Date()
-    } else {
-      let _ = self.createCloudKitServerChangeToken(name:name,changeToken: changeToken)
-    }
-    
-  }
-  
-  func getCloudKitServerChangeToken(name:String) -> CloudKitServerChangeToken? {
-    var result : CloudKitServerChangeToken?
-    
-    let fetchRequest: NSFetchRequest<CloudKitServerChangeToken> = CloudKitServerChangeToken.fetchRequest()
-    
-    // Set the batch size to a suitable number.
-    fetchRequest.fetchBatchSize = 1
-    fetchRequest.predicate = NSPredicate(format: "name = %@", name)
-    
-    do {
-      let records = try self.tresorModel.mainManagedContext.fetch(fetchRequest)
-      
-      if records.count>0 {
-        result = records[0]
-      }
-    } catch {
-      celeturKitLogger.error("Error while fetching serverchangetoken",error:error)
-    }
-    
-    return result
-  }
-  
-  func getCloudKitCKServerChangeToken(name:String) -> CKServerChangeToken? {
-    let result = self.getCloudKitServerChangeToken(name: name)
-    
-    if let r = result {
-      return NSKeyedUnarchiver.unarchiveObject(with: r.data!) as? CKServerChangeToken
-    }
-    
-    return nil
-  }
   
   public func requestUserDiscoverabilityPermission() {
     CKContainer.default().requestApplicationPermission(CKApplicationPermissions.userDiscoverability) { (status, error) in

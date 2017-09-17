@@ -7,26 +7,43 @@ import Foundation
 import Contacts
 import CloudKit
 
+let appGroup = "group.net.prisnoc.Celetur"
+let celeturKitIdentifier = "net.prisnoc.CeleturKit"
+
 public class TresorModel {
   
-  let cdm : CoreDataManager
+  let coreDataManager: CoreDataManager
+  lazy var cloudKitManager = {
+    return CloudKitManager(tresorModel: self)
+  } ()
+  
   let cipherQueue = OperationQueue()
   
   fileprivate var userList : [TresorUser]?
   fileprivate var userListInited = false
   
-  public init(_ coreDataManager:CoreDataManager) {
-    self.cdm = coreDataManager
+  public init() {
+    self.coreDataManager = CoreDataManager(modelName: "CeleturKit", using:Bundle(identifier:celeturKitIdentifier)!, inAppGroupContainer:appGroup)
+  }
+  
+  
+  public func completeSetup() {
+    self.coreDataManager.completeSetup {
+      celeturKitLogger.debug("TresorModel.completeSetup()")
+      
+      self.cloudKitManager.createCloudKitSubscription()
+      self.cloudKitManager.requestUserDiscoverabilityPermission()
+    }
   }
   
   
   public var mainManagedContext : NSManagedObjectContext {
-    return self.cdm.mainManagedObjectContext
+    return self.coreDataManager.mainManagedObjectContext
   }
   
   
   public var privateChildManagedContext : NSManagedObjectContext {
-    return self.cdm.privateChildManagedObjectContext()
+    return self.coreDataManager.privateChildManagedObjectContext()
   }
   
   
@@ -275,5 +292,9 @@ public class TresorModel {
   
   public func createAndFetchTresorDocumentItemFetchedResultsController(tresor:Tresor?) throws -> NSFetchedResultsController<TresorDocumentItem> {
     return try TresorDocumentItem.createAndFetchTresorDocumentItemFetchedResultsController(context: self.mainManagedContext, tresor: tresor)
+  }
+  
+  public func fetchChanges(in databaseScope: CKDatabaseScope, completion: @escaping () -> Void) {
+    self.cloudKitManager.fetchChanges(in: databaseScope, completion: completion)
   }
 }

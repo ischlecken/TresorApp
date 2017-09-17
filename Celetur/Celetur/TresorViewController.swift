@@ -131,7 +131,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     editAction.backgroundColor = .orange
     
     let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { action, index in
-      let context = self.tresorAppState?.mainManagedObjectContext()
+      let context = self.tresorAppState?.mainManagedContext()
       
       context?.delete(self.fetchedResultsController.object(at: index))
       

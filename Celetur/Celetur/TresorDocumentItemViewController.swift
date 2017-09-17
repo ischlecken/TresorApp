@@ -37,7 +37,7 @@ class TresorDocumentItemViewController: UITableViewController {
     
     NotificationCenter.default.addObserver(self, selector: #selector(contextDidSave(_:)),
                                            name: Notification.Name.NSManagedObjectContextObjectsDidChange,
-                                           object:self.tresorAppState?.mainManagedObjectContext())
+                                           object:self.tresorAppState?.mainManagedContext())
   }
   
   deinit {

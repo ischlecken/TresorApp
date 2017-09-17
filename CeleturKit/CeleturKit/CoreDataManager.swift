@@ -10,16 +10,14 @@ public class CoreDataManager {
   public typealias CoreDataManagerCompletion = () -> ()
   
   fileprivate let modelName: String
-  fileprivate let completion: CoreDataManagerCompletion
   fileprivate let timer : DispatchSourceTimer
   fileprivate let appGroupContainerId : String
   fileprivate let bundle : Bundle
   
-  public init(modelName: String, using bundle:Bundle, inAppGroupContainer appGroupContainerId:String, completion: @escaping CoreDataManagerCompletion) {
+  public init(modelName: String, using bundle:Bundle, inAppGroupContainer appGroupContainerId:String) {
     self.modelName = modelName
     self.appGroupContainerId = appGroupContainerId
     self.bundle = bundle
-    self.completion = completion
     self.timer = DispatchSource.makeTimerSource(flags: [], queue: DispatchQueue.global())
     
     setupCoreDataStack()
@@ -133,15 +131,17 @@ public class CoreDataManager {
     }
     
     let _ = mainManagedObjectContext.persistentStoreCoordinator
-    
+  }
+  
+  func completeSetup(completion: @escaping CoreDataManagerCompletion) {
     DispatchQueue.global().async {
       self.addPersistentStore()
-    
+      
       DispatchQueue.main.async {
         self.setupNotificationHandling()
         self.timer.resume()
         
-        self.completion()
+        completion()
       }
     }
   }

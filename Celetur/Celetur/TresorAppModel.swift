@@ -8,23 +8,15 @@
 
 import Foundation
 import CeleturKit
+import CloudKit
 
 class TresorAppModel {
-  
-  let coreDataManager: CoreDataManager
   let tresorKeys: TresorKeys
-  
-  var tresorModel: TresorModel
-  var ckManager: CloudKitManager
+  let tresorModel: TresorModel
   var masterKey: TresorKey?
   
   init() {
-    self.coreDataManager = CoreDataManager(modelName: "CeleturKit", using:Bundle(identifier:celeturKitIdentifier)!, inAppGroupContainer:appGroup) {
-    }
-    
-    self.tresorModel = TresorModel(self.coreDataManager)
-    self.ckManager = CloudKitManager(tresorModel: self.tresorModel)
-    
+    self.tresorModel = TresorModel()
     self.tresorKeys = TresorKeys(appGroup: appGroup)
     
     /*
@@ -45,12 +37,17 @@ class TresorAppModel {
         self.masterKey = mk
       }
     })
-  
-   
   }
   
-  func mainManagedObjectContext() -> NSManagedObjectContext {
-    return self.coreDataManager.mainManagedObjectContext
+  func completeSetup() {
+    self.tresorModel.completeSetup()
   }
   
+  func mainManagedContext() -> NSManagedObjectContext {
+    return self.tresorModel.mainManagedContext
+  }
+  
+  public func fetchChanges(in databaseScope: CKDatabaseScope, completion: @escaping () -> Void) {
+    self.tresorModel.fetchChanges(in: databaseScope,completion: completion)
+  }
 }

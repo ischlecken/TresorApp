@@ -30,10 +30,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     let controller = masterNavigationController.topViewController as! TresorViewController
     controller.tresorAppState = self.tresorAppModel
     
-    application.registerForRemoteNotifications()
+    self.tresorAppModel.completeSetup()
     
-    self.tresorAppModel.ckManager.createCloudKitSubscription()
-    self.tresorAppModel.ckManager.requestUserDiscoverabilityPermission()
+    application.registerForRemoteNotifications()
     
     return true
   }
@@ -94,7 +93,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     let dict = userInfo as! [String: NSObject]
     guard let notification:CKDatabaseNotification = CKNotification(fromRemoteNotificationDictionary:dict) as? CKDatabaseNotification else { return }
     
-    self.tresorAppModel.ckManager.fetchChanges(in: notification.databaseScope) {
+    self.tresorAppModel.fetchChanges(in: notification.databaseScope) {
       completionHandler( .newData )
     }
   }

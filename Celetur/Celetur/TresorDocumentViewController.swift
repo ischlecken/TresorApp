@@ -107,7 +107,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
     if editingStyle == .delete {
       let tresorDocumentItem = fetchedResultsController.object(at: indexPath)
-      let context = self.tresorAppState?.mainManagedObjectContext()
+      let context = self.tresorAppState?.mainManagedContext()
       
       context?.delete(tresorDocumentItem)
     }

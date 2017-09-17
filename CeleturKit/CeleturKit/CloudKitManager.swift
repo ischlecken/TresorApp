@@ -15,6 +15,7 @@ public class CloudKitManager {
   let createZoneGroup : DispatchGroup
   
   let tresorusersGroup = "Tresorusers"
+  let tresorGroup = "Tresor"
   let tresoruserType = "Tresoruser"
   let privateSubscriptionId = "private-changes"
   let sharedSubscriptionId = "shared-changes"
@@ -38,11 +39,62 @@ public class CloudKitManager {
     self.createZoneGroup = DispatchGroup()
     
     self.createZones(zoneName: tresorusersGroup)
+    self.createZones(zoneName: tresorGroup)
   }
   
   
   public func getPrivateDB() -> CKDatabase {
     return self.privateDB
+  }
+  
+  func saveChanges(moc:NSManagedObjectContext) {
+    let zoneId = CKRecordZoneID(zoneName: tresorGroup, ownerName: CKCurrentUserDefaultName)
+    
+    var records = [CKRecord]()
+    
+    for o in moc.updatedObjects {
+      celeturKitLogger.debug("updated:\(o)")
+      
+      let ed = o.entity
+      let entityName = ed.name
+      
+      let attributesByName = ed.attributesByName
+
+      if !entityName!.starts(with: "Tresor") || !attributesByName.keys.contains("id") {
+        continue
+      }
+      
+      if let id = o.value(forKey: "id") as? String {
+        let recordId = CKRecordID(recordName: id, zoneID: zoneId)
+        let record = CKRecord(recordType: entityName!, recordID: recordId)
+        
+        for (n,_) in attributesByName {
+          let v = o.value(forKey: n) as? CKRecordValue
+          
+          record.setObject(v, forKey: n)
+        }
+        
+        records.append(record)
+      }
+    }
+    
+    if records.count>0 {
+      let modifyOperation = CKModifyRecordsOperation(recordsToSave: records, recordIDsToDelete: nil)
+      
+      modifyOperation.completionBlock = {
+        celeturKitLogger.debug("modify finished")
+      }
+      modifyOperation.modifyRecordsCompletionBlock = { savedRecords, deletedRecordIDs, error in
+        if let e = error {
+          celeturKitLogger.error("Error while saving users in cloudkit", error: e)
+          
+        } else {
+          celeturKitLogger.debug("savedRecords:\(String(describing: savedRecords))")
+        }
+      }
+      
+      self.privateDB.add(modifyOperation)
+    }
   }
   
   func saveTresorUsersToCloudKit(tresorUsers:[TresorUser]) -> CKModifyRecordsOperation {

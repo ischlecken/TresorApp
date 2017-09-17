@@ -14,6 +14,8 @@ public class CoreDataManager {
   fileprivate let appGroupContainerId : String
   fileprivate let bundle : Bundle
   
+  var cloudKitManager : CloudKitManager?
+  
   public init(modelName: String, using bundle:Bundle, inAppGroupContainer appGroupContainerId:String) {
     self.modelName = modelName
     self.appGroupContainerId = appGroupContainerId
@@ -98,6 +100,10 @@ public class CoreDataManager {
         if self.privateManagedObjectContext.hasChanges {
           self.dumpManagedObjectContext(moc: self.privateManagedObjectContext)
           
+          if let ckm = self.cloudKitManager {
+            ckm.saveChanges(moc: self.privateManagedObjectContext)
+          }
+          
           try self.privateManagedObjectContext.save()
           
           celeturKitLogger.debug("Changes of Private Managed Object Context saved.")
@@ -108,17 +114,39 @@ public class CoreDataManager {
     })
   }
   
+  fileprivate func dumpMetaInfo(o:NSManagedObject) {
+    let ed = o.entity
+    
+    celeturKitLogger.debug("entityname:\(ed.name ?? "nil")")
+    
+    for (n,p) in ed.attributesByName {
+      celeturKitLogger.debug("  \(n):\(p.attributeValueClassName ?? "nil" )")
+    }
+    
+    for (n,p) in ed.relationshipsByName {
+      celeturKitLogger.debug("  \(n):\(p.destinationEntity?.name ?? "nil" )")
+    }
+    
+    
+  }
+  
   fileprivate func dumpManagedObjectContext(moc:NSManagedObjectContext) {
     for o in moc.insertedObjects {
       celeturKitLogger.debug("inserted:\(o)")
+      
+      self.dumpMetaInfo(o: o)
     }
     
     for o in moc.updatedObjects {
       celeturKitLogger.debug("updated:\(o)")
+      
+      self.dumpMetaInfo(o: o)
     }
     
     for o in moc.deletedObjects {
       celeturKitLogger.debug("deleted:\(o)")
+      
+      self.dumpMetaInfo(o: o)
     }
   }
   

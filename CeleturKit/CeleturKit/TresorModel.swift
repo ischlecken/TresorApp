@@ -229,22 +229,29 @@ public class TresorModel {
     return newTresorDocumentItem
   }
   
-  public func decryptTresorDocumentItemPayload(tresorDocumentItem:TresorDocumentItem,masterKey:TresorKey) -> SymmetricCipherOperation? {
+  public func decryptTresorDocumentItemPayload(tresorDocumentItem:TresorDocumentItem,
+                                               masterKey:TresorKey,
+                                               completion: ((SymmetricCipherOperation?)->Void)?) {
     var result : SymmetricCipherOperation?
     
     if let payload = tresorDocumentItem.payload, let nonce = tresorDocumentItem.nonce {
       let operation = AES256DecryptionOperation(key:masterKey.accessToken!,inputData: payload, iv:nonce)
       
       result = operation
+      
+      if let c = completion {
+        result!.completionBlock = {
+          c(result)
+        }
+      }
+      
+      self.cipherQueue.addOperation(result!)
+    } else {
+      if let c = completion {
+        c(nil)
+      }
     }
-    
-    return result
   }
-  
-  public func addToCipherQueue(_ op:Operation) {
-    self.cipherQueue.addOperation(op)
-  }
-  
   
   public func createAndFetchTresorFetchedResultsController() throws -> NSFetchedResultsController<Tresor> {
     return try Tresor.createAndFetchTresorFetchedResultsController(context: self.mainManagedContext)

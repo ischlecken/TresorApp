@@ -96,34 +96,38 @@ class TresorDocumentItemViewController: UITableViewController {
           
           self.activityView.startAnimating()
         
-          let decryptOperation = self.tresorAppState!.tresorModel.decryptTresorDocumentItemPayload(tresorDocumentItem: item, masterKey:key!)
-          
-          if decryptOperation == nil {
-            self.activityView.stopAnimating()
-            return
-          }
-          
-          decryptOperation!.completionBlock = {
-            if let d = decryptOperation!.outputData {
-              
+          self.tresorAppState!.tresorModel.decryptTresorDocumentItemPayload(tresorDocumentItem: item, masterKey:key!) {
+            (decryptOperation:SymmetricCipherOperation?) in
+            
+            guard let deop=decryptOperation else {
+              self.setDataLabel(data: nil)
+              return
+            }
+            
+            if let d = deop.outputData {
               do {
                 self.model = (try JSONSerialization.jsonObject(with: d, options: []) as? [String:Any])!
                 self.modelIndex = Array(self.model.keys)
                 
-                DispatchQueue.main.async {
-                  label.text = String(data: d, encoding: String.Encoding.utf8)
-                  self.tableView.reloadData()
-                  self.activityView.stopAnimating()
-                }
+                self.setDataLabel(data: d)
               } catch {
                 celeturLogger.error("Error while decoding json",error:error)
               }
             }
           }
-          
-          self.tresorAppState!.tresorModel.addToCipherQueue(decryptOperation!)
         }
       }
+    }
+  }
+  
+  func setDataLabel(data:Data?) {
+    DispatchQueue.main.async {
+      if let d=data {
+        self.dataLabel!.text = String(data: d, encoding: String.Encoding.utf8)
+      }
+      
+      self.tableView.reloadData()
+      self.activityView.stopAnimating()
     }
   }
   

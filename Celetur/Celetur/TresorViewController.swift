@@ -49,11 +49,11 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
         controller.tresorAppState = self.tresorAppState
         
         do {
-          self.editScratchpadContext = self.tresorAppState?.tresorModel.createScratchPadContext()
+          self.editScratchpadContext = self.tresorAppState?.tresorModel.privateChildManagedContext
           if let t = sender as? Tresor {
             controller.tresor = self.editScratchpadContext?.object(with: t.objectID) as? Tresor
           } else {
-            controller.tresor = try self.tresorAppState?.tresorModel.createTempTresor(tempManagedContext: self.editScratchpadContext!)
+            controller.tresor = try Tresor.createTempTresor(context: self.editScratchpadContext!)
           }
         } catch {
           celeturLogger.error("Error creating temp tresor object",error:error)

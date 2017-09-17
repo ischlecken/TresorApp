@@ -150,7 +150,7 @@ class TresorDocumentItemViewController: UITableViewController {
       celeturLogger.debug("saveEditTresorDocumentItem")
       
       let model = (segue.source as? EditTresorDocumentItemViewController)?.model
-      let scratchpadContext = self.tresorAppState?.tresorModel.createScratchPadContext()
+      let scratchpadContext = self.tresorAppState?.tresorModel.privateChildManagedContext
       
       scratchpadContext?.perform {
         

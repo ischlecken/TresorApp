@@ -211,13 +211,13 @@ public class CloudKitManager {
     let operation = CKFetchRecordZoneChangesOperation(recordZoneIDs: zoneIDs, optionsByRecordZoneID: optionsByRecordZoneID)
     
     
-    let tempMOC = self.tresorModel.createScratchPadContext()
+    let tempMOC = self.tresorModel.privateChildManagedContext
     
     operation.recordChangedBlock = { (record) in
       celeturKitLogger.debug("Record changed:\(record)")
       
       if record.recordType == self.tresoruserType {
-        var user = self.tresorModel.getTresorUser(withId: record["id"] as! String,tempMOC: tempMOC)
+        var user = TresorUser.findTresorUser(context: tempMOC, withId: record["id"] as! String)
         
         if user == nil {
           user = TresorUser(context:tempMOC)
@@ -234,7 +234,7 @@ public class CloudKitManager {
     operation.recordWithIDWasDeletedBlock = { (recordId,recordType) in
       celeturKitLogger.debug("Record deleted:\(recordId)")
       
-      let user = self.tresorModel.getTresorUser(withId: recordId.recordName ,tempMOC: tempMOC)
+      let user = TresorUser.findTresorUser(context: tempMOC, withId: recordId.recordName)
       
       if let u = user {
         tempMOC.delete(u)
@@ -298,7 +298,7 @@ public class CloudKitManager {
   }
   
   func createCloudKitServerChangeToken(name:String, changeToken:CKServerChangeToken) -> CloudKitServerChangeToken {
-    let result = CloudKitServerChangeToken(context: self.tresorModel.managedContext)
+    let result = CloudKitServerChangeToken(context: self.tresorModel.mainManagedContext)
     
     result.name = name
     result.createts = Date()
@@ -329,7 +329,7 @@ public class CloudKitManager {
     fetchRequest.predicate = NSPredicate(format: "name = %@", name)
     
     do {
-      let records = try self.tresorModel.managedContext.fetch(fetchRequest)
+      let records = try self.tresorModel.mainManagedContext.fetch(fetchRequest)
       
       if records.count>0 {
         result = records[0]

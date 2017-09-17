@@ -15,30 +15,45 @@ public class TresorModel {
   fileprivate var userList : [TresorUser]?
   fileprivate var userListInited = false
   
+  public init(_ coreDataManager:CoreDataManager) {
+    self.cdm = coreDataManager
+  }
+  
+  
+  public var mainManagedContext : NSManagedObjectContext {
+    return self.cdm.mainManagedObjectContext
+  }
+  
+  
+  public var privateChildManagedContext : NSManagedObjectContext {
+    return self.cdm.privateChildManagedObjectContext()
+  }
+  
+  
   public func getUserList() -> [TresorUser]? {
     guard !self.userListInited else { return self.userList }
     
     self.userListInited = true
     
     do {
-      self.userList = try self.cdm.mainManagedObjectContext.fetch(TresorUser.fetchRequest())
+      self.userList = try self.mainManagedContext.fetch(TresorUser.fetchRequest())
       
       if userList == nil || userList!.count == 0 {
-        var newUser = TresorUser.createUser(context: self.cdm.mainManagedObjectContext, firstName: "Hugo",lastName: "Müller",appleid: "bla@fasel.de")
+        var newUser = TresorUser.createUser(context: self.mainManagedContext, firstName: "Hugo",lastName: "Müller",appleid: "bla@fasel.de")
         
-        TresorUserDevice.createCurrentUserDevice(context: self.cdm.mainManagedObjectContext, user: newUser)
-        TresorUserDevice.createUserDevice(context: self.cdm.mainManagedObjectContext, user: newUser, deviceName: "Hugos iPhone")
-        TresorUserDevice.createUserDevice(context: self.cdm.mainManagedObjectContext, user: newUser, deviceName: "Hugos iPad")
-        TresorUserDevice.createUserDevice(context: self.cdm.mainManagedObjectContext, user: newUser, deviceName: "Hugos iWatch")
+        TresorUserDevice.createCurrentUserDevice(context: self.mainManagedContext, user: newUser)
+        TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Hugos iPhone")
+        TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Hugos iPad")
+        TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Hugos iWatch")
         
         self.userList?.append(newUser)
         
-        newUser = TresorUser.createUser(context: self.cdm.mainManagedObjectContext, firstName: "Manfred",lastName: "Schmid",appleid: "mane@gmx.de")
+        newUser = TresorUser.createUser(context: self.mainManagedContext, firstName: "Manfred",lastName: "Schmid",appleid: "mane@gmx.de")
         
-        TresorUserDevice.createUserDevice(context: self.cdm.mainManagedObjectContext, user: newUser, deviceName: "Manfreds iPhone")
-        TresorUserDevice.createUserDevice(context: self.cdm.mainManagedObjectContext, user: newUser, deviceName: "Manfreds iPad")
-        TresorUserDevice.createUserDevice(context: self.cdm.mainManagedObjectContext, user: newUser, deviceName: "Manfreds iWatch")
-        TresorUserDevice.createUserDevice(context: self.cdm.mainManagedObjectContext, user: newUser, deviceName: "Manfreds iTV")
+        TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Manfreds iPhone")
+        TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Manfreds iPad")
+        TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Manfreds iWatch")
+        TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Manfreds iTV")
         
         self.userList?.append(newUser)
       }
@@ -49,87 +64,21 @@ public class TresorModel {
     return self.userList
   }
   
-  public init(_ coreDataManager:CoreDataManager) {
-    self.cdm = coreDataManager
-  }
   
-  public var managedContext : NSManagedObjectContext {
-    return self.cdm.mainManagedObjectContext
-  }
   
   public func getCurrentUserDevice() -> TresorUserDevice? {
     var result:TresorUserDevice? = nil
     
-    let vendorDeviceId = UIDevice.current.identifierForVendor?.uuidString
-    let _ = self.getUserList()
-    
-    for u in self.userList! {
-      for ud in u.userdevices! {
-        let userDevice = ud as! TresorUserDevice
-        
-        if let udi = userDevice.id, let vdi = vendorDeviceId, udi == vdi {
-          result = userDevice
-          break;
-        }
-      }
-      
-      if result != nil {
-        break
-      }
+    if let userList = self.getUserList() {
+      result = TresorUserDevice.getCurrentUserDevice(userList: userList)
     }
-    
-    return result
-  }
-  
-  
-  func getTresorUser(withId id:String, tempMOC:NSManagedObjectContext) -> TresorUser? {
-    var result : TresorUser?
-    
-    let fetchRequest: NSFetchRequest<TresorUser> = TresorUser.fetchRequest()
-    
-    // Set the batch size to a suitable number.
-    fetchRequest.fetchBatchSize = 1
-    fetchRequest.predicate = NSPredicate(format: "id = %@", id)
-    
-    do {
-      let records = try tempMOC.fetch(fetchRequest)
-      
-      if records.count>0 {
-        result = records[0]
-      }
-    } catch {
-      celeturKitLogger.error("Error while fetching tresoruser",error:error)
-    }
-    
-    return result
-  }
-  
-  public func createTempTresor(tempManagedContext: NSManagedObjectContext) throws -> Tresor {
-    let newTresor = Tresor(context: tempManagedContext)
-    newTresor.createts = Date()
-    newTresor.id = String.uuid()
-    newTresor.nonce = try Data(withRandomData: SymmetricCipherAlgorithm.aes_256.requiredBlockSize())
-    
-    return newTresor
-  }
-  
-  public func createTempUser(tempManagedContext: NSManagedObjectContext, contact: CNContact) -> TresorUser {
-    let result = TresorUser(context:tempManagedContext)
-    
-    result.createts = Date()
-    result.id = String.uuid()
-    
-    result.firstname = contact.givenName
-    result.lastname = contact.familyName
-    result.email = contact.emailAddresses.first?.value as String?
-    result.profilepicture = contact.imageData
     
     return result
   }
   
   public func saveTresorUsersUsingContacts(contacts:[CNContact], completion: @escaping (_ inner:() throws -> [TresorUser]) -> Void) {
-    let tempMOC = self.createScratchPadContext()
-    let users = contacts.map { self.createTempUser(tempManagedContext: tempMOC,contact: $0) }
+    let tempMOC = self.privateChildManagedContext
+    let users = contacts.map { TresorUser.createTempUser(context: tempMOC,contact: $0) }
     
     tempMOC.perform {
       do {
@@ -164,7 +113,7 @@ public class TresorModel {
   public func deleteTresorUser(user:TresorUser, completion: @escaping (_ inner:() throws -> Void) -> Void) {
     let _ = user.id!
     
-    self.cdm.mainManagedObjectContext.delete(user)
+    self.mainManagedContext.delete(user)
     
     /*
      do {
@@ -193,12 +142,8 @@ public class TresorModel {
  */
   }
   
-  public func createTresorDocument(tresor:Tresor,masterKey: TresorKey?) throws -> TresorDocument {
-    let newTresorDocument = TresorDocument(context: self.cdm.mainManagedObjectContext)
-    newTresorDocument.createts = Date()
-    newTresorDocument.id = String.uuid()
-    newTresorDocument.tresor = tresor
-    newTresorDocument.nonce = try Data(withRandomData:SymmetricCipherAlgorithm.aes_256.requiredBlockSize())
+  public func createTresorDocument(tresor:Tresor, masterKey: TresorKey?) throws -> TresorDocument {
+    let newTresorDocument = try TresorDocument.createTresorDocument(context: self.mainManagedContext, tresor: tresor)
     
     for ud in tresor.userdevices! {
       let userdevice = ud as! TresorUserDevice
@@ -212,10 +157,7 @@ public class TresorModel {
     return newTresorDocument
   }
   
-  public func createScratchPadContext() -> NSManagedObjectContext {
-    return self.cdm.privateChildManagedObjectContext()
-  }
-  
+ 
   
   public func encryptAndSaveTresorDocumentItem(tempManagedContext: NSManagedObjectContext,
                                                masterKey:TresorKey,
@@ -253,7 +195,7 @@ public class TresorModel {
   }
   
   public func createTresorDocumentItem(tresorDocument:TresorDocument, userDevice:TresorUserDevice, masterKey:TresorKey) throws -> TresorDocumentItem {
-    let newTresorDocumentItem = TresorDocumentItem.createPendingTresorDocumentItem(context:self.cdm.mainManagedObjectContext,
+    let newTresorDocumentItem = TresorDocumentItem.createPendingTresorDocumentItem(context:self.mainManagedContext,
                                                                                    tresorDocument: tresorDocument,
                                                                                    userDevice:userDevice)
     
@@ -305,94 +247,20 @@ public class TresorModel {
   
   
   public func createAndFetchTresorFetchedResultsController() throws -> NSFetchedResultsController<Tresor> {
-    let fetchRequest: NSFetchRequest<Tresor> = Tresor.fetchRequest()
-    
-    // Set the batch size to a suitable number.
-    fetchRequest.fetchBatchSize = 20
-    
-    // Edit the sort key as appropriate.
-    let sortDescriptor = NSSortDescriptor(key: "createts", ascending: false)
-    
-    fetchRequest.sortDescriptors = [sortDescriptor]
-    
-    let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.cdm.mainManagedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
-    
-    do {
-      try aFetchedResultsController.performFetch()
-    } catch {
-      throw CeleturKitError.creationOfFetchResultsControllerFailed(coreDataError: error as NSError)
-    }
-    
-    return aFetchedResultsController
+    return try Tresor.createAndFetchTresorFetchedResultsController(context: self.mainManagedContext)
   }
   
   
   public func createAndFetchUserFetchedResultsController() throws -> NSFetchedResultsController<TresorUser> {
-    let fetchRequest: NSFetchRequest<TresorUser> = TresorUser.fetchRequest()
-    
-    // Set the batch size to a suitable number.
-    fetchRequest.fetchBatchSize = 20
-    
-    // Edit the sort key as appropriate.
-    let sortDescriptor = NSSortDescriptor(key: "createts", ascending: false)
-    
-    fetchRequest.sortDescriptors = [sortDescriptor]
-    
-    let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.cdm.mainManagedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
-    
-    do {
-      try aFetchedResultsController.performFetch()
-    } catch {
-      throw CeleturKitError.creationOfFetchResultsControllerFailed(coreDataError: error as NSError)
-    }
-    
-    return aFetchedResultsController
+    return try TresorUser.createAndFetchUserFetchedResultsController(context: self.mainManagedContext)
   }
   
   public func createAndFetchUserdeviceFetchedResultsController() throws -> NSFetchedResultsController<TresorUserDevice> {
-    let fetchRequest: NSFetchRequest<TresorUserDevice> = TresorUserDevice.fetchRequest()
-    
-    // Set the batch size to a suitable number.
-    fetchRequest.fetchBatchSize = 20
-    
-    // Edit the sort key as appropriate.
-    let sortDescriptor = NSSortDescriptor(key: "createts", ascending: false)
-    
-    fetchRequest.sortDescriptors = [sortDescriptor]
-    
-    let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.cdm.mainManagedObjectContext, sectionNameKeyPath: "user.email", cacheName: nil)
-    
-    do {
-      try aFetchedResultsController.performFetch()
-    } catch {
-      throw CeleturKitError.creationOfFetchResultsControllerFailed(coreDataError: error as NSError)
-    }
-    
-    return aFetchedResultsController
+    return try TresorUserDevice.createAndFetchUserdeviceFetchedResultsController(context: self.mainManagedContext)
   }
   
   
   public func createAndFetchTresorDocumentItemFetchedResultsController(tresor:Tresor?) throws -> NSFetchedResultsController<TresorDocumentItem> {
-    let fetchRequest: NSFetchRequest<TresorDocumentItem> = TresorDocumentItem.fetchRequest()
-    
-    // Set the batch size to a suitable number.
-    fetchRequest.fetchBatchSize = 20
-    fetchRequest.predicate = NSPredicate(format: "document.tresor.id = %@", (tresor?.id)!)
-    
-    
-    // Edit the sort key as appropriate.
-    let sortDescriptor = NSSortDescriptor(key: "createts", ascending: false)
-    
-    fetchRequest.sortDescriptors = [sortDescriptor]
-    
-    let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.cdm.mainManagedObjectContext, sectionNameKeyPath: "document.id", cacheName: nil)
-    
-    do {
-      try aFetchedResultsController.performFetch()
-    } catch {
-      throw CeleturKitError.creationOfFetchResultsControllerFailed(coreDataError: error as NSError)
-    }
-    
-    return aFetchedResultsController
+    return try TresorDocumentItem.createAndFetchTresorDocumentItemFetchedResultsController(context: self.mainManagedContext, tresor: tresor)
   }
 }

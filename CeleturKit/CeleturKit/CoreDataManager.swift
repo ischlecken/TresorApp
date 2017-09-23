@@ -251,6 +251,10 @@ public class CoreDataManager {
             o.setValue(v, forKey: k)
           }
         }
+        
+        if attributes["ckdata"] != nil {
+          o.setValue(record.data(), forKey: "ckdata")
+        }
       }
     } catch {
       celeturKitLogger.error("Error while fetching deleteManagedObject",error:error)

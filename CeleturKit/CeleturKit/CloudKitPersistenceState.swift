@@ -138,6 +138,6 @@ class CloudKitPersistenceState {
       self.changeTokens![name]?.serverChangeToken = token
     }
     
-    NSKeyedArchiver.archiveRootObject(self.changedObjectIds as Any, toFile: self.changedIdsFilePath)
+    NSKeyedArchiver.archiveRootObject(self.changeTokens as Any, toFile: self.serverChangeTokensFilePath)
   }
 }

@@ -3,7 +3,7 @@
 //
 
 import CoreData
-import Foundation
+import CloudKit
 
 public class CoreDataManager {
   
@@ -32,6 +32,7 @@ public class CoreDataManager {
     let managedObjectContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
     
     managedObjectContext.parent = self.privateManagedObjectContext
+    managedObjectContext.automaticallyMergesChangesFromParent = true
     
     return managedObjectContext
   }()
@@ -40,9 +41,20 @@ public class CoreDataManager {
     let managedObjectContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
 
     managedObjectContext.persistentStoreCoordinator = self.persistentStoreCoordinator
+    managedObjectContext.automaticallyMergesChangesFromParent = true
     
     return managedObjectContext
   }()
+  
+  
+  func createTempPrivateManagedObjectContext() -> NSManagedObjectContext {
+    let managedObjectContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+    
+    managedObjectContext.persistentStoreCoordinator = self.persistentStoreCoordinator
+    
+    return managedObjectContext
+  }
+  
   
   fileprivate lazy var managedObjectModel: NSManagedObjectModel? = {
     return NSManagedObjectModel(contentsOf: self.modelURL)
@@ -209,6 +221,61 @@ public class CoreDataManager {
       try persistentStoreCoordinator.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: persistentStoreURL, options: options)
     } catch {
       celeturKitLogger.error("Unable to Add Persistent Store", error:error)
+    }
+  }
+  
+  func updateManagedObject(context:NSManagedObjectContext, usingRecord record:CKRecord) {
+    celeturKitLogger.debug("updateManagedObject()")
+    
+    let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: record.recordType)
+    fetchRequest.predicate = NSPredicate(format: "id = %@", record.recordID.recordName)
+    fetchRequest.fetchBatchSize = 1
+    
+    do {
+      let records = try context.fetch(fetchRequest)
+      var o : NSManagedObject?
+      
+      if records.count>0 {
+        o = records[0] as? NSManagedObject
+      } else {
+        o = NSEntityDescription.insertNewObject(forEntityName: record.recordType, into: context)
+      }
+      
+      if let o = o {
+        let attributes = o.entity.attributesByName
+        
+        for k in record.allKeys() {
+          let v = record.value(forKey: k)
+        
+          if attributes[k] != nil {
+            o.setValue(v, forKey: k)
+          }
+        }
+      }
+    } catch {
+      celeturKitLogger.error("Error while fetching deleteManagedObject",error:error)
+    }
+  }
+  
+  func deleteManagedObject(context:NSManagedObjectContext, usingEntityName entityName:String,andId id:String) {
+    celeturKitLogger.debug("deleteManagedObject()")
+    
+    let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
+    fetchRequest.predicate = NSPredicate(format: "id = %@", id)
+    fetchRequest.fetchBatchSize = 1
+    
+    do {
+      let records = try context.fetch(fetchRequest)
+      
+      if records.count>0 {
+        let deletedObject = records[0] as? NSManagedObject
+        
+        if let o = deletedObject {
+          context.delete(o)
+        }
+      }
+    } catch {
+      celeturKitLogger.error("Error while fetching deleteManagedObject",error:error)
     }
   }
 }

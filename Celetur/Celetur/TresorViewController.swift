@@ -16,6 +16,9 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   override func viewDidLoad() {
     super.viewDidLoad()
     
+    self.refreshControl = UIRefreshControl()
+    self.refreshControl?.addTarget(self, action: #selector(refreshTable(_:)), for: .valueChanged)
+    
     self.dateFormatter.dateStyle = DateFormatter.Style.short
     self.dateFormatter.timeStyle = DateFormatter.Style.short
     
@@ -25,6 +28,16 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   override func viewWillAppear(_ animated: Bool) {
     clearsSelectionOnViewWillAppear = splitViewController!.isCollapsed
     super.viewWillAppear(animated)
+  }
+  
+  @objc private func refreshTable(_ sender: Any) {
+    celeturLogger.debug("refreshTable")
+    
+    self.tresorAppState?.fetchChanges(in: .private, completion: {
+      DispatchQueue.main.async {
+        self.refreshControl?.endRefreshing()
+      }
+    })
   }
   
   

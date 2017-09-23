@@ -14,7 +14,7 @@ public class TresorModel {
   
   let coreDataManager: CoreDataManager
   lazy var cloudKitManager = {
-    return CloudKitManager(tresorModel: self)
+    return CloudKitManager(tresorModel: self, appGroupContainer: appGroup)
   } ()
   
   let cipherQueue = OperationQueue()
@@ -47,6 +47,10 @@ public class TresorModel {
     return self.coreDataManager.privateChildManagedObjectContext()
   }
   
+  
+  public func createTempPrivateManagedObjectContext() -> NSManagedObjectContext {
+    return self.coreDataManager.createTempPrivateManagedObjectContext()
+  }
   
   public func getUserList() -> [TresorUser]? {
     guard !self.userListInited else { return self.userList }

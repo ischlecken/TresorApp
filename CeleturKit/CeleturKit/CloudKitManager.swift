@@ -14,82 +14,107 @@ public class CloudKitManager {
   let sharedDB : CKDatabase
   let createZoneGroup : DispatchGroup
   
-  let tresorusersGroup = "Tresorusers"
-  let tresorGroup = "Tresor"
-  let tresoruserType = "Tresoruser"
+  let tresoruserZone = "tresoruser"
+  let tresorZone = "tresor"
+  
+  var tresoruserZoneId : CKRecordZoneID?
+  var tresorZoneId : CKRecordZoneID?
+  
   let privateSubscriptionId = "private-changes"
   let sharedSubscriptionId = "shared-changes"
   
-  lazy var privateDBChangeToken : CKServerChangeToken? = {
-    return CloudKitServerChangeToken.getCloudKitCKServerChangeToken(context: self.tresorModel.mainManagedContext, name: "private")
-  }()
-  lazy var sharedDBChangeToken : CKServerChangeToken? = {
-    return CloudKitServerChangeToken.getCloudKitCKServerChangeToken(context: self.tresorModel.mainManagedContext, name: "shared")
-  }()
-  lazy var tresorusersChangeToken : CKServerChangeToken? = {
-    return CloudKitServerChangeToken.getCloudKitCKServerChangeToken(context: self.tresorModel.mainManagedContext, name: tresorusersGroup)
-  }()
+  let ckPersistenceState : CloudKitPersistenceState
   
-  
-  public init(tresorModel:TresorModel) {
+  public init(tresorModel:TresorModel,appGroupContainer appGroupContainerId:String) {
     self.tresorModel = tresorModel
+    self.ckPersistenceState = CloudKitPersistenceState(appGroupContainerId: appGroupContainerId)
     
     self.privateDB = CKContainer.default().privateCloudDatabase
     self.sharedDB = CKContainer.default().sharedCloudDatabase
+    
     self.createZoneGroup = DispatchGroup()
     
-    self.createZones(zoneName: tresorusersGroup)
-    self.createZones(zoneName: tresorGroup)
+    self.tresoruserZoneId = self.createZones(zoneName: tresoruserZone)
+    self.tresorZoneId = self.createZones(zoneName: tresorZone)
   }
   
   
-  public func getPrivateDB() -> CKDatabase {
+  func getPrivateDB() -> CKDatabase {
     return self.privateDB
   }
   
-  func saveChanges(moc:NSManagedObjectContext) {
-    let zoneId = CKRecordZoneID(zoneName: tresorGroup, ownerName: CKCurrentUserDefaultName)
+  fileprivate func createNewCKRecord(_ o:NSManagedObject) -> CKRecord? {
+    let ed = o.entity
+    let entityName = ed.name
+    let zoneId = entityName!.starts(with: "TresorUser") ? self.tresoruserZoneId : self.tresorZoneId
+    let id = o.value(forKey: "id") as? String
     
+    guard let zId = zoneId, let rId = id, let eName = entityName else { return nil }
+    
+    return CKRecord(recordType: eName, recordID:  CKRecordID(recordName: rId, zoneID: zId))
+  }
+  
+  fileprivate func createCKRecord(_ o:NSManagedObject) -> CKRecord? {
+    let result = o.storedCKRecord()
+    
+    return result != nil ? result : self.createNewCKRecord(o)
+  }
+  
+  func saveChanges(moc:NSManagedObjectContext) {
     var records = [CKRecord]()
+    var deletedRecordIds = [CKRecordID]()
     
     for o in moc.updatedObjects {
       celeturKitLogger.debug("updated:\(o)")
       
-      let ed = o.entity
-      let entityName = ed.name
-      
-      let attributesByName = ed.attributesByName
-
-      if !entityName!.starts(with: "Tresor") || !attributesByName.keys.contains("id") {
-        continue
-      }
-      
-      if let id = o.value(forKey: "id") as? String {
-        let recordId = CKRecordID(recordName: id, zoneID: zoneId)
-        let record = CKRecord(recordType: entityName!, recordID: recordId)
-        
-        for (n,_) in attributesByName {
-          let v = o.value(forKey: n) as? CKRecordValue
+      if o.isCKStoreableObject() {
+        let record = self.createCKRecord(o)
+        if let r = record {
+          let ed = o.entity
+          let attributesByName = ed.attributesByName
           
-          record.setObject(v, forKey: n)
+          for (n,_) in attributesByName {
+            let v = o.value(forKey: n) as? CKRecordValue
+            if n == "ckdata" {
+              continue
+            }
+            
+            r.setObject(v, forKey: n)
+          }
+          
+          records.append(r)
+          
+          self.ckPersistenceState.addChangedObject(o: o)
         }
-        
-        records.append(record)
       }
     }
     
-    if records.count>0 {
-      let modifyOperation = CKModifyRecordsOperation(recordsToSave: records, recordIDsToDelete: nil)
+    for o in moc.deletedObjects {
+      celeturKitLogger.debug("deleted:\(o)")
+      
+      if o.isCKStoreableObject() {
+        let record = o.storedCKRecord()
+        if let r = record {
+          deletedRecordIds.append(r.recordID)
+          self.ckPersistenceState.addDeletedObject(o: o)
+        }
+      }
+    }
+    
+    if records.count>0 || deletedRecordIds.count>0 {
+      self.ckPersistenceState.saveChangedIds()
+      
+      let modifyOperation = CKModifyRecordsOperation(recordsToSave: records, recordIDsToDelete: deletedRecordIds)
       
       modifyOperation.completionBlock = {
         celeturKitLogger.debug("modify finished")
       }
       modifyOperation.modifyRecordsCompletionBlock = { savedRecords, deletedRecordIDs, error in
         if let e = error {
-          celeturKitLogger.error("Error while saving users in cloudkit", error: e)
-          
+          let _ = self.handleError(context: "saveChanges", error: e)
         } else {
           celeturKitLogger.debug("savedRecords:\(String(describing: savedRecords))")
+          self.ckPersistenceState.flushChangedIds()
         }
       }
       
@@ -97,31 +122,87 @@ public class CloudKitManager {
     }
   }
   
-  func saveTresorUsersToCloudKit(tresorUsers:[TresorUser]) -> CKModifyRecordsOperation {
-    let zoneId = CKRecordZoneID(zoneName: tresorusersGroup, ownerName: CKCurrentUserDefaultName)
+  
+  
+  fileprivate func handleError(context:String, error:Error) -> CeleturKitError? {
+    celeturKitLogger.error("CloudKit error in context \(context)", error: error)
     
-    var records = [CKRecord]()
-    for tresorUser in tresorUsers {
-      let recordId = CKRecordID(recordName: tresorUser.id!, zoneID: zoneId)
-      
-      let record = CKRecord(recordType: "Tresoruser", recordID: recordId)
-      
-      record["id"] = tresorUser.id as CKRecordValue?
-      record["firstname"] = tresorUser.firstname as CKRecordValue?
-      record["lastname"] = tresorUser.lastname as CKRecordValue?
-      record["email"] = tresorUser.email as CKRecordValue?
-      
-      records.append(record)
+    let ckerror = error as? CKError
+    
+    if let ckerror = ckerror {
+      switch ckerror.code {
+      case .alreadyShared:
+        celeturKitLogger.debug("An error indicating that a record or share cannot be saved because doing so would cause the same hierarchy of records to exist in multiple shares.")
+      case .assetFileModified:
+        celeturKitLogger.debug("An error indicating that the content of the specified asset file was modified while being saved.")
+      case .assetFileNotFound:
+        celeturKitLogger.debug("An error that is returned when the specified asset file is not found.")
+      case .badContainer:
+        celeturKitLogger.debug("An error that is returned when the specified container is unknown or unauthorized.")
+      case .badDatabase:
+        celeturKitLogger.debug("An error indicating that the operation could not be completed on the given database.")
+      case .batchRequestFailed:
+        celeturKitLogger.debug("An error indicating that the entire batch was rejected.")
+      case .changeTokenExpired:
+        celeturKitLogger.debug("An error indicating that the previous server change token is too old.")
+      case .constraintViolation:
+        celeturKitLogger.debug("An error indicating that the server rejected the request because of a conflict with a unique field.")
+      case .incompatibleVersion:
+        celeturKitLogger.debug("An error indicating that your app version is older than the oldest version allowed.")
+      case .internalError:
+        celeturKitLogger.debug("A nonrecoverable error encountered by CloudKit.")
+      case .invalidArguments:
+        celeturKitLogger.debug("An error that is returned when the specified request contains bad information.")
+      case .limitExceeded:
+        celeturKitLogger.debug("An error that is returned when a request to the server is too large.")
+      case .managedAccountRestricted:
+        celeturKitLogger.debug("An error that is returned when a request is rejected due to a managed-account restriction.")
+      case .missingEntitlement:
+        celeturKitLogger.debug("An error that is returned when the app is missing a required entitlement.")
+      case .networkFailure:
+        celeturKitLogger.debug("An error that is returned when the network is available but cannot be accessed.")
+      case .networkUnavailable:
+        celeturKitLogger.debug("An error that is returned when the network is not available.")
+      case .notAuthenticated:
+        celeturKitLogger.debug("An error indicating that the current user is not authenticated, and no user record was available.")
+      case .operationCancelled:
+        celeturKitLogger.debug("An error indicating that an operation was explicitly canceled.")
+      case .partialFailure:
+        celeturKitLogger.debug("An error indicating that some items failed, but the operation succeeded overall.")
+      case .participantMayNeedVerification:
+        celeturKitLogger.debug("An error that is returned when the user is not a member of the share.")
+      case .permissionFailure:
+        celeturKitLogger.debug("An error indicating that the user did not have permission to perform the specified save or fetch operation.")
+      case .quotaExceeded:
+        celeturKitLogger.debug("An error that is returned when saving the record would exceed the user’s current storage quota.")
+      case .referenceViolation:
+        celeturKitLogger.debug("An error that is returned when the target of a record's parent or share reference is not found.")
+      case .requestRateLimited:
+        celeturKitLogger.debug("Transfers to and from the server are being rate limited for the client at this time.")
+      case .resultsTruncated:
+        celeturKitLogger.debug("Deprecated: An error indicating that the query results were truncated by the server.")
+      case .serverRecordChanged:
+        celeturKitLogger.debug("An error indicating that the record was rejected because the version on the server is different.")
+      case .serverRejectedRequest:
+        celeturKitLogger.debug("An error indicating that the server rejected the request.")
+      case .serverResponseLost:
+        celeturKitLogger.debug("An error that is returned when the CloudKit service is unavailable.")
+      case .serviceUnavailable:
+        celeturKitLogger.debug("An error that is returned when the CloudKit service is unavailable.")
+      case .tooManyParticipants:
+        celeturKitLogger.debug("An error indicating that a share cannot be saved because too many participants are attached to the share.")
+      case .unknownItem:
+        celeturKitLogger.debug("An error that is returned when the specified record does not exist.")
+      case .userDeletedZone:
+        celeturKitLogger.debug("An error indicating that the user has deleted this zone from the settings UI.")
+      case .zoneBusy:
+        celeturKitLogger.debug("An error indicating that the server is too busy to handle the zone operation.")
+      case .zoneNotFound:
+        celeturKitLogger.debug("An error indicating that the specified record zone does not exist on the server.")
+      }
     }
     
-    return CKModifyRecordsOperation(recordsToSave: records, recordIDsToDelete: nil)
-  }
-  
-  func deleteTresorUserFromCloudKit(tresorUserId:String) -> CKModifyRecordsOperation {
-    let zoneId = CKRecordZoneID(zoneName: tresorusersGroup, ownerName: CKCurrentUserDefaultName)
-    let recordId = CKRecordID(recordName: tresorUserId, zoneID: zoneId)
-      
-    return CKModifyRecordsOperation(recordsToSave: nil, recordIDsToDelete: [recordId])
+    return nil
   }
   
   
@@ -151,18 +232,18 @@ public class CloudKitManager {
     self.privateDB.add(createSubscriptionOperation)
     
     /*
-      let createSubscriptionOperation = self.createDatabaseSubscriptionOperation(subscriptionId: sharedSubscriptionId)
-      createSubscriptionOperation.modifySubscriptionsCompletionBlock = { (subscriptions, deletedIds, error) in
-        if let e = error {
-          celeturKitLogger.error("Error creating sharedSubscriptionId subscription",error:e)
-        }
-      }
-      self.sharedDB.add(createSubscriptionOperation)
- */
+     let createSubscriptionOperation = self.createDatabaseSubscriptionOperation(subscriptionId: sharedSubscriptionId)
+     createSubscriptionOperation.modifySubscriptionsCompletionBlock = { (subscriptions, deletedIds, error) in
+     if let e = error {
+     celeturKitLogger.error("Error creating sharedSubscriptionId subscription",error:e)
+     }
+     }
+     self.sharedDB.add(createSubscriptionOperation)
+     */
     
     self.createZoneGroup.notify(queue: DispatchQueue.global()) {
       self.fetchChanges(in: .private) {}
-     // self.fetchChanges(in: .shared) {}
+      //self.fetchChanges(in: .shared) {}
     }
   }
   
@@ -177,29 +258,12 @@ public class CloudKitManager {
     }
   }
   
-  func getChangeToken(tokenName:String) -> CKServerChangeToken? {
-    if tokenName == "private" {
-      return self.privateDBChangeToken
-    } else if tokenName == "shared" {
-      return self.sharedDBChangeToken
-    } else if tokenName == tresorusersGroup {
-      return self.sharedDBChangeToken
-    }
-    
-    return nil
+  fileprivate func getChangeToken(tokenName:String) -> CKServerChangeToken? {
+    return self.ckPersistenceState.getServerChangeToken(forName: tokenName)
   }
   
-  func setChangeToken(tokenName:String, changeToken: CKServerChangeToken) {
-    if tokenName == "private" {
-      self.privateDBChangeToken = changeToken
-      CloudKitServerChangeToken.saveCloudKitServerChangeToken(context: self.tresorModel.mainManagedContext, name: tokenName, changeToken: changeToken)
-    } else if tokenName == "shared" {
-      self.sharedDBChangeToken = changeToken
-      CloudKitServerChangeToken.saveCloudKitServerChangeToken(context: self.tresorModel.mainManagedContext,name: tokenName, changeToken: changeToken)
-    } else if tokenName == tresorusersGroup {
-      self.sharedDBChangeToken = changeToken
-      CloudKitServerChangeToken.saveCloudKitServerChangeToken(context: self.tresorModel.mainManagedContext,name: tokenName, changeToken: changeToken)
-    }
+  fileprivate func setChangeToken(tokenName:String, changeToken: CKServerChangeToken) {
+    self.ckPersistenceState.setServerChangeToken(token: changeToken, forName: tokenName)
   }
   
   func fetchDatabaseChanges(database: CKDatabase, databaseTokenKey: String, completion: @escaping () -> Void) {
@@ -265,34 +329,18 @@ public class CloudKitManager {
     let operation = CKFetchRecordZoneChangesOperation(recordZoneIDs: zoneIDs, optionsByRecordZoneID: optionsByRecordZoneID)
     
     
-    let tempMOC = self.tresorModel.privateChildManagedContext
+    let tempMOC = self.tresorModel.createTempPrivateManagedObjectContext()
     
     operation.recordChangedBlock = { (record) in
       celeturKitLogger.debug("Record changed:\(record)")
       
-      if record.recordType == self.tresoruserType {
-        var user = TresorUser.findTresorUser(context: tempMOC, withId: record["id"] as! String)
-        
-        if user == nil {
-          user = TresorUser(context:tempMOC)
-          user?.createts = Date()
-          user?.id = String.uuid()
-        }
-        
-        user?.firstname = record["firstname"] as? String
-        user?.lastname = record["lastname"] as? String
-        user?.email = record["email"] as? String
-      }
+      self.tresorModel.coreDataManager.updateManagedObject(context: tempMOC, usingRecord:record)
     }
     
     operation.recordWithIDWasDeletedBlock = { (recordId,recordType) in
       celeturKitLogger.debug("Record deleted:\(recordId)")
       
-      let user = TresorUser.findTresorUser(context: tempMOC, withId: recordId.recordName)
-      
-      if let u = user {
-        tempMOC.delete(u)
-      }
+      self.tresorModel.coreDataManager.deleteManagedObject(context: tempMOC, usingEntityName: recordType, andId: recordId.recordName)
     }
     
     operation.recordZoneChangeTokensUpdatedBlock = { (zoneId, token, data) in
@@ -329,7 +377,7 @@ public class CloudKitManager {
     database.add(operation)
   }
   
-  public func createZones(zoneName:String) {
+  public func createZones(zoneName:String) -> CKRecordZoneID {
     self.createZoneGroup.enter()
     
     let zoneID = CKRecordZoneID(zoneName: zoneName, ownerName: CKCurrentUserDefaultName)
@@ -349,6 +397,7 @@ public class CloudKitManager {
     
     self.privateDB.add(createZoneOperation)
     
+    return zoneID
   }
   
   

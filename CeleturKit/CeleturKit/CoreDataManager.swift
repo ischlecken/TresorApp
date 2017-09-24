@@ -28,37 +28,44 @@ public class CoreDataManager {
   
   // MARK: - Core Data Stack
   
-  public fileprivate(set) lazy var mainManagedObjectContext: NSManagedObjectContext = {
-    let managedObjectContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
+  fileprivate lazy var managedObjectModel: NSManagedObjectModel? = {
+    return NSManagedObjectModel(contentsOf: self.modelURL)
+  }()
+  
+  fileprivate func addPersistentStore() {
+    guard let persistentStoreCoordinator = persistentStoreCoordinator else { celeturKitLogger.fatal("Unable to Initialize Persistent Store Coordinator") }
     
-    managedObjectContext.parent = self.privateManagedObjectContext
-    managedObjectContext.automaticallyMergesChangesFromParent = true
+    let persistentStoreURL = self.persistentStoreURL
+    do {
+      let options = [ NSMigratePersistentStoresAutomaticallyOption : true, NSInferMappingModelAutomaticallyOption : true ]
+      try persistentStoreCoordinator.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: persistentStoreURL, options: options)
+    } catch {
+      celeturKitLogger.error("Unable to Add Persistent Store", error:error)
+    }
+  }
+  
+  fileprivate lazy var persistentStoreCoordinator: NSPersistentStoreCoordinator? = {
+    guard let managedObjectModel = self.managedObjectModel else { return nil }
     
-    return managedObjectContext
+    return NSPersistentStoreCoordinator(managedObjectModel: managedObjectModel)
   }()
   
   fileprivate lazy var privateManagedObjectContext: NSManagedObjectContext = {
     let managedObjectContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
-
-    managedObjectContext.persistentStoreCoordinator = self.persistentStoreCoordinator
-    managedObjectContext.automaticallyMergesChangesFromParent = true
-    
-    return managedObjectContext
-  }()
-  
-  
-  func createTempPrivateManagedObjectContext() -> NSManagedObjectContext {
-    let managedObjectContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
     
     managedObjectContext.persistentStoreCoordinator = self.persistentStoreCoordinator
     
     return managedObjectContext
-  }
-  
-  
-  fileprivate lazy var managedObjectModel: NSManagedObjectModel? = {
-    return NSManagedObjectModel(contentsOf: self.modelURL)
   }()
+  
+  public fileprivate(set) lazy var mainManagedObjectContext: NSManagedObjectContext = {
+    let managedObjectContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
+    
+    managedObjectContext.parent = self.privateManagedObjectContext
+    
+    return managedObjectContext
+  }()
+  
   
   public func privateChildManagedObjectContext() -> NSManagedObjectContext {
     let managedObjectContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
@@ -68,11 +75,6 @@ public class CoreDataManager {
     return managedObjectContext
   }
   
-  fileprivate lazy var persistentStoreCoordinator: NSPersistentStoreCoordinator? = {
-    guard let managedObjectModel = self.managedObjectModel else { return nil }
-    
-    return NSPersistentStoreCoordinator(managedObjectModel: managedObjectModel)
-  }()
   
   // MARK: - Computed Properties
   
@@ -92,38 +94,38 @@ public class CoreDataManager {
     return url!
   }
   
-  // MARK: - Helper Methods
+  // MARK: - Main Save
   
   public func saveChanges() {
-    mainManagedObjectContext.performAndWait({
-      do {
-        if self.mainManagedObjectContext.hasChanges {
-          try self.mainManagedObjectContext.save()
-          
-          celeturKitLogger.debug("Changes of Main Managed Object Context saved.")
-        }
-      } catch {
-        celeturKitLogger.error("Unable to Save Changes of Main Managed Object Context", error: error)
-      }
-    })
-    
-    privateManagedObjectContext.perform({
-      do {
-        if self.privateManagedObjectContext.hasChanges {
-          self.dumpManagedObjectContext(moc: self.privateManagedObjectContext)
-          
-          if let ckm = self.cloudKitManager {
-            ckm.saveChanges(moc: self.privateManagedObjectContext)
+    if self.mainManagedObjectContext.hasChanges || self.privateManagedObjectContext.hasChanges {
+      mainManagedObjectContext.performAndWait({
+        do {
+          if self.mainManagedObjectContext.hasChanges {
+            try self.mainManagedObjectContext.save()
+            
+            celeturKitLogger.debug("Changes of Main Managed Object Context saved.")
           }
-          
-          try self.privateManagedObjectContext.save()
-          
-          celeturKitLogger.debug("Changes of Private Managed Object Context saved.")
+        } catch {
+          celeturKitLogger.error("Unable to Save Changes of Main Managed Object Context", error: error)
         }
-      } catch {
-        celeturKitLogger.error("Unable to Save Changes of Private Managed Object Context", error:error)
-      }
-    })
+      })
+      
+      privateManagedObjectContext.perform({
+        do {
+          if self.privateManagedObjectContext.hasChanges {
+            if let ckm = self.cloudKitManager {
+              ckm.saveChanges(moc: self.privateManagedObjectContext)
+            }
+            
+            try self.privateManagedObjectContext.save()
+            
+            celeturKitLogger.debug("Changes of Private Managed Object Context saved.")
+          }
+        } catch {
+          celeturKitLogger.error("Unable to Save Changes of Private Managed Object Context", error:error)
+        }
+      })
+    }
   }
   
   fileprivate func dumpMetaInfo(o:NSManagedObject) {
@@ -142,25 +144,6 @@ public class CoreDataManager {
     
   }
   
-  fileprivate func dumpManagedObjectContext(moc:NSManagedObjectContext) {
-    for o in moc.insertedObjects {
-      celeturKitLogger.debug("inserted:\(o)")
-      
-      self.dumpMetaInfo(o: o)
-    }
-    
-    for o in moc.updatedObjects {
-      celeturKitLogger.debug("updated:\(o)")
-      
-      self.dumpMetaInfo(o: o)
-    }
-    
-    for o in moc.deletedObjects {
-      celeturKitLogger.debug("deleted:\(o)")
-      
-      self.dumpMetaInfo(o: o)
-    }
-  }
   
   // MARK: - Private Helper Methods
   
@@ -186,11 +169,6 @@ public class CoreDataManager {
     }
   }
   
-  // MARK: - Notification Handling
-  @objc func saveChanges(_ notification: Notification) {
-    celeturKitLogger.debug("call saveChanges triggered by notification..")
-    saveChanges()
-  }
   
   // MARK: - Helper Methods
   private func setupNotificationHandling() {
@@ -201,7 +179,7 @@ public class CoreDataManager {
   }
   
   fileprivate func periodicTask() {
-    celeturKitLogger.debug("periodicTask()")
+    celeturKitLogger.debug("trigger saveChanges()")
     
     self.saveChanges()
   }
@@ -212,74 +190,32 @@ public class CoreDataManager {
     return urls[0]
   }
   
-  fileprivate func addPersistentStore() {
-    guard let persistentStoreCoordinator = persistentStoreCoordinator else { celeturKitLogger.fatal("Unable to Initialize Persistent Store Coordinator") }
-    
-    let persistentStoreURL = self.persistentStoreURL
-    do {
-      let options = [ NSMigratePersistentStoresAutomaticallyOption : true, NSInferMappingModelAutomaticallyOption : true ]
-      try persistentStoreCoordinator.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: persistentStoreURL, options: options)
-    } catch {
-      celeturKitLogger.error("Unable to Add Persistent Store", error:error)
-    }
+  // MARK: - Notification Handling
+  @objc func saveChanges(_ notification: Notification) {
+    saveChanges()
   }
+  
+  // MARK: - CloudKit helper
   
   func updateManagedObject(context:NSManagedObjectContext, usingRecord record:CKRecord) {
     celeturKitLogger.debug("updateManagedObject()")
     
-    let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: record.recordType)
-    fetchRequest.predicate = NSPredicate(format: "id = %@", record.recordID.recordName)
-    fetchRequest.fetchBatchSize = 1
-    
-    do {
-      let records = try context.fetch(fetchRequest)
-      var o : NSManagedObject?
+    var o = record.getManagedObject(usingContext: context)
+    if o == nil {
+      o = NSEntityDescription.insertNewObject(forEntityName: record.recordType, into: context)
+    }
       
-      if records.count>0 {
-        o = records[0] as? NSManagedObject
-      } else {
-        o = NSEntityDescription.insertNewObject(forEntityName: record.recordType, into: context)
-      }
-      
-      if let o = o {
-        let attributes = o.entity.attributesByName
-        
-        for k in record.allKeys() {
-          let v = record.value(forKey: k)
-        
-          if attributes[k] != nil {
-            o.setValue(v, forKey: k)
-          }
-        }
-        
-        if attributes["ckdata"] != nil {
-          o.setValue(record.data(), forKey: "ckdata")
-        }
-      }
-    } catch {
-      celeturKitLogger.error("Error while fetching deleteManagedObject",error:error)
+    if let o = o {
+      o.update(usingRecord: record)
     }
   }
   
-  func deleteManagedObject(context:NSManagedObjectContext, usingEntityName entityName:String,andId id:String) {
+  func deleteManagedObject(context:NSManagedObjectContext, usingEntityName entityName:String, andId id:String) {
     celeturKitLogger.debug("deleteManagedObject()")
     
-    let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
-    fetchRequest.predicate = NSPredicate(format: "id = %@", id)
-    fetchRequest.fetchBatchSize = 1
-    
-    do {
-      let records = try context.fetch(fetchRequest)
-      
-      if records.count>0 {
-        let deletedObject = records[0] as? NSManagedObject
-        
-        if let o = deletedObject {
-          context.delete(o)
-        }
-      }
-    } catch {
-      celeturKitLogger.error("Error while fetching deleteManagedObject",error:error)
+    let obj = CKRecord.getManagedObject(usingContext: context, withEntityName: entityName, andId: id)
+    if let o = obj {
+      context.delete(o)
     }
   }
 }

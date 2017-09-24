@@ -115,6 +115,28 @@ public class CloudKitManager {
         } else {
           celeturKitLogger.debug("savedRecords:\(String(describing: savedRecords))")
           self.ckPersistenceState.flushChangedIds()
+          
+          if let savedRecords = savedRecords {
+            if savedRecords.count>0 {
+              for r in savedRecords {
+                let obj = r.getManagedObject(usingContext:moc)
+                
+                if let o = obj {
+                  o.setValue(r.data(), forKey: "ckdata")
+                }
+              }
+              
+              moc.perform({
+                do {
+                  try moc.save()
+                    
+                  celeturKitLogger.debug("Update from cloudkit saved in Private Managed Object Context.")
+                } catch {
+                  celeturKitLogger.error("Unable to Save Changes of Private Managed Object Context after update from cloudkit", error:error)
+                }
+              })
+            }
+          }
         }
       }
       
@@ -226,7 +248,7 @@ public class CloudKitManager {
     let createSubscriptionOperation = self.createDatabaseSubscriptionOperation(subscriptionId: privateSubscriptionId)
     createSubscriptionOperation.modifySubscriptionsCompletionBlock = { (subscriptions, deletedIds, error) in
       if let e = error {
-        celeturKitLogger.error("Error creating privateSubscriptionId subscription",error:e)
+        let _ = self.handleError(context: "creating privateSubscriptionId subscription", error: e)
       }
     }
     self.privateDB.add(createSubscriptionOperation)
@@ -289,7 +311,7 @@ public class CloudKitManager {
     
     operation.fetchDatabaseChangesCompletionBlock = { (token, moreComing, error) in
       if let e = error {
-        celeturKitLogger.error("Error during fetch shared database changes operation", error:e)
+        let _ = self.handleError(context: "fetch shared database changes", error: e)
         completion()
         return
       }
@@ -329,7 +351,7 @@ public class CloudKitManager {
     let operation = CKFetchRecordZoneChangesOperation(recordZoneIDs: zoneIDs, optionsByRecordZoneID: optionsByRecordZoneID)
     
     
-    let tempMOC = self.tresorModel.createTempPrivateManagedObjectContext()
+    let tempMOC = self.tresorModel.privateChildManagedContext
     
     operation.recordChangedBlock = { (record) in
       celeturKitLogger.debug("Record changed:\(record)")
@@ -353,14 +375,13 @@ public class CloudKitManager {
     
     operation.recordZoneFetchCompletionBlock = { (zoneId, changeToken, _, _, error) in
       if let e = error {
-        celeturKitLogger.error("Error fetching zone changes for \(databaseTokenKey) database:", error: e)
-        return
+        let _ = self.handleError(context: "fetching zone changes for \(databaseTokenKey) database", error: e)
       }
     }
     
     operation.fetchRecordZoneChangesCompletionBlock = { (error) in
       if let e = error {
-        celeturKitLogger.error("Error fetching zone changes for \(databaseTokenKey) database:", error: e)
+        let _ = self.handleError(context: "fetching zone changes for \(databaseTokenKey) database", error: e)
       } else {
         tempMOC.perform {
           do {
@@ -387,8 +408,7 @@ public class CloudKitManager {
     
     createZoneOperation.modifyRecordZonesCompletionBlock = { (saved, deleted, error) in
       if let e = error {
-        celeturKitLogger.error("Error creating custom zone \(zoneID)", error: e)
-        return
+        let _ = self.handleError(context: "creating custom zone", error: e)
       }
       
       self.createZoneGroup.leave()
@@ -404,7 +424,7 @@ public class CloudKitManager {
   public func requestUserDiscoverabilityPermission() {
     CKContainer.default().requestApplicationPermission(CKApplicationPermissions.userDiscoverability) { (status, error) in
       if let error=error {
-        celeturKitLogger.error("Error requesting UserDiscoverabilityPermission", error: error)
+        let _ = self.handleError(context: "UserDiscoverabilityPermission", error: error)
       }
       
       celeturKitLogger.debug("status:\(status.rawValue)")

@@ -28,4 +28,20 @@ extension NSManagedObject {
     
     return entityName!.starts(with: "Tresor") && attributesByName.keys.contains("ckdata") && attributesByName.keys.contains("id")
   }
+  
+  func update(usingRecord record:CKRecord) {
+    let attributes = self.entity.attributesByName
+    
+    for k in record.allKeys() {
+      let v = record.value(forKey: k)
+      
+      if attributes[k] != nil {
+        self.setValue(v, forKey: k)
+      }
+    }
+    
+    if attributes["ckdata"] != nil {
+      self.setValue(record.data(), forKey: "ckdata")
+    }
+  }
 }

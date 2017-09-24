@@ -128,21 +128,7 @@ public class CoreDataManager {
     }
   }
   
-  fileprivate func dumpMetaInfo(o:NSManagedObject) {
-    let ed = o.entity
-    
-    celeturKitLogger.debug("entityname:\(ed.name ?? "nil")")
-    
-    for (n,p) in ed.attributesByName {
-      celeturKitLogger.debug("  \(n):\(p.attributeValueClassName ?? "nil" )")
-    }
-    
-    for (n,p) in ed.relationshipsByName {
-      celeturKitLogger.debug("  \(n):\(p.destinationEntity?.name ?? "nil" )")
-    }
-    
-    
-  }
+  
   
   
   // MARK: - Private Helper Methods

@@ -60,12 +60,30 @@ public class CloudKitManager {
     return result != nil ? result : self.createNewCKRecord(o)
   }
   
-  func saveChanges(moc:NSManagedObjectContext) {
-    var records = [CKRecord]()
-    var deletedRecordIds = [CKRecordID]()
+  fileprivate func dumpMetaInfo(o:NSManagedObject) {
+    let ed = o.entity
     
-    for o in moc.updatedObjects {
-      celeturKitLogger.debug("updated:\(o)")
+    celeturKitLogger.debug("entityname:\(ed.name ?? "nil")")
+    
+    for (n,p) in ed.attributesByName {
+      celeturKitLogger.debug("  \(n):\(p.attributeValueClassName ?? "nil" )")
+    }
+    
+    for (n,p) in ed.relationshipsByName {
+      celeturKitLogger.debug("  \(n): ")
+      celeturKitLogger.debug("        type=\(p.destinationEntity?.name ?? "nil" )")
+      celeturKitLogger.debug("        toMany=\(p.isToMany)")
+      celeturKitLogger.debug("        inverseType=\(p.inverseRelationship?.name ?? "nil" )")
+    }
+  }
+  
+  fileprivate func handleChangedObjects(objs : Set<NSManagedObject>) -> [CKRecord] {
+    var records = [CKRecord]()
+    
+    for o in objs {
+      celeturKitLogger.debug("changed:\(o)")
+      
+      self.dumpMetaInfo(o: o)
       
       if o.isCKStoreableObject() {
         let record = self.createCKRecord(o)
@@ -89,17 +107,35 @@ public class CloudKitManager {
       }
     }
     
-    for o in moc.deletedObjects {
+    return records
+  }
+  
+  fileprivate func handleDeletedObjects(objs : Set<NSManagedObject>) -> [CKRecordID] {
+    var records = [CKRecordID]()
+    
+    for o in objs {
       celeturKitLogger.debug("deleted:\(o)")
       
       if o.isCKStoreableObject() {
         let record = o.storedCKRecord()
+        
         if let r = record {
-          deletedRecordIds.append(r.recordID)
+          records.append(r.recordID)
           self.ckPersistenceState.addDeletedObject(o: o)
         }
       }
     }
+    
+    return records
+  }
+  
+  func saveChanges(moc:NSManagedObjectContext) {
+    var records = [CKRecord]()
+    
+    records.append(contentsOf: self.handleChangedObjects(objs: moc.insertedObjects) )
+    records.append(contentsOf: self.handleChangedObjects(objs: moc.updatedObjects) )
+    
+    let deletedRecordIds = self.handleDeletedObjects(objs: moc.deletedObjects)
     
     if records.count>0 || deletedRecordIds.count>0 {
       self.ckPersistenceState.saveChangedIds()

@@ -34,6 +34,10 @@ public class TresorModel {
       self.cloudKitManager.createCloudKitSubscription()
       self.cloudKitManager.requestUserDiscoverabilityPermission()
       self.coreDataManager.cloudKitManager = self.cloudKitManager
+      
+      DispatchQueue.main.async {
+        let _ = self.getUserList()
+      }
     }
   }
   

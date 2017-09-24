@@ -206,7 +206,7 @@ public class TresorModel {
       } else {
         tdi.status = "failed"
       }
-      tdi.createts = Date()
+      tdi.changets = Date()
       
       try tempManagedContext.save()
     } catch {

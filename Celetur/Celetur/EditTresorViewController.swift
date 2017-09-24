@@ -39,6 +39,7 @@ class EditTresorViewController: UITableViewController {
   func getUpdatedModel() -> Tresor {
     self.tresor?.name = self.nameTextfield!.text
     self.tresor?.tresordescription = self.descriptionTextfield!.text
+    self.tresor?.changets = Date()
     
     return self.tresor!
   }

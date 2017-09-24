@@ -11,6 +11,7 @@ extension TresorDocumentItem {
     let result = TresorDocumentItem(context: context)
     
     result.createts = Date()
+    result.changets = result.createts
     result.id = String.uuid()
     result.status = "pending"
     result.document = tresorDocument

@@ -8,6 +8,7 @@ public extension Tresor {
   public class func createTempTresor(context: NSManagedObjectContext) throws -> Tresor {
     let newTresor = Tresor(context: context)
     newTresor.createts = Date()
+    newTresor.changets = newTresor.createts
     newTresor.id = String.uuid()
     newTresor.nonce = try Data(withRandomData: SymmetricCipherAlgorithm.aes_256.requiredBlockSize())
     
@@ -22,7 +23,7 @@ public extension Tresor {
     fetchRequest.fetchBatchSize = 20
     
     // Edit the sort key as appropriate.
-    let sortDescriptor = NSSortDescriptor(key: "createts", ascending: false)
+    let sortDescriptor = NSSortDescriptor(key: "changets", ascending: false)
     
     fetchRequest.sortDescriptors = [sortDescriptor]
     

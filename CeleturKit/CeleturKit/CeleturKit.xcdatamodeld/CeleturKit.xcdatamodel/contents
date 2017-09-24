@@ -46,10 +46,9 @@
         <relationship name="tresor" maxCount="1" deletionRule="Nullify" destinationEntity="Tresor" inverseName="documents" inverseEntity="Tresor" syncable="YES"/>
     </entity>
     <entity name="TresorDocumentItem" representedClassName="TresorDocumentItem" syncable="YES" codeGenerationType="class">
-        <attribute name="changed" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="changets" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="ckdata" optional="YES" attributeType="Binary" syncable="YES"/>
         <attribute name="createts" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="deletets" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="id" attributeType="String" syncable="YES"/>
         <attribute name="mimetype" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="nonce" optional="YES" attributeType="Binary" syncable="YES"/>
@@ -99,9 +98,9 @@
         <element name="Schemaversion" positionX="-360" positionY="-135" width="128" height="88"/>
         <element name="Tresor" positionX="-812" positionY="191" width="128" height="223"/>
         <element name="TresorDocument" positionX="-720" positionY="482" width="128" height="208"/>
-        <element name="TresorDocumentItem" positionX="-540" positionY="482" width="126" height="223"/>
-        <element name="TresorUserPermission" positionX="-900" positionY="-142" width="128" height="193"/>
+        <element name="TresorDocumentItem" positionX="-540" positionY="482" width="126" height="30"/>
         <element name="TresorUser" positionX="-711" positionY="-148" width="128" height="208"/>
         <element name="TresorUserDevice" positionX="-594" positionY="104" width="128" height="163"/>
+        <element name="TresorUserPermission" positionX="-900" positionY="-142" width="128" height="193"/>
     </elements>
 </model>

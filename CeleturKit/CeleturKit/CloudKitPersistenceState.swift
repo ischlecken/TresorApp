@@ -159,6 +159,8 @@ class CloudKitPersistenceState {
   
   func getServerChangeToken(forName name:String) -> CKServerChangeToken? {
     guard let ct = self.changeTokens, let ctName = ct[name] else { return nil }
+    
+    celeturKitLogger.debug("getServerChangeToken(\(name)): \(ctName.serverChangeToken)")
       
     return ctName.serverChangeToken
   }
@@ -174,6 +176,8 @@ class CloudKitPersistenceState {
       self.changeTokens![name]?.serverChangeToken = token
     }
     
+    celeturKitLogger.debug("setServerChangeToken(\(name)): \(token)")
+    
     NSKeyedArchiver.archiveRootObject(self.changeTokens as Any, toFile: self.serverChangeTokensFilePath)
   }
   
@@ -186,7 +190,7 @@ class CloudKitPersistenceState {
           if let oID = moc.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: url) {
             let o = moc.object(with: oID)
             
-            o.dumpMetaInfo()
+            //o.dumpMetaInfo()
             
             if o.isCKStoreableObject() {
               if let zId = zoneId(o) {

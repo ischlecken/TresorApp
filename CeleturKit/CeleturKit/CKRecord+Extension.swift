@@ -74,7 +74,7 @@ extension CKRecord {
       celeturKitLogger.error("Error while find corresponding managed object",error:error)
     }
     
-    celeturKitLogger.debug("CKRecord.getManagedObject(entityName:\(entityName),id:\(id)):\(String(describing: result))")
+    //celeturKitLogger.debug("CKRecord.getManagedObject(entityName:\(entityName),id:\(id)):\(String(describing: result))")
     
     return result
   }

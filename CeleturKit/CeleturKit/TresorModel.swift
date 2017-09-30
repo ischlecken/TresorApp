@@ -86,6 +86,8 @@ public class TresorModel {
         TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Manfreds iTV")
         
         self.userList?.append(newUser)
+        
+        self.saveChanges()
       }
     } catch {
       celeturKitLogger.error("Error while create objects...",error:error)

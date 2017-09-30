@@ -50,7 +50,7 @@ public class CloudKitManager {
   // MARK: - Save Changed from CoreData
   
   func saveChanges() {
-    celeturKitLogger.debug("CloudKitManager.saveChanges()")
+    //celeturKitLogger.debug("CloudKitManager.saveChanges()")
     
     let moc = self.tresorModel.privateManagedContext
     
@@ -66,6 +66,11 @@ public class CloudKitManager {
       modifyOperation.modifyRecordsCompletionBlock = { savedRecords, deletedRecordIDs, error in
         if let e = error {
           let _ = self.handleError(context: "saveChanges", error: e)
+          
+          //
+          // TODO: more sophisticated error handling
+          //
+          self.ckPersistenceState.flushChangedIds()
         } else {
           celeturKitLogger.debug("CloudKitManager.saveChanges() savedRecords:\(String(describing: savedRecords))")
           
@@ -311,33 +316,30 @@ public class CloudKitManager {
     }
   }
   
-  fileprivate func getChangeToken(tokenName:String) -> CKServerChangeToken? {
-    return self.ckPersistenceState.getServerChangeToken(forName: tokenName)
-  }
   
-  fileprivate func setChangeToken(tokenName:String, changeToken: CKServerChangeToken) {
-    self.ckPersistenceState.setServerChangeToken(token: changeToken, forName: tokenName)
-  }
-  
-  func fetchDatabaseChanges(database: CKDatabase, databaseTokenKey: String, completion: @escaping () -> Void) {
+  fileprivate func fetchDatabaseChanges(database: CKDatabase, databaseTokenKey: String, completion: @escaping () -> Void) {
     var changedZoneIDs: [CKRecordZoneID] = []
     
     let operation = CKFetchDatabaseChangesOperation(previousServerChangeToken: self.getChangeToken(tokenName: databaseTokenKey))
     
     operation.recordZoneWithIDChangedBlock = { (zoneID) in
       changedZoneIDs.append(zoneID)
+      
+      celeturKitLogger.debug("CloudKitManager.fetchDatabaseChanges() recordZoneWithIDChanged:\(zoneID)")
     }
     
     operation.recordZoneWithIDWasDeletedBlock = { (zoneID) in
       // Write this zone deletion to memory
+      
+      celeturKitLogger.debug("CloudKitManager.fetchDatabaseChanges() recordZoneWithIDWasDeleted:\(zoneID)")
     }
     
     operation.changeTokenUpdatedBlock = { (token) in
       // Flush zone deletions for this database to disk
       // Write this new database change token to memory
       
-      celeturKitLogger.debug("changeTokenUpdatedBlock:\(token)")
       self.setChangeToken(tokenName: databaseTokenKey, changeToken: token)
+      celeturKitLogger.debug("CloudKitManager.fetchDatabaseChanges() changeTokenUpdated")
     }
     
     operation.fetchDatabaseChangesCompletionBlock = { (token, moreComing, error) in
@@ -351,8 +353,9 @@ public class CloudKitManager {
       // Write this new database change token to memory
       
       if let c = token {
-        celeturKitLogger.debug("CloudKitManager.fetchDatabaseChanges() fetchDatabaseChangesCompletionBlock:\(c)")
         self.setChangeToken(tokenName: databaseTokenKey, changeToken: c)
+        
+        celeturKitLogger.debug("CloudKitManager.fetchDatabaseChanges() fetchDatabaseChangesCompletion")
       }
       
       if changedZoneIDs.count>0 {
@@ -369,7 +372,8 @@ public class CloudKitManager {
     database.add(operation)
   }
   
-  func fetchZoneChanges(database: CKDatabase, databaseTokenKey: String, zoneIDs: [CKRecordZoneID], completion: @escaping () -> Void) {
+  fileprivate func fetchZoneChanges(database: CKDatabase, databaseTokenKey: String, zoneIDs: [CKRecordZoneID], completion: @escaping () -> Void) {
+    celeturKitLogger.debug("CloudKitManager.fetchZoneChanges(databaseTokenKey:\(databaseTokenKey),zoneIDs:\(zoneIDs))")
     
     // Look up the previous change token for each zone
     var optionsByRecordZoneID = [CKRecordZoneID: CKFetchRecordZoneChangesOptions]()
@@ -381,32 +385,38 @@ public class CloudKitManager {
     }
     let operation = CKFetchRecordZoneChangesOperation(recordZoneIDs: zoneIDs, optionsByRecordZoneID: optionsByRecordZoneID)
     
-    
     let tempMOC = self.tresorModel.privateChildManagedContext
     
     operation.recordChangedBlock = { (record) in
-      celeturKitLogger.debug("CloudKitManager.fetchZoneChanges() record changed:\(record)")
-      
       record.updateManagedObject(context: tempMOC)
+    
+      celeturKitLogger.debug("CloudKitManager.fetchZoneChanges() record changed:\(record)")
     }
     
     operation.recordWithIDWasDeletedBlock = { (recordId,recordType) in
-      celeturKitLogger.debug("CloudKitManager.fetchZoneChanges()  record deleted:\(recordId)")
-      
       recordId.deleteManagedObject(context: tempMOC, usingEntityName: recordType)
+    
+      celeturKitLogger.debug("CloudKitManager.fetchZoneChanges()  record deleted:\(recordId)")
     }
     
     operation.recordZoneChangeTokensUpdatedBlock = { (zoneId, token, data) in
       if let c = token {
-        celeturKitLogger.debug("CloudKitManager.fetchZoneChanges()  recordZone:\(zoneId) changeToken:\(c)")
-        
         self.setChangeToken(tokenName: zoneId.zoneName, changeToken: c)
+        
+        celeturKitLogger.debug("CloudKitManager.fetchZoneChanges() recordZoneChangeTokensUpdated")
       }
     }
     
     operation.recordZoneFetchCompletionBlock = { (zoneId, changeToken, _, _, error) in
       if let e = error {
         let _ = self.handleError(context: "fetching zone changes for \(databaseTokenKey) database", error: e)
+      } else {
+        
+        if let c = changeToken {
+          self.setChangeToken(tokenName: zoneId.zoneName, changeToken: c)
+        }
+        
+        celeturKitLogger.debug("CloudKitManager.fetchZoneChanges()  recordZoneFetchCompletion")
       }
     }
     
@@ -414,6 +424,7 @@ public class CloudKitManager {
       if let e = error {
         let _ = self.handleError(context: "fetching zone changes for \(databaseTokenKey) database", error: e)
       } else {
+        
         tempMOC.perform {
           do {
             try tempMOC.save()
@@ -423,6 +434,8 @@ public class CloudKitManager {
             celeturKitLogger.error("error saving ck changes to core data",error:error)
           }
         }
+      
+        celeturKitLogger.debug("CloudKitManager.fetchZoneChanges()  fetchRecordZoneChangesCompletion")
       }
       
       completion()
@@ -453,5 +466,11 @@ public class CloudKitManager {
     return zoneID
   }
   
+  fileprivate func getChangeToken(tokenName:String) -> CKServerChangeToken? {
+    return self.ckPersistenceState.getServerChangeToken(forName: tokenName)
+  }
   
+  fileprivate func setChangeToken(tokenName:String, changeToken: CKServerChangeToken) {
+    self.ckPersistenceState.setServerChangeToken(token: changeToken, forName: tokenName)
+  }
 }

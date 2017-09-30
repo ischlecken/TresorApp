@@ -42,6 +42,10 @@ class CloudKitPersistenceState {
   var changeTokens : [String:CKServerChangeTokenModel]?
   var changedObjectIds : Set<String>?
   var deletedObjectIds : Set<String>?
+
+  var alreadyChangedObjectIds : Set<String>?
+  var alreadyDeletedObjectIds : Set<String>?
+
   var saveLock = NSLock()
   
   init(appGroupContainerId:String) {
@@ -82,6 +86,9 @@ class CloudKitPersistenceState {
     
     self.changedObjectIds = Set<String>()
     self.deletedObjectIds = Set<String>()
+ 
+    self.alreadyChangedObjectIds = Set<String>()
+    self.alreadyDeletedObjectIds = Set<String>()
     
     NSKeyedArchiver.archiveRootObject(self.changedObjectIds as Any, toFile: self.changedIdsFilePath)
     NSKeyedArchiver.archiveRootObject(self.deletedObjectIds as Any, toFile: self.deletedIdsFilePath)
@@ -89,14 +96,21 @@ class CloudKitPersistenceState {
   
   func addChangedObject(o:NSManagedObject) {
     let uri = o.objectID.uriRepresentation().path
-    celeturKitLogger.debug("CloudKitPersistenceState.addChangedObject(\(uri))")
     
     self.saveLock.lock()
-    
     defer {
       self.saveLock.unlock()
     }
     
+    if let _ = self.alreadyChangedObjectIds?.contains(uri) {
+      celeturKitLogger.debug("CloudKitPersistenceState.addChangedObject(\(uri)) ignore!")
+      
+      self.alreadyChangedObjectIds?.remove(uri)
+      
+      return
+    }
+    
+    celeturKitLogger.debug("CloudKitPersistenceState.addChangedObject(\(uri))")
     if self.changedObjectIds == nil {
       self.changedObjectIds = Set<String>()
     }
@@ -106,12 +120,19 @@ class CloudKitPersistenceState {
   
   func addDeletedObject(o:NSManagedObject) {
     let uri = o.objectID.uriRepresentation().path
-    celeturKitLogger.debug("CloudKitPersistenceState.addDeletedObject(\(uri))")
     
     self.saveLock.lock()
-    
     defer {
       self.saveLock.unlock()
+    }
+    
+    celeturKitLogger.debug("CloudKitPersistenceState.addDeletedObject(\(uri))")
+    if let _ = self.alreadyDeletedObjectIds?.contains(uri) {
+      celeturKitLogger.debug("CloudKitPersistenceState.addDeletedObject(\(uri)) ignore!")
+      
+      self.alreadyDeletedObjectIds?.remove(uri)
+      
+      return
     }
     
     if self.deletedObjectIds == nil {
@@ -119,6 +140,40 @@ class CloudKitPersistenceState {
     }
     
     self.deletedObjectIds?.insert(uri)
+  }
+  
+  func addAlreadyChangedObject(o:NSManagedObject) {
+    let uri = o.objectID.uriRepresentation().path
+    celeturKitLogger.debug("CloudKitPersistenceState.addAlreadyChangedObject(\(uri))")
+    
+    self.saveLock.lock()
+    
+    defer {
+      self.saveLock.unlock()
+    }
+    
+    if self.alreadyChangedObjectIds == nil {
+      self.alreadyChangedObjectIds = Set<String>()
+    }
+    
+    self.alreadyChangedObjectIds?.insert(uri)
+  }
+  
+  func addAlreadyDeletedObject(o:NSManagedObject) {
+    let uri = o.objectID.uriRepresentation().path
+    celeturKitLogger.debug("CloudKitPersistenceState.addAlreadyDeletedObject(\(uri))")
+    
+    self.saveLock.lock()
+    
+    defer {
+      self.saveLock.unlock()
+    }
+    
+    if self.alreadyDeletedObjectIds == nil {
+      self.alreadyDeletedObjectIds = Set<String>()
+    }
+    
+    self.alreadyDeletedObjectIds?.insert(uri)
   }
   
   func getServerChangeToken(forName name:String) -> CKServerChangeToken? {

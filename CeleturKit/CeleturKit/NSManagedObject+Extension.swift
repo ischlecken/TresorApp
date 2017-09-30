@@ -41,7 +41,7 @@ extension NSManagedObject {
     }
     
     if attributes["ckdata"] != nil {
-      self.setValue(record.data(), forKey: "ckdata")
+      self.setValue(record.cksystemdata(), forKey: "ckdata")
     }
   }
 }

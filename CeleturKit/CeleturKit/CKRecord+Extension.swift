@@ -10,7 +10,7 @@ import CloudKit
 
 extension CKRecord {
   
-  func data() -> Data {
+  func cksystemdata() -> Data {
     let result = NSMutableData()
     let archiver = NSKeyedArchiver(forWritingWith: result)
     

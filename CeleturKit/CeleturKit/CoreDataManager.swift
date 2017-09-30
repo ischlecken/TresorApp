@@ -94,7 +94,7 @@ public class CoreDataManager {
     return url!
   }
   
-  // MARK: - Main Save
+  // MARK: - Save changes in main and private MOC
   
   public func saveChanges() {
     if self.mainManagedObjectContext.hasChanges || self.privateManagedObjectContext.hasChanges {
@@ -128,8 +128,12 @@ public class CoreDataManager {
     }
   }
   
-  
-  
+  fileprivate func updateInfoForChangedObjects() {
+    if self.mainManagedObjectContext.hasChanges || self.privateManagedObjectContext.hasChanges {
+      self.cloudKitManager?.updateInfoForChangedObjects(moc: self.mainManagedObjectContext)
+      self.cloudKitManager?.updateInfoForChangedObjects(moc: self.privateManagedObjectContext)
+    }
+  }
   
   // MARK: - Private Helper Methods
   
@@ -157,6 +161,8 @@ public class CoreDataManager {
   
   
   // MARK: - Helper Methods
+  
+  
   private func setupNotificationHandling() {
     let notificationCenter = NotificationCenter.default
     
@@ -165,8 +171,7 @@ public class CoreDataManager {
   }
   
   fileprivate func periodicTask() {
-    celeturKitLogger.debug("trigger saveChanges()")
-    
+    self.updateInfoForChangedObjects()
     self.saveChanges()
   }
   
@@ -178,14 +183,14 @@ public class CoreDataManager {
   
   // MARK: - Notification Handling
   @objc func saveChanges(_ notification: Notification) {
+    self.updateInfoForChangedObjects()
+    
     saveChanges()
   }
   
   // MARK: - CloudKit helper
   
   func updateManagedObject(context:NSManagedObjectContext, usingRecord record:CKRecord) {
-    celeturKitLogger.debug("updateManagedObject()")
-    
     var o = record.getManagedObject(usingContext: context)
     if o == nil {
       o = NSEntityDescription.insertNewObject(forEntityName: record.recordType, into: context)
@@ -193,15 +198,17 @@ public class CoreDataManager {
       
     if let o = o {
       o.update(usingRecord: record)
+      
+      self.cloudKitManager?.addAlreadyChangedObject(o: o)
     }
   }
   
   func deleteManagedObject(context:NSManagedObjectContext, usingEntityName entityName:String, andId id:String) {
-    celeturKitLogger.debug("deleteManagedObject()")
-    
     let obj = CKRecord.getManagedObject(usingContext: context, withEntityName: entityName, andId: id)
     if let o = obj {
       context.delete(o)
+      
+      self.cloudKitManager?.addAlreadyDeletedObject(o: o)
     }
   }
 }

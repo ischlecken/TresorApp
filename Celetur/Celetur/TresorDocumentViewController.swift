@@ -41,7 +41,8 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     // Dispose of any resources that can be recreated.
   }
   
-  @IBAction func insertNewObject(_ sender: Any) {
+  @IBAction
+  func insertNewObject(_ sender: Any) {
     do {
       let plainText = "{ \"title\": \"gmx.de\",\"user\":\"bla@fasel.de\",\"password\":\"hugo\"}"
       

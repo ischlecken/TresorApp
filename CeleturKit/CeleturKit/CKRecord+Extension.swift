@@ -8,6 +8,17 @@
 
 import CloudKit
 
+extension CKRecordID {
+  
+  func deleteManagedObject(context:NSManagedObjectContext, usingEntityName entityName:String) {
+    let obj = CKRecord.getManagedObject(usingContext: context, withEntityName: entityName, andId: self.recordName)
+    
+    if let o = obj {
+      context.delete(o)
+    }
+  }
+}
+
 extension CKRecord {
   
   func cksystemdata() -> Data {
@@ -30,6 +41,19 @@ extension CKRecord {
     self.init(coder: unarchiver)
   }
   
+  func updateManagedObject(context:NSManagedObjectContext) {
+    var o = self.getManagedObject(usingContext: context)
+    if o == nil {
+      o = NSEntityDescription.insertNewObject(forEntityName: self.recordType, into: context)
+    }
+    
+    if let o = o {
+      o.update(usingRecord: self)
+    }
+  }
+  
+  
+  
   func getManagedObject(usingContext context:NSManagedObjectContext) -> NSManagedObject? {
     return CKRecord.getManagedObject(usingContext: context, withEntityName: self.recordType, andId: self.recordID.recordName)
   }
@@ -50,7 +74,7 @@ extension CKRecord {
       celeturKitLogger.error("Error while find corresponding managed object",error:error)
     }
     
-    celeturKitLogger.debug("getManagedObject(entityName:\(entityName),id:\(id)):\(String(describing: result))")
+    celeturKitLogger.debug("CKRecord.getManagedObject(entityName:\(entityName),id:\(id)):\(String(describing: result))")
     
     return result
   }

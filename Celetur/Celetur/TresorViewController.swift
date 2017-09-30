@@ -95,6 +95,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
             do {
               try esc.save()
               
+              self.tresorAppState?.tresorModel.saveChanges()
             } catch {
               celeturLogger.error("Error while saving tresor object",error:error)
             }
@@ -150,6 +151,8 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
       
       do {
         try context?.save()
+        
+        self.tresorAppState?.tresorModel.saveChanges()
       } catch {
         celeturLogger.error("Error while deleting tresor object",error:error)
         

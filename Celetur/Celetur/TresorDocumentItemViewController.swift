@@ -162,6 +162,8 @@ class TresorDocumentItemViewController: UITableViewController {
                                                                               masterKey: (self.tresorAppState?.masterKey)!,
                                                                               tresorDocumentItem: self.tresorDocumentItem!,
                                                                               payload: model!)
+        
+        self.tresorAppState?.tresorModel.saveChanges()
       }
     }
   }

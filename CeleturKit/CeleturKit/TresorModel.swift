@@ -42,6 +42,11 @@ public class TresorModel {
   }
   
   
+  public var privateManagedContext : NSManagedObjectContext {
+    return self.coreDataManager.privateManagedObjectContext
+  }
+  
+  
   public var mainManagedContext : NSManagedObjectContext {
     return self.coreDataManager.mainManagedObjectContext
   }
@@ -49,6 +54,10 @@ public class TresorModel {
   
   public var privateChildManagedContext : NSManagedObjectContext {
     return self.coreDataManager.privateChildManagedObjectContext()
+  }
+  
+  public func saveChanges(notifyCloudKit:Bool=true) {
+    self.coreDataManager.saveChanges(notifyChangesToCloudKit:notifyCloudKit)
   }
   
   public func getUserList() -> [TresorUser]? {
@@ -105,24 +114,9 @@ public class TresorModel {
       do {
         try tempMOC.save()
         
+        self.coreDataManager.saveChanges(notifyChangesToCloudKit: true)
+        
         completion( {return users} )
-        
-        /*
-        let modifyOperation = self.saveTresorUsersToCloudKit(tresorUsers: users)
-        modifyOperation.completionBlock = {
-          celeturKitLogger.debug("modify finished")
-        }
-        modifyOperation.modifyRecordsCompletionBlock = { savedRecords, deletedRecordIDs, error in
-          if let e = error {
-            celeturKitLogger.error("Error while saving users in cloudkit", error: e)
-            completion( {throw e} )
-          } else {
-            completion( {return users} )
-          }
-        }
-        
-        self.privateDB.add(modifyOperation)
- */
       } catch {
         celeturKitLogger.error("Error saving contacts",error:error)
         
@@ -136,31 +130,7 @@ public class TresorModel {
     
     self.mainManagedContext.delete(user)
     
-    /*
-     do {
-      try self.managedContext.save()
-      
-      completion( {} )
-      
-      let modifyOperation = self.deleteTresorUserFromCloudKit(tresorUserId: userId)
-      
-      modifyOperation.modifyRecordsCompletionBlock = {savedRecords, deletedRecordIDs, error in
-        if let e = error {
-          celeturKitLogger.error("Error while deleting tresor user from cloudkit", error: e)
-          completion( {throw e} )
-        } else {
-          completion( {} )
-        }
-      }
-      
-      self.privateDB.add(modifyOperation)
- 
-    } catch {
-      celeturKitLogger.error("Error while deleting TresorUser", error: error)
-      
-      completion( {throw error} )
-    }
- */
+    self.coreDataManager.saveChanges(notifyChangesToCloudKit: true)
   }
   
   public func createTresorDocument(tresor:Tresor, plainText: String, masterKey: TresorKey?) throws -> TresorDocument {
@@ -177,6 +147,8 @@ public class TresorModel {
       newTresorDocument.addToDocumentitems(item)
       userdevice.addToDocumentitems(item)
     }
+    
+    self.saveChanges()
     
     return newTresorDocument
   }
@@ -213,6 +185,7 @@ public class TresorModel {
       tdi.changets = Date()
       
       try tempManagedContext.save()
+      self.saveChanges()
     } catch {
       celeturKitLogger.error("Error while encryption payload from edit dialogue",error:error)
     }
@@ -243,6 +216,8 @@ public class TresorModel {
           newTresorDocumentItem.status = "encrypted"
           newTresorDocumentItem.payload = operation.outputData
           newTresorDocumentItem.nonce = operation.iv
+          
+          self.saveChanges()
           
           celeturKitLogger.debug("plain:\(plainText) key:\(key) encryptedText:\(String(describing: operation.outputData?.hexEncodedString()))")
         }

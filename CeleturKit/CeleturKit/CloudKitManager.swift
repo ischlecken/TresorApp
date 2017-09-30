@@ -36,6 +36,7 @@ public class CloudKitManager {
   public init(tresorModel:TresorModel,appGroupContainer appGroupContainerId:String) {
     self.tresorModel = tresorModel
     self.ckPersistenceState = CloudKitPersistenceState(appGroupContainerId: appGroupContainerId)
+    self.ckPersistenceState.load()
     
     self.privateDB = CKContainer.default().privateCloudDatabase
     self.sharedDB = CKContainer.default().sharedCloudDatabase
@@ -48,26 +49,26 @@ public class CloudKitManager {
   
   // MARK: - Save Changed from CoreData
   
-  func saveChanges(moc:NSManagedObjectContext) {
-    var records = [CKRecord]()
+  func saveChanges() {
+    celeturKitLogger.debug("CloudKitManager.saveChanges()")
     
-    records.append(contentsOf: self.handleChangedObjects(objs: moc.insertedObjects) )
-    records.append(contentsOf: self.handleChangedObjects(objs: moc.updatedObjects) )
+    let moc = self.tresorModel.privateManagedContext
     
-    let deletedRecordIds = self.handleDeletedObjects(objs: moc.deletedObjects)
+    let records = self.ckPersistenceState.changedRecords(moc: moc, zoneId: self.getZoneId)
+    let deletedRecordIds = self.ckPersistenceState.deletedRecordIds(moc:moc, zoneId: self.getZoneIdByEntityName)
     
     if records.count>0 || deletedRecordIds.count>0 {
-      
       let modifyOperation = CKModifyRecordsOperation(recordsToSave: records, recordIDsToDelete: deletedRecordIds)
       
       modifyOperation.completionBlock = {
-        celeturKitLogger.debug("modify finished")
+        celeturKitLogger.debug("CloudKitManager.saveChanges() modify finished")
       }
       modifyOperation.modifyRecordsCompletionBlock = { savedRecords, deletedRecordIDs, error in
         if let e = error {
           let _ = self.handleError(context: "saveChanges", error: e)
         } else {
-          celeturKitLogger.debug("savedRecords:\(String(describing: savedRecords))")
+          celeturKitLogger.debug("CloudKitManager.saveChanges() savedRecords:\(String(describing: savedRecords))")
+          
           self.ckPersistenceState.flushChangedIds()
           
           if let savedRecords = savedRecords {
@@ -84,7 +85,7 @@ public class CloudKitManager {
                 do {
                   try moc.save()
                   
-                  celeturKitLogger.debug("Update from cloudkit saved in Private Managed Object Context.")
+                  celeturKitLogger.debug("CloudKitManager.saveChanges() update from cloudkit saved in Private Managed Object Context.")
                 } catch {
                   celeturKitLogger.error("Unable to Save Changes of Private Managed Object Context after update from cloudkit", error:error)
                 }
@@ -96,14 +97,6 @@ public class CloudKitManager {
       
       self.privateDB.add(modifyOperation)
     }
-  }
-  
-  func addAlreadyChangedObject(o:NSManagedObject) {
-    self.ckPersistenceState.addAlreadyChangedObject(o: o)
-  }
- 
-  func addAlreadyDeletedObject(o:NSManagedObject) {
-    self.ckPersistenceState.addAlreadyDeletedObject(o: o)
   }
   
   func updateInfoForChangedObjects(moc:NSManagedObjectContext) {
@@ -128,57 +121,6 @@ public class CloudKitManager {
       
       self.ckPersistenceState.saveChangedIds()
     }
-  }
-  
-  
-  
-  fileprivate func handleChangedObjects(objs : Set<NSManagedObject>) -> [CKRecord] {
-    var records = [CKRecord]()
-    
-    for o in objs {
-      celeturKitLogger.debug("changed:\(o)")
-      
-      self.dumpMetaInfo(o: o)
-      
-      if o.isCKStoreableObject() {
-        let record = self.createCKRecord(o)
-        if let r = record {
-          let ed = o.entity
-          let attributesByName = ed.attributesByName
-          
-          for (n,_) in attributesByName {
-            let v = o.value(forKey: n) as? CKRecordValue
-            if n == "ckdata" {
-              continue
-            }
-            
-            r.setObject(v, forKey: n)
-          }
-          
-          records.append(r)
-        }
-      }
-    }
-    
-    return records
-  }
-  
-  fileprivate func handleDeletedObjects(objs : Set<NSManagedObject>) -> [CKRecordID] {
-    var records = [CKRecordID]()
-    
-    for o in objs {
-      celeturKitLogger.debug("deleted:\(o)")
-      
-      if o.isCKStoreableObject() {
-        let record = o.storedCKRecord()
-        
-        if let r = record {
-          records.append(r.recordID)
-        }
-      }
-    }
-    
-    return records
   }
   
   
@@ -340,22 +282,21 @@ public class CloudKitManager {
     }
   }
   
-  fileprivate func createNewCKRecord(_ o:NSManagedObject) -> CKRecord? {
+  
+  
+  func getZoneId(_ o:NSManagedObject) -> CKRecordZoneID? {
     let ed = o.entity
-    let entityName = ed.name
-    let zoneId = entityName!.starts(with: "TresorUser") ? self.tresoruserZoneId : self.tresorZoneId
-    let id = o.value(forKey: "id") as? String
+    if let entityName = ed.name {
+      return self.getZoneIdByEntityName(entityName: entityName)
+    }
     
-    guard let zId = zoneId, let rId = id, let eName = entityName else { return nil }
-    
-    return CKRecord(recordType: eName, recordID:  CKRecordID(recordName: rId, zoneID: zId))
+    return nil
   }
   
-  fileprivate func createCKRecord(_ o:NSManagedObject) -> CKRecord? {
-    let result = o.storedCKRecord()
-    
-    return result != nil ? result : self.createNewCKRecord(o)
+  func getZoneIdByEntityName(entityName:String) -> CKRecordZoneID? {
+    return entityName.starts(with: "TresorUser") ? self.tresoruserZoneId : self.tresorZoneId
   }
+  
   
   // MARK: - Fetch Changes from CloudKit
   
@@ -410,7 +351,7 @@ public class CloudKitManager {
       // Write this new database change token to memory
       
       if let c = token {
-        celeturKitLogger.debug("fetchDatabaseChangesCompletionBlock:\(c)")
+        celeturKitLogger.debug("CloudKitManager.fetchDatabaseChanges() fetchDatabaseChangesCompletionBlock:\(c)")
         self.setChangeToken(tokenName: databaseTokenKey, changeToken: c)
       }
       
@@ -444,20 +385,20 @@ public class CloudKitManager {
     let tempMOC = self.tresorModel.privateChildManagedContext
     
     operation.recordChangedBlock = { (record) in
-      celeturKitLogger.debug("Record changed:\(record)")
+      celeturKitLogger.debug("CloudKitManager.fetchZoneChanges() record changed:\(record)")
       
-      self.tresorModel.coreDataManager.updateManagedObject(context: tempMOC, usingRecord:record)
+      record.updateManagedObject(context: tempMOC)
     }
     
     operation.recordWithIDWasDeletedBlock = { (recordId,recordType) in
-      celeturKitLogger.debug("Record deleted:\(recordId)")
+      celeturKitLogger.debug("CloudKitManager.fetchZoneChanges()  record deleted:\(recordId)")
       
-      self.tresorModel.coreDataManager.deleteManagedObject(context: tempMOC, usingEntityName: recordType, andId: recordId.recordName)
+      recordId.deleteManagedObject(context: tempMOC, usingEntityName: recordType)
     }
     
     operation.recordZoneChangeTokensUpdatedBlock = { (zoneId, token, data) in
       if let c = token {
-        celeturKitLogger.debug("recordZone:\(zoneId) changeToken:\(c)")
+        celeturKitLogger.debug("CloudKitManager.fetchZoneChanges()  recordZone:\(zoneId) changeToken:\(c)")
         
         self.setChangeToken(tokenName: zoneId.zoneName, changeToken: c)
       }
@@ -476,6 +417,8 @@ public class CloudKitManager {
         tempMOC.perform {
           do {
             try tempMOC.save()
+            
+            self.tresorModel.saveChanges(notifyCloudKit: false)
           } catch {
             celeturKitLogger.error("error saving ck changes to core data",error:error)
           }
@@ -509,26 +452,6 @@ public class CloudKitManager {
     
     return zoneID
   }
-  
-  // MARK: - Util
-  
-  fileprivate func dumpMetaInfo(o:NSManagedObject) {
-    let ed = o.entity
-    
-    celeturKitLogger.debug("entityname:\(ed.name ?? "nil")")
-    
-    for (n,p) in ed.attributesByName {
-      celeturKitLogger.debug("  \(n):\(p.attributeValueClassName ?? "nil" )")
-    }
-    
-    for (n,p) in ed.relationshipsByName {
-      celeturKitLogger.debug("  \(n): ")
-      celeturKitLogger.debug("        type=\(p.destinationEntity?.name ?? "nil" )")
-      celeturKitLogger.debug("        toMany=\(p.isToMany)")
-      celeturKitLogger.debug("        inverseType=\(p.inverseRelationship?.name ?? "nil" )")
-    }
-  }
-  
   
   
 }

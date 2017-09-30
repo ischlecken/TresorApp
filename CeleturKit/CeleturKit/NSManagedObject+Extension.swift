@@ -44,4 +44,38 @@ extension NSManagedObject {
       self.setValue(record.cksystemdata(), forKey: "ckdata")
     }
   }
+  
+  func createNewCKRecord(zoneId:CKRecordZoneID) -> CKRecord? {
+    let ed = self.entity
+    let entityName = ed.name
+    let id = self.value(forKey: "id") as? String
+    
+    guard let rId = id, let eName = entityName else { return nil }
+    
+    return CKRecord(recordType: eName, recordID:  CKRecordID(recordName: rId, zoneID: zoneId))
+  }
+  
+  func createCKRecord(zoneId:CKRecordZoneID) -> CKRecord? {
+    let result = self.storedCKRecord()
+    
+    return result != nil ? result : self.createNewCKRecord(zoneId:zoneId)
+  }
+  
+  func dumpMetaInfo() {
+    let ed = self.entity
+    
+    celeturKitLogger.debug("entityname:\(ed.name ?? "nil")")
+    
+    for (n,p) in ed.attributesByName {
+      celeturKitLogger.debug("  \(n):\(p.attributeValueClassName ?? "nil" )")
+    }
+    
+    for (n,p) in ed.relationshipsByName {
+      celeturKitLogger.debug("  \(n): ")
+      celeturKitLogger.debug("        type=\(p.destinationEntity?.name ?? "nil" )")
+      celeturKitLogger.debug("        toMany=\(p.isToMany)")
+      celeturKitLogger.debug("        inverseType=\(p.inverseRelationship?.name ?? "nil" )")
+    }
+  }
+  
 }

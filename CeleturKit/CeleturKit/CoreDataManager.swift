@@ -50,7 +50,7 @@ public class CoreDataManager {
     return NSPersistentStoreCoordinator(managedObjectModel: managedObjectModel)
   }()
   
-  fileprivate lazy var privateManagedObjectContext: NSManagedObjectContext = {
+  public fileprivate(set) lazy var privateManagedObjectContext: NSManagedObjectContext = {
     let managedObjectContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
     
     managedObjectContext.persistentStoreCoordinator = self.persistentStoreCoordinator
@@ -96,14 +96,20 @@ public class CoreDataManager {
   
   // MARK: - Save changes in main and private MOC
   
-  public func saveChanges() {
+  public func saveChanges(notifyChangesToCloudKit:Bool) {
+    celeturKitLogger.debug("CoreDataManager.saveChanges(notifyChangesToCloudKit:\(notifyChangesToCloudKit))...")
+    
     if self.mainManagedObjectContext.hasChanges || self.privateManagedObjectContext.hasChanges {
+      if( notifyChangesToCloudKit ) {
+        self.updateInfoForChangedObjects()
+      }
+      
       mainManagedObjectContext.performAndWait({
         do {
           if self.mainManagedObjectContext.hasChanges {
             try self.mainManagedObjectContext.save()
             
-            celeturKitLogger.debug("Changes of Main Managed Object Context saved.")
+            celeturKitLogger.debug("CoreDataManager.saveChanges() changes of Main Managed Object Context saved.")
           }
         } catch {
           celeturKitLogger.error("Unable to Save Changes of Main Managed Object Context", error: error)
@@ -113,18 +119,20 @@ public class CoreDataManager {
       privateManagedObjectContext.perform({
         do {
           if self.privateManagedObjectContext.hasChanges {
-            if let ckm = self.cloudKitManager {
-              ckm.saveChanges(moc: self.privateManagedObjectContext)
-            }
-            
             try self.privateManagedObjectContext.save()
             
-            celeturKitLogger.debug("Changes of Private Managed Object Context saved.")
+            celeturKitLogger.debug("CoreDataManager.saveChanges() changes of Private Managed Object Context saved.")
           }
         } catch {
           celeturKitLogger.error("Unable to Save Changes of Private Managed Object Context", error:error)
         }
       })
+    }
+  }
+  
+  fileprivate func saveChangesToCloudKit() {
+    if let ckm = self.cloudKitManager {
+      ckm.saveChanges()
     }
   }
   
@@ -171,8 +179,7 @@ public class CoreDataManager {
   }
   
   fileprivate func periodicTask() {
-    self.updateInfoForChangedObjects()
-    self.saveChanges()
+    self.saveChangesToCloudKit()
   }
   
   fileprivate static func applicationDocumentsDirectory() -> URL {
@@ -183,32 +190,7 @@ public class CoreDataManager {
   
   // MARK: - Notification Handling
   @objc func saveChanges(_ notification: Notification) {
-    self.updateInfoForChangedObjects()
-    
-    saveChanges()
+    self.periodicTask()
   }
   
-  // MARK: - CloudKit helper
-  
-  func updateManagedObject(context:NSManagedObjectContext, usingRecord record:CKRecord) {
-    var o = record.getManagedObject(usingContext: context)
-    if o == nil {
-      o = NSEntityDescription.insertNewObject(forEntityName: record.recordType, into: context)
-    }
-      
-    if let o = o {
-      o.update(usingRecord: record)
-      
-      self.cloudKitManager?.addAlreadyChangedObject(o: o)
-    }
-  }
-  
-  func deleteManagedObject(context:NSManagedObjectContext, usingEntityName entityName:String, andId id:String) {
-    let obj = CKRecord.getManagedObject(usingContext: context, withEntityName: entityName, andId: id)
-    if let o = obj {
-      context.delete(o)
-      
-      self.cloudKitManager?.addAlreadyDeletedObject(o: o)
-    }
-  }
 }

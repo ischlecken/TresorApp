@@ -61,6 +61,8 @@ class UserDeviceViewController: UITableViewController, NSFetchedResultsControlle
       
       do {
         try context?.save()
+        
+        self.tresorAppState?.tresorModel.saveChanges()
       } catch {
         celeturLogger.error("Error while deleting TresorUser", error: error)
       }

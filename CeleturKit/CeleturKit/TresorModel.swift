@@ -187,7 +187,6 @@ public class TresorModel {
       tdi.changets = Date()
       
       try tempManagedContext.save()
-      self.saveChanges()
     } catch {
       celeturKitLogger.error("Error while encryption payload from edit dialogue",error:error)
     }

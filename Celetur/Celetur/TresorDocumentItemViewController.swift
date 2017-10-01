@@ -151,8 +151,6 @@ class TresorDocumentItemViewController: UITableViewController {
   
   @IBAction func unwindToTresorDocumentItem(segue: UIStoryboardSegue) {
     if "saveEditTresorDocumentItem" == segue.identifier {
-      celeturLogger.debug("saveEditTresorDocumentItem")
-      
       let model = (segue.source as? EditTresorDocumentItemViewController)?.model
       let scratchpadContext = self.tresorAppState?.tresorModel.privateChildManagedContext
       

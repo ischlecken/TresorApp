@@ -35,7 +35,7 @@ public class SymmetricCipherOperation : Operation {
       return
     }
     
-    celeturKitLogger.debug("SymmetricCipherOperation.cryptoOperation() key:\(self.key.hexEncodedString())")
+    celeturKitLogger.debug("SymmetricCipherOperation.cryptoOperation(operation:\(operation)) key:\(self.key.hexEncodedString())")
     
     // Prepare data parameters
     let keyData: Data! = self.key

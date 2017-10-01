@@ -33,7 +33,6 @@ class UserViewController: UITableViewController, NSFetchedResultsControllerDeleg
       do {
         let result = try inner()
         
-        celeturLogger.debug("result=\(result)")
       } catch {
         celeturLogger.error("Error while saving contacts", error: error)
         

@@ -31,8 +31,6 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   }
   
   @objc private func refreshTable(_ sender: Any) {
-    celeturLogger.debug("refreshTable")
-    
     self.tresorAppState?.fetchChanges(in: .private, completion: {
       DispatchQueue.main.async {
         self.refreshControl?.endRefreshing()

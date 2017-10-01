@@ -52,8 +52,6 @@ extension CKRecord {
     }
   }
   
-  
-  
   func getManagedObject(usingContext context:NSManagedObjectContext) -> NSManagedObject? {
     return CKRecord.getManagedObject(usingContext: context, withEntityName: self.recordType, andId: self.recordID.recordName)
   }
@@ -77,6 +75,10 @@ extension CKRecord {
     //celeturKitLogger.debug("CKRecord.getManagedObject(entityName:\(entityName),id:\(id)):\(String(describing: result))")
     
     return result
+  }
+  
+  func dumpRecordInfo(prefix:String) {
+    celeturKitLogger.debug(prefix+"\(self.recordType): \(self.recordID.recordName) in \(self.recordID.zoneID.zoneName)")
   }
 }
 

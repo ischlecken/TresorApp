@@ -197,7 +197,7 @@ class CloudKitPersistenceState {
           if let oID = moc.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: url) {
             let o = moc.object(with: oID)
             
-            //o.dumpMetaInfo()
+            o.dumpMetaInfo()
             
             if o.isCKStoreableObject() {
               if let zId = zoneId(o) {
@@ -213,6 +213,19 @@ class CloudKitPersistenceState {
                     }
                     
                     r.setObject(v, forKey: n)
+                  }
+                  
+                  for (n,p) in ed.relationshipsByName {
+                    if !p.isToMany,
+                      let destValue = o.value(forKey:n) as? NSManagedObject,
+                      let destId = destValue.value(forKey: "id") as? String {
+                      
+                      let ref = CKReference(recordID: CKRecordID(recordName: destId, zoneID: zId), action: .none)
+                      
+                      celeturKitLogger.debug("  reference to \(p.destinationEntity?.name): \(destId)")
+                      
+                      r.setObject(ref, forKey:n)
+                    }
                   }
                   
                   records.append(r)

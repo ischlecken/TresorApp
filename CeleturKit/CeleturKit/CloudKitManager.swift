@@ -14,10 +14,7 @@ public class CloudKitManager {
   let sharedDB : CKDatabase
   let createZoneGroup : DispatchGroup
   
-  let tresoruserZone = "tresoruser"
   let tresorZone = "tresor"
-  
-  var tresoruserZoneId : CKRecordZoneID?
   var tresorZoneId : CKRecordZoneID?
   
   let privateSubscriptionId = "private-changes"
@@ -43,7 +40,6 @@ public class CloudKitManager {
     
     self.createZoneGroup = DispatchGroup()
     
-    self.tresoruserZoneId = self.createZones(zoneName: tresoruserZone)
     self.tresorZoneId = self.createZones(zoneName: tresorZone)
   }
   
@@ -310,7 +306,7 @@ public class CloudKitManager {
   }
   
   func getZoneIdByEntityName(entityName:String) -> CKRecordZoneID? {
-    return entityName.starts(with: "TresorUser") ? self.tresoruserZoneId : self.tresorZoneId
+    return self.tresorZoneId
   }
   
   

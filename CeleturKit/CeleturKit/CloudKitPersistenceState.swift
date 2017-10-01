@@ -222,9 +222,15 @@ class CloudKitPersistenceState {
                       
                       let ref = CKReference(recordID: CKRecordID(recordName: destId, zoneID: zId), action: .none)
                       
-                      celeturKitLogger.debug("  reference to \(p.destinationEntity?.name): \(destId)")
+                      celeturKitLogger.debug("  reference to \(p.destinationEntity?.name ?? "-"): \(destId)")
                       
                       r.setObject(ref, forKey:n)
+                    } else if p.isToMany, let _ = p.inverseRelationship?.isToMany, let relationObjects = o.value(forKey:n) as? NSSet {
+                      celeturKitLogger.debug("\(n) is many-to-many relation...")
+                      
+                      for ro in relationObjects {
+                        celeturKitLogger.debug("   ro:\(ro))")
+                      }
                     }
                   }
                   

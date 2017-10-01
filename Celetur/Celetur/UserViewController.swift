@@ -31,49 +31,28 @@ class UserViewController: UITableViewController, NSFetchedResultsControllerDeleg
   func contactPicker(_ picker: CNContactPickerViewController, didSelect contacts: [CNContact]) {
     self.tresorAppState?.tresorModel.saveTresorUsersUsingContacts(contacts: contacts) { inner in
       do {
-        let result = try inner()
+        let _ = try inner()
         
       } catch {
         celeturLogger.error("Error while saving contacts", error: error)
         
-        self.presentErrorAlert(title:"Error while saving users",message: error.localizedDescription)
+        self.presentAlertController(title:"Error while saving users",message: error.localizedDescription)
       }
     }
   }
   
   func presentPermissionErrorAlert() {
-    DispatchQueue.main.async {
-      let alert =
-        UIAlertController(title: "Could Not Save Contact",
-                          message: "How am I supposed to add the contact if you didn't give me permission?",
-                          preferredStyle: .alert)
-      
-      let openSettingsAction = UIAlertAction(title: "Settings",
-                                             style: .default,
-                                             handler: { alert in
-                                              UIApplication.shared.open(URL(string: UIApplicationOpenSettingsURLString)!)
-                                              
-      })
-      let dismissAction = UIAlertAction(title: "OK",style: .cancel, handler: nil)
-      alert.addAction(openSettingsAction)
-      alert.addAction(dismissAction)
-      
-      self.present(alert, animated: true,completion: nil)
-    }
-  }
-  
-  func presentErrorAlert(title:String, message:String) {
-    DispatchQueue.main.async {
-      let alert =
-        UIAlertController(title: title,
-                          message: message,
-                          preferredStyle: .alert)
-      
-      let dismissAction = UIAlertAction(title: "OK",style: .cancel, handler: nil)
-      alert.addAction(dismissAction)
-      
-      self.present(alert, animated: true,completion: nil)
-    }
+    let openSettingsAction = UIAlertAction(title: "Settings",
+                                           style: .default,
+                                           handler: { alert in
+                                            UIApplication.shared.open(URL(string: UIApplicationOpenSettingsURLString)!)
+                                            
+    })
+    
+    self.presentAlertController(title: "Could Not Save Contact",
+                   message: "How am I supposed to add the contact if you didn't give me permission?",
+                   alertAction:openSettingsAction)
+    
   }
   
   // MARK: - Table view data source
@@ -112,7 +91,7 @@ class UserViewController: UITableViewController, NSFetchedResultsControllerDeleg
         } catch {
           celeturLogger.error("Error while deleting tresur user", error: error)
           
-          self.presentErrorAlert(title:"Error while deleting user",message: error.localizedDescription)
+          self.presentAlertController(title:"Error while deleting user",message: error.localizedDescription)
         }
       }
     }

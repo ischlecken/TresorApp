@@ -79,6 +79,12 @@ public class CloudKitManager {
             }
           }
           
+          if let dr=deletedRecordIDs {
+            for dri in dr {
+              celeturKitLogger.debug("CloudKitManager.saveChanges()  record \(dri.recordName) in \(dri.zoneID.zoneName) deleted")
+            }
+          }
+          
           self.ckPersistenceState.flushChangedIds()
           
           if let savedRecords = savedRecords {
@@ -380,7 +386,7 @@ public class CloudKitManager {
   }
   
   fileprivate func fetchZoneChanges(database: CKDatabase, databaseTokenKey: String, zoneIDs: [CKRecordZoneID], completion: @escaping () -> Void) {
-    var zoneNames = zoneIDs.map { (zoneId) -> String in
+    let zoneNames = zoneIDs.map { (zoneId) -> String in
       return zoneId.zoneName
     }
     

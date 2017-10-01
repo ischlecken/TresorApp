@@ -81,8 +81,6 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   }
   
   @IBAction func unwindToTresor(segue: UIStoryboardSegue) {
-    celeturLogger.debug("unwindToTresor:\(String(describing: segue.identifier))")
-    
     if segue.identifier == "saveUnwindToTresor" {
         let controller = segue.source as! EditTresorViewController
        

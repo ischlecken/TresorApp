@@ -128,7 +128,10 @@ class CloudKitPersistenceState {
       self.saveLock.unlock()
     }
     
-    celeturKitLogger.debug("CloudKitPersistenceState.addChangedObject(\(uri))")
+    let entityId = o.value(forKey: "id") as? String
+    let entityType = o.entity.name
+    
+    celeturKitLogger.debug("CloudKitPersistenceState.addChangedObject(\(entityType ?? "nil"): \(entityId ?? "nil"))")
     if self.changedObjectIds == nil {
       self.changedObjectIds = Set<String>()
     }
@@ -146,9 +149,13 @@ class CloudKitPersistenceState {
       self.saveLock.unlock()
     }
     
-    celeturKitLogger.debug("CloudKitPersistenceState.addDeletedObject(\(uri))")
+    celeturKitLogger.debug("CloudKitPersistenceState.addDeletedObject(\(entityType ?? "nil"): \(entityId ?? "nil"))")
     if self.deletedObjectIds == nil {
       self.deletedObjectIds = Set<CKDeletedObjectInfo>()
+    }
+    
+    if var c = self.changedObjectIds {
+      c.remove(uri)
     }
     
     if let et = entityType, let ei = entityId {

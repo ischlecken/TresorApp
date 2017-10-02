@@ -41,15 +41,17 @@ extension CKRecord {
     self.init(coder: unarchiver)
   }
   
-  func updateManagedObject(context:NSManagedObjectContext) {
+  func updateManagedObject(context:NSManagedObjectContext) -> NSManagedObject {
     var o = self.getManagedObject(usingContext: context)
     if o == nil {
       o = NSEntityDescription.insertNewObject(forEntityName: self.recordType, into: context)
     }
     
     if let o = o {
-      o.update(usingRecord: self)
+      o.update(context: context, usingRecord: self)
     }
+    
+    return o!
   }
   
   func getManagedObject(usingContext context:NSManagedObjectContext) -> NSManagedObject? {

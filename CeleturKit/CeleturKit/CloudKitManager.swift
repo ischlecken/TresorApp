@@ -50,8 +50,8 @@ public class CloudKitManager {
     
     let moc = self.tresorModel.privateManagedContext
     
-    let records = self.ckPersistenceState.changedRecords(moc: moc, zoneId: self.getZoneId)
-    let deletedRecordIds = self.ckPersistenceState.deletedRecordIds(moc:moc, zoneId: self.getZoneIdByEntityName)
+    let records = self.ckPersistenceState.changedRecords(moc: moc, zoneId: self.tresorZoneId)
+    let deletedRecordIds = self.ckPersistenceState.deletedRecordIds(moc:moc, zoneId: self.tresorZoneId)
     
     if records.count>0 || deletedRecordIds.count>0 {
       let modifyOperation = CKModifyRecordsOperation(recordsToSave: records, recordIDsToDelete: deletedRecordIds)
@@ -296,20 +296,6 @@ public class CloudKitManager {
   
   
   
-  func getZoneId(_ o:NSManagedObject) -> CKRecordZoneID? {
-    let ed = o.entity
-    if let entityName = ed.name {
-      return self.getZoneIdByEntityName(entityName: entityName)
-    }
-    
-    return nil
-  }
-  
-  func getZoneIdByEntityName(entityName:String) -> CKRecordZoneID? {
-    return self.tresorZoneId
-  }
-  
-  
   // MARK: - Fetch Changes from CloudKit
   
   public func fetchChanges(in databaseScope: CKDatabaseScope, completion: @escaping () -> Void) {
@@ -381,12 +367,24 @@ public class CloudKitManager {
     database.add(operation)
   }
   
+  struct RecordObject {
+    var object : NSManagedObject
+    var record : CKRecord
+    
+    init(object : NSManagedObject,record : CKRecord) {
+      self.object = object
+      self.record = record
+    }
+  }
+  
   fileprivate func fetchZoneChanges(database: CKDatabase, databaseTokenKey: String, zoneIDs: [CKRecordZoneID], completion: @escaping () -> Void) {
     let zoneNames = zoneIDs.map { (zoneId) -> String in
       return zoneId.zoneName
     }
     
     celeturKitLogger.debug("CloudKitManager.fetchZoneChanges() fetch for changes in zones \(zoneNames) started...")
+    
+    var updateObjects = [RecordObject]()
     
     // Look up the previous change token for each zone
     var optionsByRecordZoneID = [CKRecordZoneID: CKFetchRecordZoneChangesOptions]()
@@ -401,7 +399,9 @@ public class CloudKitManager {
     let tempMOC = self.tresorModel.privateChildManagedContext
     
     operation.recordChangedBlock = { (record) in
-      record.updateManagedObject(context: tempMOC)
+      var o = record.updateManagedObject(context: tempMOC)
+      
+      updateObjects.append( RecordObject(object:o, record: record) )
     
       record.dumpRecordInfo(prefix: "CloudKitManager.fetchZoneChanges()   changed:")
     }
@@ -440,6 +440,11 @@ public class CloudKitManager {
         
         tempMOC.perform {
           do {
+            
+            for or in updateObjects {
+              or.object.updateRelationships(context: tempMOC, usingRecord: or.record)
+            }
+            
             try tempMOC.save()
             
             self.tresorModel.saveChanges(notifyCloudKit: false)

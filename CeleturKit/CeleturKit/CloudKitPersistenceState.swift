@@ -188,57 +188,15 @@ class CloudKitPersistenceState {
     NSKeyedArchiver.archiveRootObject(self.changeTokens as Any, toFile: self.serverChangeTokensFilePath)
   }
   
-  func changedRecords(moc:NSManagedObjectContext,zoneId:( (NSManagedObject) -> CKRecordZoneID?) ) -> [CKRecord] {
+  func changedRecords(moc:NSManagedObjectContext,zoneId:CKRecordZoneID? ) -> [CKRecord] {
     var records = [CKRecord]()
     
     if let coi = self.changedObjectIds {
       for urlString in coi {
-        if let url = URL(string:urlString) {
-          if let oID = moc.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: url) {
-            let o = moc.object(with: oID)
-            
-            o.dumpMetaInfo()
-            
-            if o.isCKStoreableObject() {
-              if let zId = zoneId(o) {
-                let record = o.createCKRecord(zoneId: zId)
-                if let r = record {
-                  let ed = o.entity
-                  let attributesByName = ed.attributesByName
-                  
-                  for (n,_) in attributesByName {
-                    let v = o.value(forKey: n) as? CKRecordValue
-                    if n == "ckdata" {
-                      continue
-                    }
-                    
-                    r.setObject(v, forKey: n)
-                  }
-                  
-                  for (n,p) in ed.relationshipsByName {
-                    if !p.isToMany,
-                      let destValue = o.value(forKey:n) as? NSManagedObject,
-                      let destId = destValue.value(forKey: "id") as? String {
-                      
-                      let ref = CKReference(recordID: CKRecordID(recordName: destId, zoneID: zId), action: .none)
-                      
-                      celeturKitLogger.debug("  reference to \(p.destinationEntity?.name ?? "-"): \(destId)")
-                      
-                      r.setObject(ref, forKey:n)
-                    } else if p.isToMany, let _ = p.inverseRelationship?.isToMany, let relationObjects = o.value(forKey:n) as? NSSet {
-                      celeturKitLogger.debug("\(n) is many-to-many relation...")
-                      
-                      for ro in relationObjects {
-                        celeturKitLogger.debug("   ro:\(ro))")
-                      }
-                    }
-                  }
-                  
-                  records.append(r)
-                }
-              }
-            }
-          }
+        if let url = URL(string:urlString),
+          let oID = moc.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: url),
+          let r = moc.object(with: oID).mapToRecord(zoneId: zoneId) {
+            records.append(r)
         }
       }
     }
@@ -246,19 +204,18 @@ class CloudKitPersistenceState {
     return records
   }
   
-  func deletedRecordIds(moc:NSManagedObjectContext,zoneId:( (String) -> CKRecordZoneID?) ) -> [CKRecordID] {
+  func deletedRecordIds(moc:NSManagedObjectContext,zoneId:CKRecordZoneID? ) -> [CKRecordID] {
     var result = [CKRecordID]()
     
     if let dOIds = self.deletedObjectIds {
       for doi in dOIds {
-        if let zId = zoneId(doi.entityType) {
-          let rId = CKRecordID(recordName: doi.entityId, zoneID: zId)
-          
-          result.append(rId)
+        if let zId = zoneId {
+          result.append(CKRecordID(recordName: doi.entityId, zoneID: zId))
         }
       }
     }
     
     return result
   }
+  
 }

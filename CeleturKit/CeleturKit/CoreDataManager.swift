@@ -13,6 +13,7 @@ public class CoreDataManager {
   fileprivate let timer : DispatchSourceTimer
   fileprivate let appGroupContainerId : String
   fileprivate let bundle : Bundle
+  fileprivate var saveToCKIsRunning = false
   
   var cloudKitManager : CloudKitManager?
   
@@ -132,6 +133,13 @@ public class CoreDataManager {
   
   fileprivate func saveChangesToCloudKit() {
     if let ckm = self.cloudKitManager {
+      guard !self.saveToCKIsRunning else { return }
+      
+      self.saveToCKIsRunning = true
+      defer {
+        self.saveToCKIsRunning = false
+      }
+      
       ckm.saveChanges()
     }
   }

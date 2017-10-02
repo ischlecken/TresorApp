@@ -29,19 +29,42 @@ extension NSManagedObject {
     return entityName!.starts(with: "Tresor") && attributesByName.keys.contains("ckdata") && attributesByName.keys.contains("id")
   }
   
-  func update(usingRecord record:CKRecord) {
+  func update(context:NSManagedObjectContext, usingRecord record:CKRecord) {
     let attributes = self.entity.attributesByName
     
     for k in record.allKeys() {
-      let v = record.value(forKey: k)
-      
-      if attributes[k] != nil {
+      if let v = record.value(forKey: k), attributes[k] != nil {
         self.setValue(v, forKey: k)
       }
     }
     
     if attributes["ckdata"] != nil {
       self.setValue(record.cksystemdata(), forKey: "ckdata")
+    }
+  }
+  
+  func updateRelationships(context:NSManagedObjectContext, usingRecord record:CKRecord) {
+    for (n,p) in self.entity.relationshipsByName {
+      if !p.isToMany, let ref = record.value(forKey: n) as? CKReference, let refEntityName = p.destinationEntity?.name {
+        let refObj = CKRecord.getManagedObject(usingContext: context, withEntityName: refEntityName, andId: ref.recordID.recordName)
+        
+        self.setValue(refObj, forKey: n)
+      } else if p.isToMany,
+        p.inverseRelationship?.isToMany ?? false,
+        let refEntityName = p.destinationEntity?.name {
+        
+        if let l = record.value(forKey: n) as? [CKReference] {
+          let refObjSet = self.mutableSetValue(forKey: n)
+          refObjSet.removeAllObjects()
+          for r in l {
+            if let refObj = CKRecord.getManagedObject(usingContext: context, withEntityName: refEntityName, andId: r.recordID.recordName) {
+              refObjSet.add( refObj as Any )
+            }
+          }
+        } else {
+          self.setValue(nil, forKey: n)
+        }
+      }
     }
   }
   
@@ -75,6 +98,74 @@ extension NSManagedObject {
       celeturKitLogger.debug("        type=\(p.destinationEntity?.name ?? "nil" )")
       celeturKitLogger.debug("        toMany=\(p.isToMany)")
       celeturKitLogger.debug("        inverseType=\(p.inverseRelationship?.name ?? "nil" )")
+    }
+  }
+  
+  
+  func mapToRecord(zoneId:CKRecordZoneID? ) -> CKRecord? {
+    var result : CKRecord?
+    
+    if self.isCKStoreableObject() {
+      self.dumpMetaInfo()
+      
+      if let zId = zoneId {
+        let record = self.createCKRecord(zoneId: zId)
+        if let r = record {
+          self.mapObjectAttributes(zId: zId, r: r)
+          self.mapObjectRelationship(zId: zId, r: r)
+          
+          result = r
+        }
+      }
+    }
+    
+    return result
+  }
+  
+  fileprivate func mapObjectAttributes(zId:CKRecordZoneID, r:CKRecord) {
+    let ed = self.entity
+    let attributesByName = ed.attributesByName
+    
+    for (n,_) in attributesByName {
+      let v = self.value(forKey: n) as? CKRecordValue
+      if n == "ckdata" {
+        continue
+      }
+      
+      r.setObject(v, forKey: n)
+    }
+  }
+  
+  fileprivate func mapObjectRelationship(zId:CKRecordZoneID, r:CKRecord) {
+    let ed = self.entity
+    
+    for (n,p) in ed.relationshipsByName {
+      if !p.isToMany,
+        let destValue = self.value(forKey:n) as? NSManagedObject,
+        let destId = destValue.value(forKey: "id") as? String {
+        
+        let ref = CKReference(recordID: CKRecordID(recordName: destId, zoneID: zId), action: .none)
+        
+        celeturKitLogger.debug("  reference to \(p.destinationEntity?.name ?? "-"): \(destId)")
+        
+        r.setObject(ref, forKey:n)
+      } else if p.isToMany,
+        let relationObjects = self.value(forKey:n) as? NSSet,
+        p.inverseRelationship?.isToMany ?? false {
+        
+        celeturKitLogger.debug("  \(n) is many-to-many relation...")
+        
+        var rList = [CKReference]()
+        for ro in relationObjects {
+          if let o = ro as? NSManagedObject, let destId = o.value(forKey: "id") as? String {
+            celeturKitLogger.debug("    reference to \(p.destinationEntity?.name ?? "-"): \(destId)")
+            
+            rList.append(CKReference(recordID: CKRecordID(recordName: destId, zoneID: zId), action: .none))
+          }
+        }
+        
+        r.setObject(rList as CKRecordValue, forKey: n)
+      }
     }
   }
   

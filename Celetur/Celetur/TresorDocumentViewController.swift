@@ -111,6 +111,8 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
       let context = self.tresorAppState?.mainManagedContext()
       
       context?.delete(tresorDocumentItem)
+      
+      self.tresorAppState?.tresorModel.saveChanges()
     }
   }
   

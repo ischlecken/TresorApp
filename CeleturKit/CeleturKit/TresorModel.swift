@@ -65,6 +65,7 @@ public class TresorModel {
     
     self.userListInited = true
     
+    /*
     do {
       self.userList = try self.mainManagedContext.fetch(TresorUser.fetchRequest())
       
@@ -92,6 +93,7 @@ public class TresorModel {
     } catch {
       celeturKitLogger.error("Error while create objects...",error:error)
     }
+ */
   
     return self.userList
   }

@@ -30,7 +30,8 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     super.viewWillAppear(animated)
   }
   
-  @objc private func refreshTable(_ sender: Any) {
+  @objc
+  private func refreshTable(_ sender: Any) {
     self.tresorAppState?.fetchChanges(in: .private, completion: {
       DispatchQueue.main.async {
         self.refreshControl?.endRefreshing()
@@ -141,24 +142,25 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     editAction.backgroundColor = .orange
     
     let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { action, index in
-      let context = self.tresorAppState?.mainManagedContext()
-      
-      context?.delete(self.fetchedResultsController.object(at: index))
-      
-      do {
-        try context?.save()
+      if let context = self.tresorAppState?.mainManagedContext() {
+        let tresor = self.fetchedResultsController.object(at: index)
         
-        self.tresorAppState?.tresorModel.saveChanges()
-      } catch {
-        celeturLogger.error("Error while deleting tresor object",error:error)
+        self.tresorAppState?.tresorModel.deleteTresor(context: context, tresor: tresor)
         
         do {
-          try self._fetchedResultsController?.performFetch()
-          self.tableView.reloadData()
+          try context.save()
+          
+          self.tresorAppState?.tresorModel.saveChanges()
         } catch {
-          celeturLogger.error("Error while refreshing fetchedResultsController", error: error)
+          celeturLogger.error("Error while deleting tresor object",error:error)
+          
+          do {
+            try self._fetchedResultsController?.performFetch()
+            self.tableView.reloadData()
+          } catch {
+            celeturLogger.error("Error while refreshing fetchedResultsController", error: error)
+          }
         }
-        
       }
     }
     

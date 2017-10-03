@@ -164,6 +164,30 @@ public class TresorModel {
     return newTresorDocument
   }
   
+  public func deleteTresor(context:NSManagedObjectContext, tresor:Tresor) {
+    if let docs = tresor.documents {
+      for doc in docs {
+        if let o = doc as? TresorDocument {
+          self.deleteTresorDocument(context: context, tresorDocument: o)
+        }
+      }
+    }
+    
+    context.delete(tresor)
+  }
+  
+  public func deleteTresorDocument(context:NSManagedObjectContext, tresorDocument:TresorDocument) {
+    if let docItems = tresorDocument.documentitems {
+      for item in docItems {
+        if let o = item as? NSManagedObject {
+          context.delete(o)
+        }
+      }
+    }
+    
+    context.delete(tresorDocument)
+  }
+  
  
   
   public func encryptAndSaveTresorDocumentItem(tempManagedContext: NSManagedObjectContext,

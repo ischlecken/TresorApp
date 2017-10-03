@@ -61,7 +61,7 @@ class CKDeletedObjectInfo : NSObject, NSCoding {
   }
   
   override var hashValue: Int {
-    return self.entityId.hashValue + self.entityType.hashValue
+    return self.entityId.hashValue
   }
 }
 

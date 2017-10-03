@@ -23,6 +23,10 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     
     let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(insertNewObject(_:)))
     navigationItem.rightBarButtonItem = addButton
+    
+    self.refreshControl = UIRefreshControl()
+    self.refreshControl?.addTarget(self, action: #selector(refreshTable(_:)), for: .valueChanged)
+    
   
     self.title = tresor?.tresordescription
     self.dateFormatter.dateStyle = DateFormatter.Style.short
@@ -30,6 +34,16 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     
     self.currentUserDevice = self.tresorAppState?.tresorModel.getCurrentUserDevice()
   }
+  
+  @objc
+  private func refreshTable(_ sender: Any) {
+    self.tresorAppState?.fetchChanges(in: .private, completion: {
+      DispatchQueue.main.async {
+        self.refreshControl?.endRefreshing()
+      }
+    })
+  }
+  
   
   override func viewWillAppear(_ animated: Bool) {
     clearsSelectionOnViewWillAppear = splitViewController!.isCollapsed
@@ -79,7 +93,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     let sectionInfo = fetchedResultsController.sections![section]
     
-    return sectionInfo.numberOfObjects
+    return sectionInfo.numberOfObjects + 1
   }
   
   override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -93,28 +107,70 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "tresorDocumentCell", for: indexPath)
-    let tresorDocumentItem = fetchedResultsController.object(at: indexPath)
     
-    configureCell(cell, withTresorDocumentItem: tresorDocumentItem)
+    if indexPath.row == 0 {
+      let tresorDocumentItem = fetchedResultsController.object(at: indexPath)
+      let tresorDocument = tresorDocumentItem.document
+      
+      configureCellForTresorDocument(cell,withTresorDocument: tresorDocument)
+    } else {
+      let newIndexPath = IndexPath(row: indexPath.row-1, section: indexPath.section)
+      let tresorDocumentItem = fetchedResultsController.object(at: newIndexPath)
+      
+      configureCell(cell, withTresorDocumentItem: tresorDocumentItem)
+    }
     
     return cell
   }
   
   override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-    let tresorDocumentItem = fetchedResultsController.object(at: indexPath)
-    let isItemDeleted = self.tresorAppState?.tresorModel.isObjectDeleted(o: tresorDocumentItem) ?? false
     
-    return !isItemDeleted
+    return true
   }
   
   override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
     if editingStyle == .delete {
-      let tresorDocumentItem = fetchedResultsController.object(at: indexPath)
-      
-      self.tresorAppState?.tresorModel.deleteObject(o:tresorDocumentItem)
-      
-      self.tableView.reloadRows(at: [indexPath], with: .fade)
+      if let context = self.tresorAppState?.mainManagedContext() {
+        
+        if indexPath.row == 0 {
+          if let tresorDocument = fetchedResultsController.object(at: indexPath).document {
+            self.tresorAppState?.tresorModel.deleteTresorDocument(context: context, tresorDocument: tresorDocument)
+          }
+        } else {
+          let newIndexPath = IndexPath(row: indexPath.row-1, section: indexPath.section)
+          let tresorDocumentItem = fetchedResultsController.object(at: newIndexPath)
+          
+          if tresorDocumentItem.document?.documentitems?.count == 1 {
+            self.tresorAppState?.tresorModel.deleteTresorDocument(context: context, tresorDocument: tresorDocumentItem.document!)
+          } else {
+            context.delete(tresorDocumentItem)
+          }
+        }
+        
+        do {
+          try context.save()
+          
+          self.tresorAppState?.tresorModel.saveChanges()
+        } catch {
+          celeturLogger.error("Error while deleting tresor object",error:error)
+        }
+      }
     }
+  }
+  
+  func configureCellForTresorDocument(_ cell: UITableViewCell, withTresorDocument tresorDocument: TresorDocument?) {
+    cell.textLabel!.text = "Document"
+    
+    cell.textLabel?.textColor = UIColor.black
+    
+    var formatedCreatets = "-"
+    
+    if let createts = tresorDocument?.createts {
+      formatedCreatets = self.dateFormatter.string(from: createts)
+    }
+    
+    cell.detailTextLabel!.text = "created at " + formatedCreatets
+    cell.indentationLevel = 0
   }
   
   func configureCell(_ cell: UITableViewCell, withTresorDocumentItem tresorDocumentItem: TresorDocumentItem) {
@@ -138,6 +194,8 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     
     let formatedCreatets = self.dateFormatter.string(from: tresorDocumentItem.createts!)
     cell.detailTextLabel!.text = "Device:"+(tresorDocumentItem.userdevice?.devicename ?? "-") + " " + formatedCreatets
+    
+    cell.indentationLevel = 1
   }
   
   
@@ -164,7 +222,10 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     tableView.beginUpdates()
   }
   
-  func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange sectionInfo: NSFetchedResultsSectionInfo, atSectionIndex sectionIndex: Int, for type: NSFetchedResultsChangeType) {
+  func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>,
+                  didChange sectionInfo: NSFetchedResultsSectionInfo,
+                  atSectionIndex sectionIndex: Int,
+                  for type: NSFetchedResultsChangeType) {
     switch type {
     case .insert:
       tableView.insertSections(IndexSet(integer: sectionIndex), with: .fade)
@@ -175,20 +236,37 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     }
   }
   
-  func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+  func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>,
+                  didChange anObject: Any,
+                  at indexPath: IndexPath?,
+                  for type: NSFetchedResultsChangeType,
+                  newIndexPath: IndexPath?) {
     switch type {
     case .insert:
-      tableView.insertRows(at: [newIndexPath!], with: .fade)
+    
+      let newIndexPath1 = IndexPath(row:newIndexPath!.row+1,section:newIndexPath!.section)
+      tableView.insertRows(at: [newIndexPath1], with: .fade)
+    
     case .delete:
-      tableView.deleteRows(at: [indexPath!], with: .fade)
+      let indexPath1 = IndexPath(row:indexPath!.row+1,section:indexPath!.section)
+      
+      tableView.deleteRows(at: [indexPath1], with: .fade)
+      
     case .update:
-      let cell = tableView.cellForRow(at: indexPath!)
+      let indexPath1 = IndexPath(row:indexPath!.row+1,section:indexPath!.section)
+      
+      let cell = tableView.cellForRow(at: indexPath1)
+      
       configureCell(cell!, withTresorDocumentItem: (anObject as? TresorDocumentItem)!)
+    
     case .move:
-     let cell = tableView.cellForRow(at: indexPath!)
+      let indexPath1 = IndexPath(row:indexPath!.row+1,section:indexPath!.section)
+      let newIndexPath1 = IndexPath(row:newIndexPath!.row+1,section:newIndexPath!.section)
+      
+      let cell = tableView.cellForRow(at: indexPath1)
        
      configureCell(cell!, withTresorDocumentItem: (anObject as? TresorDocumentItem)!)
-      tableView.moveRow(at: indexPath!, to: newIndexPath!)
+      tableView.moveRow(at: indexPath1, to: newIndexPath1)
     }
   }
   

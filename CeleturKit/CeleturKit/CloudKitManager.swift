@@ -110,6 +110,37 @@ public class CloudKitManager {
     }
   }
   
+  func deleteAllRecordsForZone() {
+    var recordIds = [CKRecordID]()
+    
+    let fetchOperation = CKFetchRecordZoneChangesOperation(recordZoneIDs: [self.tresorZoneId!], optionsByRecordZoneID: nil)
+    
+    fetchOperation.recordChangedBlock = { (record) in
+      celeturKitLogger.debug("  delete candidate \(record.recordType): \(record.recordID.recordName)")
+      recordIds.append(record.recordID)
+    }
+    
+    fetchOperation.completionBlock = {
+      let deleteOperation = CKModifyRecordsOperation(recordsToSave: nil, recordIDsToDelete: recordIds)
+      
+      deleteOperation.modifyRecordsCompletionBlock = { savedRecords, deletedRecordIDs, error in
+        if let e = error {
+          celeturKitLogger.error("Error deleted all records",error:e)
+        }
+        
+        if let dri = deletedRecordIDs {
+          for i in dri {
+            celeturKitLogger.debug("    deleted record \(i.recordName)")
+          }
+        }
+      }
+      
+      self.privateDB.add(deleteOperation)
+    }
+    
+    self.privateDB.add(fetchOperation)
+  }
+  
   func updateInfoForChangedObjects(moc:NSManagedObjectContext) {
     if moc.hasChanges {
       for o in moc.insertedObjects {

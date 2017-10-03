@@ -201,4 +201,22 @@ public class CoreDataManager {
     self.periodicTask()
   }
   
+  func removeAllEntities(context: NSManagedObjectContext,entityName:String) {
+    let fr = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
+    
+    do {
+      let fetchResult = try context.fetch(fr)
+      
+      for i in fetchResult {
+        if let o = i as? NSManagedObject {
+          celeturKitLogger.debug("  delete \(entityName): \(o.value(forKey: "id") ?? "-")")
+          
+          context.delete(o)
+        }
+      }
+      
+    } catch {
+      celeturKitLogger.error("error deleted all entities \(entityName)", error: error)
+    }
+  }
 }

@@ -299,8 +299,37 @@ public class TresorModel {
     self.cloudKitPersistenceState.addDeletedObject(o: o)
   }
   
-  public func resetData() {
+  public func resetChangeTokens() {
     self.cloudKitPersistenceState.flushChangedIds()
     self.cloudKitPersistenceState.flushServerChangeTokens()
   }
+  
+  public func removeAllCloudKitData() {
+    self.cloudKitManager.deleteAllRecordsForZone()
+  }
+  
+  public func removeAllCoreData() {
+    let tempMoc = self.coreDataManager.privateChildManagedObjectContext()
+    
+    do {
+      self.coreDataManager.removeAllEntities(context: tempMoc, entityName: "TresorDocumentItem")
+      self.coreDataManager.removeAllEntities(context: tempMoc, entityName: "TresorDocument")
+      self.coreDataManager.removeAllEntities(context: tempMoc, entityName: "Tresor")
+      self.coreDataManager.removeAllEntities(context: tempMoc, entityName: "TresorUserDevice")
+      self.coreDataManager.removeAllEntities(context: tempMoc, entityName: "TresorUser")
+      
+      try tempMoc.save()
+      
+      self.saveChanges(notifyCloudKit: false)
+    } catch {
+      celeturKitLogger.error("Error delete all entities",error:error)
+    }
+  }
+  
+  public func resetAll() {
+    self.resetChangeTokens()
+    self.removeAllCloudKitData()
+    self.removeAllCoreData()
+  }
+  
 }

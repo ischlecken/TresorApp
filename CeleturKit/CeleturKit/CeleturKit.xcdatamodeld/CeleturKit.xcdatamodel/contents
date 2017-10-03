@@ -43,7 +43,7 @@
         <attribute name="prevdocid" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="previewimage" optional="YES" attributeType="Binary" syncable="YES"/>
         <relationship name="documentitems" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TresorDocumentItem" inverseName="document" inverseEntity="TresorDocumentItem" syncable="YES"/>
-        <relationship name="tresor" maxCount="1" deletionRule="Cascade" destinationEntity="Tresor" inverseName="documents" inverseEntity="Tresor" syncable="YES"/>
+        <relationship name="tresor" maxCount="1" deletionRule="Nullify" destinationEntity="Tresor" inverseName="documents" inverseEntity="Tresor" syncable="YES"/>
     </entity>
     <entity name="TresorDocumentItem" representedClassName="TresorDocumentItem" syncable="YES" codeGenerationType="class">
         <attribute name="changets" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
@@ -55,7 +55,7 @@
         <attribute name="payload" optional="YES" attributeType="Binary" syncable="YES"/>
         <attribute name="status" attributeType="String" syncable="YES"/>
         <attribute name="type" optional="YES" attributeType="String" defaultValueString="document" syncable="YES"/>
-        <relationship name="document" maxCount="1" deletionRule="Cascade" destinationEntity="TresorDocument" inverseName="documentitems" inverseEntity="TresorDocument" syncable="YES"/>
+        <relationship name="document" maxCount="1" deletionRule="Nullify" destinationEntity="TresorDocument" inverseName="documentitems" inverseEntity="TresorDocument" syncable="YES"/>
         <relationship name="userdevice" maxCount="1" deletionRule="Nullify" destinationEntity="TresorUserDevice" inverseName="documentitems" inverseEntity="TresorUserDevice" syncable="YES"/>
     </entity>
     <entity name="TresorUser" representedClassName="TresorUser" syncable="YES" codeGenerationType="class">

@@ -147,8 +147,7 @@ extension NSManagedObject {
         let destValue = self.value(forKey:n) as? NSManagedObject,
         let destId = destValue.value(forKey: "id") as? String {
         
-        let referenceAction = p.deleteRule == .cascadeDeleteRule ? CKReferenceAction.deleteSelf : CKReferenceAction.none
-        let ref = CKReference(recordID: CKRecordID(recordName: destId, zoneID: zId), action: referenceAction)
+        let ref = CKReference(recordID: CKRecordID(recordName: destId, zoneID: zId), action: .none)
         
         celeturKitLogger.debug("  reference to \(p.destinationEntity?.name ?? "-"): \(destId)")
         

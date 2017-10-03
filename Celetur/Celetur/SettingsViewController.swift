@@ -20,21 +20,32 @@ class SettingsViewController: UITableViewController {
   }
   
   override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return section==0 ? 2 : 2
+    return section==0 ? 2 : 5
   }
   
   @IBAction
   func createDummyUsersAction(_ sender: Any) {
-    celeturLogger.debug("createDummyUser")
-    
     self.tresorAppState?.tresorModel.createDummyUsers()
   }
   
   @IBAction
-  func resetDataAction(_ sender: Any) {
-    celeturLogger.debug("resetData")
-    
-    self.tresorAppState?.tresorModel.resetData()
+  func resetChangeTokensAction(_ sender: Any) {
+    self.tresorAppState?.tresorModel.resetChangeTokens()
+  }
+  
+  @IBAction
+  func removeAllCloudKitDataAction(_ sender: Any) {
+    self.tresorAppState?.tresorModel.removeAllCloudKitData()
+  }
+  
+  @IBAction
+  func removeAllCoreDataAction(_ sender: Any) {
+    self.tresorAppState?.tresorModel.removeAllCoreData()
+  }
+  
+  @IBAction
+  func resetAllAction(_ sender: Any) {
+    self.tresorAppState?.tresorModel.resetAll()
   }
   
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -79,8 +90,29 @@ class SettingsViewController: UITableViewController {
       case 1:
         
         if let b = cell.contentView.viewWithTag(42) as? UIButton {
-          b.setTitle("Reset Data", for: .normal)
-          b.addTarget(self, action:#selector(resetDataAction(_:)), for: .touchUpInside)
+          b.setTitle("Reset Change Tokens", for: .normal)
+          b.addTarget(self, action:#selector(self.resetChangeTokensAction(_:)), for: .touchUpInside)
+        }
+     
+      case 2:
+        
+        if let b = cell.contentView.viewWithTag(42) as? UIButton {
+          b.setTitle("Remove All CloudKit Data", for: .normal)
+          b.addTarget(self, action:#selector(self.removeAllCloudKitDataAction(_:)), for: .touchUpInside)
+        }
+        
+      case 3:
+        
+        if let b = cell.contentView.viewWithTag(42) as? UIButton {
+          b.setTitle("Remove All Core Data", for: .normal)
+          b.addTarget(self, action:#selector(self.removeAllCoreDataAction(_:)), for: .touchUpInside)
+        }
+      
+      case 4:
+        
+        if let b = cell.contentView.viewWithTag(42) as? UIButton {
+          b.setTitle("Reset All", for: .normal)
+          b.addTarget(self, action:#selector(self.resetAllAction(_:)), for: .touchUpInside)
         }
         
       default:

@@ -106,7 +106,7 @@ extension NSManagedObject {
     var result : CKRecord?
     
     if self.isCKStoreableObject() {
-      self.dumpMetaInfo()
+      //self.dumpMetaInfo()
       
       if let zId = zoneId {
         let record = self.createCKRecord(zoneId: zId)
@@ -138,13 +138,17 @@ extension NSManagedObject {
   
   fileprivate func mapObjectRelationship(zId:CKRecordZoneID, r:CKRecord) {
     let ed = self.entity
+    let id = self.value(forKey: "id") as? String
+    
+    celeturKitLogger.debug("set references for \(ed.name ?? "-" ): \(id ?? "-")")
     
     for (n,p) in ed.relationshipsByName {
       if !p.isToMany,
         let destValue = self.value(forKey:n) as? NSManagedObject,
         let destId = destValue.value(forKey: "id") as? String {
         
-        let ref = CKReference(recordID: CKRecordID(recordName: destId, zoneID: zId), action: .none)
+        let referenceAction = p.deleteRule == .cascadeDeleteRule ? CKReferenceAction.deleteSelf : CKReferenceAction.none
+        let ref = CKReference(recordID: CKRecordID(recordName: destId, zoneID: zId), action: referenceAction)
         
         celeturKitLogger.debug("  reference to \(p.destinationEntity?.name ?? "-"): \(destId)")
         
@@ -164,7 +168,11 @@ extension NSManagedObject {
           }
         }
         
-        r.setObject(rList as CKRecordValue, forKey: n)
+        if rList.count>0 {
+          r.setObject(rList as CKRecordValue, forKey: n)
+        } else {
+          r.setObject(nil, forKey: n)
+        }
       }
     }
   }

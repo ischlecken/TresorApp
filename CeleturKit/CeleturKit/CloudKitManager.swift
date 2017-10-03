@@ -30,10 +30,9 @@ public class CloudKitManager {
   
   // MARK: - Init
   
-  public init(tresorModel:TresorModel,appGroupContainer appGroupContainerId:String) {
+  public init(tresorModel:TresorModel) {
     self.tresorModel = tresorModel
-    self.ckPersistenceState = CloudKitPersistenceState(appGroupContainerId: appGroupContainerId)
-    self.ckPersistenceState.load()
+    self.ckPersistenceState = tresorModel.cloudKitPersistenceState
     
     self.privateDB = CKContainer.default().privateCloudDatabase
     self.sharedDB = CKContainer.default().sharedCloudDatabase
@@ -399,7 +398,7 @@ public class CloudKitManager {
     let tempMOC = self.tresorModel.privateChildManagedContext
     
     operation.recordChangedBlock = { (record) in
-      var o = record.updateManagedObject(context: tempMOC)
+      let o = record.updateManagedObject(context: tempMOC)
       
       updateObjects.append( RecordObject(object:o, record: record) )
     

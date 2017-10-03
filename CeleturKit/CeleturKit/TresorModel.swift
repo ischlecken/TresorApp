@@ -14,8 +14,16 @@ public class TresorModel {
   
   let coreDataManager: CoreDataManager
   lazy var cloudKitManager = {
-    return CloudKitManager(tresorModel: self, appGroupContainer: appGroup)
-  } ()
+    return CloudKitManager(tresorModel: self)
+  }()
+  
+  lazy var cloudKitPersistenceState : CloudKitPersistenceState = {
+    let ckps = CloudKitPersistenceState(appGroupContainerId: appGroup)
+    
+    ckps.load()
+    
+    return ckps
+  }()
   
   let cipherQueue = OperationQueue()
   
@@ -63,42 +71,41 @@ public class TresorModel {
   public func getUserList() -> [TresorUser]? {
     guard !self.userListInited else { return self.userList }
     
-    self.userListInited = true
-    
-    /*
     do {
       self.userList = try self.mainManagedContext.fetch(TresorUser.fetchRequest())
-      
-      if userList == nil || userList!.count == 0 {
-        var newUser = TresorUser.createUser(context: self.mainManagedContext, firstName: "Hugo",lastName: "Müller",appleid: "bla@fasel.de")
-        
-        TresorUserDevice.createCurrentUserDevice(context: self.mainManagedContext, user: newUser)
-        TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Hugos iPhone")
-        TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Hugos iPad")
-        TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Hugos iWatch")
-        
-        self.userList?.append(newUser)
-        
-        newUser = TresorUser.createUser(context: self.mainManagedContext, firstName: "Manfred",lastName: "Schmid",appleid: "mane@gmx.de")
-        
-        TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Manfreds iPhone")
-        TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Manfreds iPad")
-        TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Manfreds iWatch")
-        TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Manfreds iTV")
-        
-        self.userList?.append(newUser)
-        
-        self.saveChanges()
-      }
+    
+      self.userListInited = true
     } catch {
       celeturKitLogger.error("Error while create objects...",error:error)
     }
- */
   
     return self.userList
   }
   
   
+  public func createDummyUsers() {
+    do {
+      var newUser = TresorUser.createUser(context: self.mainManagedContext, firstName: "Hugo",lastName: "Müller",appleid: "bla@fasel.de")
+      
+      TresorUserDevice.createCurrentUserDevice(context: self.mainManagedContext, user: newUser)
+      TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Hugos iPhone")
+      TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Hugos iPad")
+      TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Hugos iWatch")
+      
+      newUser = TresorUser.createUser(context: self.mainManagedContext, firstName: "Manfred",lastName: "Schmid",appleid: "mane@gmx.de")
+      
+      TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Manfreds iPhone")
+      TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Manfreds iPad")
+      TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Manfreds iWatch")
+      TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Manfreds iTV")
+      
+      self.saveChanges()
+      
+      self.userList = try self.mainManagedContext.fetch(TresorUser.fetchRequest())
+    } catch {
+      celeturKitLogger.error("Error while create objects...",error:error)
+    }
+  }
   
   public func getCurrentUserDevice() -> TresorUserDevice? {
     var result:TresorUserDevice? = nil
@@ -278,5 +285,22 @@ public class TresorModel {
   
   public func fetchChanges(in databaseScope: CKDatabaseScope, completion: @escaping () -> Void) {
     self.cloudKitManager.fetchChanges(in: databaseScope, completion: completion)
+  }
+  
+  public func isObjectChanged(o:NSManagedObject) -> Bool {
+    return self.cloudKitPersistenceState.isObjectChanged(o:o)
+  }
+  
+  public func isObjectDeleted(o:NSManagedObject) -> Bool {
+    return self.cloudKitPersistenceState.isObjectDeleted(o:o)
+  }
+  
+  public func deleteObject(o:NSManagedObject) {
+    self.cloudKitPersistenceState.addDeletedObject(o: o)
+  }
+  
+  public func resetData() {
+    self.cloudKitPersistenceState.flushChangedIds()
+    self.cloudKitPersistenceState.flushServerChangeTokens()
   }
 }

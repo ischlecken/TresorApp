@@ -139,6 +139,10 @@ class CloudKitPersistenceState {
     self.changedObjectIds?.insert(uri)
   }
   
+  func isObjectChanged(o:NSManagedObject) -> Bool {
+    return self.changedObjectIds != nil && self.changedObjectIds?.contains(o.objectID.uriRepresentation().absoluteString) ?? false
+  }
+  
   func addDeletedObject(o:NSManagedObject) {
     let uri = o.objectID.uriRepresentation().absoluteString
     let entityType = o.entity.name
@@ -161,6 +165,12 @@ class CloudKitPersistenceState {
     if let et = entityType, let ei = entityId {
       self.deletedObjectIds?.insert(CKDeletedObjectInfo(type:et, id: ei))
     }
+  }
+  
+  func isObjectDeleted(o:NSManagedObject) -> Bool {
+    let delInfo = CKDeletedObjectInfo(type:o.entity.name!, id: o.value(forKey: "id") as! String)
+    
+    return self.deletedObjectIds != nil && self.deletedObjectIds?.contains(delInfo) ?? false
   }
   
   
@@ -186,6 +196,16 @@ class CloudKitPersistenceState {
     //celeturKitLogger.debug("setServerChangeToken(\(name)): \(token)")
     
     NSKeyedArchiver.archiveRootObject(self.changeTokens as Any, toFile: self.serverChangeTokensFilePath)
+  }
+  
+  func flushServerChangeTokens() {
+    self.changeTokens = [String:CKServerChangeTokenModel]()
+    
+    do {
+      try FileManager.default.removeItem(atPath: self.serverChangeTokensFilePath)
+    } catch {
+      celeturKitLogger.error("Error deleted servertoken file", error: error)
+    }
   }
   
   func changedRecords(moc:NSManagedObjectContext,zoneId:CKRecordZoneID? ) -> [CKRecord] {
@@ -217,5 +237,4 @@ class CloudKitPersistenceState {
     
     return result
   }
-  
 }

@@ -101,18 +101,19 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   }
   
   override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-    // Return false if you do not want the specified item to be editable.
-    return true
+    let tresorDocumentItem = fetchedResultsController.object(at: indexPath)
+    let isItemDeleted = self.tresorAppState?.tresorModel.isObjectDeleted(o: tresorDocumentItem) ?? false
+    
+    return !isItemDeleted
   }
   
   override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
     if editingStyle == .delete {
       let tresorDocumentItem = fetchedResultsController.object(at: indexPath)
-      let context = self.tresorAppState?.mainManagedContext()
       
-      context?.delete(tresorDocumentItem)
+      self.tresorAppState?.tresorModel.deleteObject(o:tresorDocumentItem)
       
-      self.tresorAppState?.tresorModel.saveChanges()
+      self.tableView.reloadRows(at: [indexPath], with: .fade)
     }
   }
   
@@ -120,6 +121,14 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     cell.textLabel!.text = "Id:\(tresorDocumentItem.id!)"
     
     cell.textLabel?.textColor = tresorDocumentItem.status == "encrypted" ? UIColor.black : UIColor.red
+    cell.textLabel?.font = UIFont.systemFont(ofSize: UIFont.systemFontSize)
+    
+    if self.tresorAppState?.tresorModel.isObjectChanged(o:tresorDocumentItem) ?? false {
+      cell.textLabel?.font = UIFont.italicSystemFont(ofSize: UIFont.systemFontSize)
+    } else if self.tresorAppState?.tresorModel.isObjectDeleted(o:tresorDocumentItem) ?? false {
+      cell.textLabel?.font = UIFont.italicSystemFont(ofSize: UIFont.systemFontSize)
+      cell.textLabel?.textColor = UIColor.lightGray
+    }
     
     let tdiUserDevice = tresorDocumentItem.userdevice
     

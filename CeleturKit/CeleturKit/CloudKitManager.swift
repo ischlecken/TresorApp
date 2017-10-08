@@ -266,16 +266,8 @@ public class CloudKitManager {
             //celeturKitLogger.debug("recordID:\(r)")
             
             CKContainer.default().discoverUserIdentity(withUserRecordID: r, completionHandler: { (userIdentity, error) in
-              if let u = userIdentity?.nameComponents {
-                //celeturKitLogger.debug("nameComponents:\(u)")
-                
-                let formatter = PersonNameComponentsFormatter()
-                
-                formatter.style = PersonNameComponentsFormatter.Style.long
-                
-                let displayName = formatter.string(from: u)
-                
-                celeturKitLogger.debug("  LoggedIn Cloud User DisplayName:\(displayName)")
+              if let u = userIdentity {
+                self.tresorModel.updateUserIdentityInfo(userIdentity: u)
               }
             })
           }

@@ -17,13 +17,17 @@ extension TresorUserDevice {
     user.addToUserdevices(newUserDevice)
   }
   
-  class func createCurrentUserDevice(context:NSManagedObjectContext,user:TresorUser) {
+  class func createCurrentUserDevice(context:NSManagedObjectContext,user:TresorUser,apndeviceToken:String) {
     let newUserDevice = TresorUserDevice(context:context)
     
     newUserDevice.createts = Date()
     newUserDevice.devicename = UIDevice.current.name
+    newUserDevice.devicesystemname = UIDevice.current.systemName
+    newUserDevice.devicesystemversion = UIDevice.current.systemVersion
+    newUserDevice.deviceuitype = Int16(UIDevice.current.userInterfaceIdiom.rawValue)
+    
     newUserDevice.id = UIDevice.current.identifierForVendor?.uuidString
-    newUserDevice.apndevicetoken = String.uuid()
+    newUserDevice.apndevicetoken = apndeviceToken
     newUserDevice.user = user
     
     user.addToUserdevices(newUserDevice)

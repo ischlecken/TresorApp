@@ -79,10 +79,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
   
   func application(_ application: UIApplication,didFailToRegisterForRemoteNotificationsWithError error: Error) {
     celeturLogger.error("Registration for remote notifications failed", error:error)
+    
+    // TEST-TOKEN
+    // 7000000000000000000000aaaaaaabbbbbbbcccccccdddddddeeeeeeefffffff
+    // 703115609b3d27416922deee926a38697601f2c713185bfd2c80055b0cf7dfda
   }
+  
   // 2
   func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
     celeturLogger.debug("Registration for remote notifications successfull with token \(deviceToken.hexEncodedString())")
+    
+    self.tresorAppModel.tresorModel.updateAPNToken(deviceToken:deviceToken)
   }
   
   func application(_ application: UIApplication,

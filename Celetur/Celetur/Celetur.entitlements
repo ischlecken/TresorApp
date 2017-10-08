@@ -24,7 +24,7 @@
 	</array>
 	<key>keychain-access-groups</key>
 	<array>
-		<string>$(AppIdentifierPrefix)net.pinac.Celetur</string>
+		<string>$(AppIdentifierPrefix)net.prisnoc.Celetur</string>
 	</array>
 </dict>
 </plist>

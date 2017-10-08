@@ -87,7 +87,6 @@ public class TresorModel {
     do {
       var newUser = TresorUser.createUser(context: self.mainManagedContext, firstName: "Hugo",lastName: "Müller",appleid: "bla@fasel.de")
       
-      TresorUserDevice.createCurrentUserDevice(context: self.mainManagedContext, user: newUser)
       TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Hugos iPhone")
       TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Hugos iPad")
       TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Hugos iWatch")
@@ -115,6 +114,88 @@ public class TresorModel {
     }
     
     return result
+  }
+  
+  var currentUserGivenName:String?
+  var currentUserFamilyName:String?
+  var currentUserEMailAddress:String?
+  var currentUserDisplayName:String?
+  var currentUserRecordID:String?
+  var currentAPNToken:String?
+  
+  public func updateAPNToken(deviceToken: Data) {
+    self.currentAPNToken = deviceToken.hexEncodedString()
+    
+    self.createCurrentUserInfo()
+  }
+  
+  public func updateUserIdentityInfo(userIdentity:CKUserIdentity) {
+    if let u = userIdentity.nameComponents,let li = userIdentity.lookupInfo {
+      let formatter = PersonNameComponentsFormatter()
+      
+      formatter.style = PersonNameComponentsFormatter.Style.long
+      
+      self.currentUserDisplayName = formatter.string(from: u)
+      self.currentUserGivenName = u.givenName
+      self.currentUserFamilyName = u.familyName
+      self.currentUserEMailAddress = li.emailAddress
+      self.currentUserRecordID = li.userRecordID?.recordName
+      
+      if self.currentUserEMailAddress == nil {
+        self.currentUserEMailAddress = "bla@me.com"
+      }
+      
+      celeturKitLogger.debug("  LoggedIn Cloud User DisplayName:\(self.currentUserDisplayName ?? "-")")
+      celeturKitLogger.debug("                     userRecordID:\(self.currentUserRecordID ?? "-" )")
+      
+      self.createCurrentUserInfo()
+    }
+  }
+  
+  func isCurrentDeviceKnown() -> Bool {
+    if let ul = self.userList {
+      for u in ul {
+        if let udlist = u.userdevices {
+          for ud in udlist {
+            if let ud0 = ud as? TresorUserDevice {
+              if let apndt = ud0.apndevicetoken {
+                if apndt == self.currentAPNToken {
+                  return true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    return false
+  }
+  
+  func createCurrentUserInfo() {
+    if self.isCurrentDeviceKnown() {
+      return
+    }
+    
+    if let apntoken = self.currentAPNToken,
+      let fn = self.currentUserGivenName,
+      let ln = self.currentUserFamilyName,
+      let aid = self.currentUserEMailAddress {
+      let tempMOC = self.privateChildManagedContext
+      
+      let u = TresorUser.createUser(context: tempMOC, firstName: fn, lastName: ln, appleid: aid)
+      let _ = TresorUserDevice.createCurrentUserDevice(context: tempMOC,user: u, apndeviceToken: apntoken)
+      
+      tempMOC.perform {
+        do {
+          try tempMOC.save()
+          
+          self.coreDataManager.saveChanges(notifyChangesToCloudKit: true)
+        } catch {
+          celeturKitLogger.error("Error saving contacts",error:error)
+        }
+      }
+    }
   }
   
   public func saveTresorUsersUsingContacts(contacts:[CNContact], completion: @escaping (_ inner:() throws -> [TresorUser]) -> Void) {

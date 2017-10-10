@@ -10,6 +10,7 @@ import UIKit
 import CoreData
 import CeleturKit
 import CloudKit
+import UserNotifications
 
 let celeturLogger = Logger("Celetur")
 
@@ -30,9 +31,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     let controller = masterNavigationController.topViewController as! TresorViewController
     controller.tresorAppState = self.tresorAppModel
     
-    self.tresorAppModel.completeSetup()
+    UNUserNotificationCenter.current().delegate = self
+    UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+      if granted && error == nil {
+        DispatchQueue.main.async {
+          application.registerForRemoteNotifications()
+        }
+      } else {
+        celeturLogger.debug(error?.localizedDescription ?? "authorization is not granted. check your app notification setting in the setting app")
+      }
+    }
     
-    application.registerForRemoteNotifications()
+    self.tresorAppModel.completeSetup()
     
     return true
   }
@@ -96,7 +106,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
                    didReceiveRemoteNotification userInfo: [AnyHashable : Any],
                    fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
     celeturLogger.debug("Received notification!")
-    
     let dict = userInfo as! [String: NSObject]
     guard let notification:CKDatabaseNotification = CKNotification(fromRemoteNotificationDictionary:dict) as? CKDatabaseNotification else { return }
     
@@ -104,6 +113,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
       completionHandler( .newData )
     }
   }
-  
 }
 
+extension AppDelegate : UNUserNotificationCenterDelegate {
+  func userNotificationCenter(_ center: UNUserNotificationCenter,
+                              didReceive response: UNNotificationResponse,
+                              withCompletionHandler completionHandler: @escaping () -> Void) {
+    
+    celeturLogger.debug("Received notification!")
+    
+    completionHandler()
+  }
+}

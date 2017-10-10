@@ -280,8 +280,10 @@ public class CloudKitManager {
     let subscription = CKDatabaseSubscription(subscriptionID: subscriptionId)
     
     let notificationInfo = CKNotificationInfo()
-    // send a silent notification
+    notificationInfo.alertBody = "A new notification has been posted!"
     notificationInfo.shouldSendContentAvailable = true
+    notificationInfo.soundName = "default"
+    
     subscription.notificationInfo = notificationInfo
     
     let operation = CKModifySubscriptionsOperation(subscriptionsToSave: [subscription], subscriptionIDsToDelete: [])
@@ -294,6 +296,10 @@ public class CloudKitManager {
   public func createCloudKitSubscription() {
     let createSubscriptionOperation = self.createDatabaseSubscriptionOperation(subscriptionId: privateSubscriptionId)
     createSubscriptionOperation.modifySubscriptionsCompletionBlock = { (subscriptions, deletedIds, error) in
+      if error == nil {
+        celeturKitLogger.debug("subscription modified")
+      }
+      
       if let e = error {
         let _ = self.handleError(context: "creating privateSubscriptionId subscription", error: e)
       }

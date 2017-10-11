@@ -280,9 +280,9 @@ public class CloudKitManager {
     let subscription = CKDatabaseSubscription(subscriptionID: subscriptionId)
     
     let notificationInfo = CKNotificationInfo()
-    notificationInfo.alertBody = "A new notification has been posted!"
+    //notificationInfo.alertBody = "A new notification has been posted!"
     notificationInfo.shouldSendContentAvailable = true
-    notificationInfo.soundName = "default"
+    //notificationInfo.soundName = "default"
     
     subscription.notificationInfo = notificationInfo
     

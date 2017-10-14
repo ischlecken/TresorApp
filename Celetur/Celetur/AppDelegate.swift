@@ -35,7 +35,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
       if granted && error == nil {
         DispatchQueue.main.async {
-          application.registerForRemoteNotifications()
+            application.registerForRemoteNotifications()
         }
       } else {
         celeturLogger.debug(error?.localizedDescription ?? "authorization is not granted. check your app notification setting in the setting app")
@@ -106,6 +106,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
                    didReceiveRemoteNotification userInfo: [AnyHashable : Any],
                    fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
     celeturLogger.debug("Received notification!")
+    
     let dict = userInfo as! [String: NSObject]
     guard let notification:CKDatabaseNotification = CKNotification(fromRemoteNotificationDictionary:dict) as? CKDatabaseNotification else { return }
     
@@ -120,8 +121,15 @@ extension AppDelegate : UNUserNotificationCenterDelegate {
                               didReceive response: UNNotificationResponse,
                               withCompletionHandler completionHandler: @escaping () -> Void) {
     
-    celeturLogger.debug("Received notification!")
+    celeturLogger.debug("UNUserNotificationCenterDelegate didReceive!")
     
-    completionHandler()
+    let userInfo = response.notification.request.content.userInfo
+    
+    guard let notification:CKDatabaseNotification = CKNotification(fromRemoteNotificationDictionary:userInfo) as? CKDatabaseNotification else { return }
+    
+    self.tresorAppModel.fetchChanges(in: notification.databaseScope) {
+       completionHandler()
+    }
+    
   }
 }

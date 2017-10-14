@@ -5,19 +5,16 @@
 
 extension TresorUserDevice {
   
-  class func createUserDevice(context:NSManagedObjectContext,user:TresorUser, deviceName:String) {
+  class func createUserDevice(context:NSManagedObjectContext,deviceName:String) {
     let newUserDevice = TresorUserDevice(context:context)
     
     newUserDevice.createts = Date()
     newUserDevice.devicename = deviceName
     newUserDevice.id = String.uuid()
     newUserDevice.apndevicetoken = String.uuid()
-    newUserDevice.user = user
-    
-    user.addToUserdevices(newUserDevice)
   }
   
-  class func createCurrentUserDevice(context:NSManagedObjectContext,user:TresorUser,apndeviceToken:String) {
+  class func createCurrentUserDevice(context:NSManagedObjectContext, userName:String, apndeviceToken:String) {
     let newUserDevice = TresorUserDevice(context:context)
     
     newUserDevice.createts = Date()
@@ -28,29 +25,18 @@ extension TresorUserDevice {
     
     newUserDevice.id = UIDevice.current.identifierForVendor?.uuidString
     newUserDevice.apndevicetoken = apndeviceToken
-    newUserDevice.user = user
-    
-    user.addToUserdevices(newUserDevice)
+    newUserDevice.username = userName
   }
   
-  class func getCurrentUserDevice(userList:[TresorUser]) -> TresorUserDevice? {
-    var result:TresorUserDevice? = nil
+  
+  class public func loadUserDevices(context:NSManagedObjectContext) -> [TresorUserDevice]? {
+    var result : [TresorUserDevice]?
     
-    let vendorDeviceId = UIDevice.current.identifierForVendor?.uuidString
-    
-    for u in userList {
-      for ud in u.userdevices! {
-        let userDevice = ud as! TresorUserDevice
-        
-        if let udi = userDevice.id, let vdi = vendorDeviceId, udi == vdi {
-          result = userDevice
-          break;
-        }
-      }
+    do {
+      result = try context.fetch(TresorUserDevice.fetchRequest())
       
-      if result != nil {
-        break
-      }
+    } catch {
+      celeturKitLogger.error("Error while loading user devices...",error:error)
     }
     
     return result

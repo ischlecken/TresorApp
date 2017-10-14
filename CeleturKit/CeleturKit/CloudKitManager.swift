@@ -267,7 +267,7 @@ public class CloudKitManager {
             
             CKContainer.default().discoverUserIdentity(withUserRecordID: r, completionHandler: { (userIdentity, error) in
               if let u = userIdentity {
-                self.tresorModel.updateUserIdentityInfo(userIdentity: u)
+                self.tresorModel.setCurrentUserInfo(userIdentity: u)
               }
             })
           }

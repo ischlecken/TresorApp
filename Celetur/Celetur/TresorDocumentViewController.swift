@@ -27,12 +27,11 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     self.refreshControl = UIRefreshControl()
     self.refreshControl?.addTarget(self, action: #selector(refreshTable(_:)), for: .valueChanged)
     
-  
     self.title = tresor?.tresordescription
     self.dateFormatter.dateStyle = DateFormatter.Style.short
     self.dateFormatter.timeStyle = DateFormatter.Style.short
     
-    self.currentUserDevice = self.tresorAppState?.tresorModel.getCurrentUserDevice()
+    self.currentUserDevice = self.tresorAppState?.tresorModel.currentDeviceInfo?.userDevice
   }
   
   @objc

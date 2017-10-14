@@ -23,10 +23,6 @@ class SettingsViewController: UITableViewController {
     return section==0 ? 2 : 5
   }
   
-  @IBAction
-  func createDummyUsersAction(_ sender: Any) {
-    self.tresorAppState?.tresorModel.createDummyUsers()
-  }
   
   @IBAction
   func resetChangeTokensAction(_ sender: Any) {
@@ -54,8 +50,6 @@ class SettingsViewController: UITableViewController {
     if indexPath.section==0 {
       switch indexPath.row {
       case 0:
-        cellIdentifier = "userCell"
-      case 1:
         cellIdentifier = "userdeviceCell"
       default:
         cellIdentifier = "settingCell"
@@ -68,10 +62,6 @@ class SettingsViewController: UITableViewController {
     if indexPath.section==0 {
       switch indexPath.row {
       case 0:
-        cell.textLabel?.text = "TresorUser"
-        cell.detailTextLabel?.text = "edit the list of known users"
-        
-      case 1:
         cell.textLabel?.text = "TresorUser Devices"
         cell.detailTextLabel?.text = "edit the list of known user devices"
       default:
@@ -83,32 +73,25 @@ class SettingsViewController: UITableViewController {
       case 0:
         
         if let b = cell.contentView.viewWithTag(42) as? UIButton {
-          b.setTitle("Create Dummy User", for: .normal)
-          b.addTarget(self, action:#selector(createDummyUsersAction(_:)), for: .touchUpInside)
-        }
-        
-      case 1:
-        
-        if let b = cell.contentView.viewWithTag(42) as? UIButton {
           b.setTitle("Reset Change Tokens", for: .normal)
           b.addTarget(self, action:#selector(self.resetChangeTokensAction(_:)), for: .touchUpInside)
         }
      
-      case 2:
+      case 1:
         
         if let b = cell.contentView.viewWithTag(42) as? UIButton {
           b.setTitle("Remove All CloudKit Data", for: .normal)
           b.addTarget(self, action:#selector(self.removeAllCloudKitDataAction(_:)), for: .touchUpInside)
         }
         
-      case 3:
+      case 2:
         
         if let b = cell.contentView.viewWithTag(42) as? UIButton {
           b.setTitle("Remove All Core Data", for: .normal)
           b.addTarget(self, action:#selector(self.removeAllCoreDataAction(_:)), for: .touchUpInside)
         }
       
-      case 4:
+      case 3:
         
         if let b = cell.contentView.viewWithTag(42) as? UIButton {
           b.setTitle("Reset All", for: .normal)
@@ -129,11 +112,7 @@ class SettingsViewController: UITableViewController {
   
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     
-    if segue.identifier == "showUserList" {
-      let controller = segue.destination as! UserViewController
-      
-      controller.tresorAppState = self.tresorAppState
-    } else if segue.identifier == "showUserdeviceList" {
+    if segue.identifier == "showUserdeviceList" {
       let controller = segue.destination as! UserDeviceViewController
       
       controller.tresorAppState = self.tresorAppState

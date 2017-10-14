@@ -1,18 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="13240" systemVersion="" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="Audit" representedClassName="Audit" syncable="YES" codeGenerationType="class">
-        <attribute name="createts" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="message" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="messagekey" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="parameter1" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="parameter2" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="parameter3" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="tresordocid" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="tresordocitemid" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="tresorid" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="userdeviceid" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="userid" optional="YES" attributeType="String" syncable="YES"/>
-    </entity>
     <entity name="Schemaversion" representedClassName="Schemaversion" syncable="YES" codeGenerationType="class">
         <attribute name="createts" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="entityname" attributeType="String" syncable="YES"/>
@@ -22,26 +9,46 @@
         <attribute name="changets" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="ckdata" optional="YES" attributeType="Binary" syncable="YES"/>
         <attribute name="createts" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="deletets" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="id" attributeType="String" syncable="YES"/>
         <attribute name="name" attributeType="String" syncable="YES"/>
         <attribute name="nonce" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="owneruserdeviceid" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="tresordescription" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="documents" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TresorDocument" inverseName="tresor" inverseEntity="TresorDocument" syncable="YES"/>
-        <relationship name="owneduser" maxCount="1" deletionRule="Nullify" destinationEntity="TresorUser" inverseName="ownedtresors" inverseEntity="TresorUser" syncable="YES"/>
         <relationship name="userdevices" toMany="YES" deletionRule="Nullify" destinationEntity="TresorUserDevice" inverseName="tresors" inverseEntity="TresorUserDevice" syncable="YES"/>
-        <relationship name="userpermissions" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TresorUserPermission" inverseName="tresor" inverseEntity="TresorUserPermission" syncable="YES"/>
+    </entity>
+    <entity name="TresorAudit" representedClassName="TresorAudit" syncable="YES" codeGenerationType="class">
+        <attribute name="createts" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="message" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="messagekey" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="parameter1" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="parameter2" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="parameter3" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="signature" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="tresordocid" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="tresordocitemid" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="tresorid" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="userdeviceid" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="userid" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="TresorCommand" representedClassName="TresorCommand" syncable="YES" codeGenerationType="class">
+        <attribute name="command" attributeType="String" syncable="YES"/>
+        <attribute name="createts" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="destinationdeviceid" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="param1" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="param2" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="param3" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="signature" attributeType="Binary" syncable="YES"/>
+        <attribute name="sourcedeviceid" attributeType="String" syncable="YES"/>
+        <attribute name="status" attributeType="String" syncable="YES"/>
     </entity>
     <entity name="TresorDocument" representedClassName="TresorDocument" syncable="YES" codeGenerationType="class">
         <attribute name="changets" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="ckdata" optional="YES" attributeType="Binary" syncable="YES"/>
         <attribute name="createts" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="deletets" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="id" attributeType="String" syncable="YES"/>
         <attribute name="metainfo" optional="YES" attributeType="Binary" syncable="YES"/>
         <attribute name="nonce" optional="YES" attributeType="Binary" syncable="YES"/>
-        <attribute name="prevdocid" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="previewimage" optional="YES" attributeType="Binary" syncable="YES"/>
         <relationship name="documentitems" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TresorDocumentItem" inverseName="document" inverseEntity="TresorDocumentItem" syncable="YES"/>
         <relationship name="tresor" maxCount="1" deletionRule="Nullify" destinationEntity="Tresor" inverseName="documents" inverseEntity="Tresor" syncable="YES"/>
     </entity>
@@ -58,19 +65,6 @@
         <relationship name="document" maxCount="1" deletionRule="Nullify" destinationEntity="TresorDocument" inverseName="documentitems" inverseEntity="TresorDocument" syncable="YES"/>
         <relationship name="userdevice" maxCount="1" deletionRule="Nullify" destinationEntity="TresorUserDevice" inverseName="documentitems" inverseEntity="TresorUserDevice" syncable="YES"/>
     </entity>
-    <entity name="TresorUser" representedClassName="TresorUser" syncable="YES" codeGenerationType="class">
-        <attribute name="changets" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="ckdata" optional="YES" attributeType="Binary" syncable="YES"/>
-        <attribute name="createts" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="email" attributeType="String" syncable="YES"/>
-        <attribute name="firstname" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="id" attributeType="String" syncable="YES"/>
-        <attribute name="lastname" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="profilepicture" optional="YES" attributeType="Binary" syncable="YES"/>
-        <relationship name="ownedtresors" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tresor" inverseName="owneduser" inverseEntity="Tresor" syncable="YES"/>
-        <relationship name="tresorpermissions" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TresorUserPermission" inverseName="user" inverseEntity="TresorUserPermission" syncable="YES"/>
-        <relationship name="userdevices" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TresorUserDevice" inverseName="user" inverseEntity="TresorUserDevice" syncable="YES"/>
-    </entity>
     <entity name="TresorUserDevice" representedClassName="TresorUserDevice" syncable="YES" codeGenerationType="class">
         <attribute name="apndevicetoken" attributeType="String" syncable="YES"/>
         <attribute name="ckdata" optional="YES" attributeType="Binary" syncable="YES"/>
@@ -81,30 +75,18 @@
         <attribute name="devicesystemversion" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="deviceuitype" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="id" attributeType="String" syncable="YES"/>
+        <attribute name="messagekey" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="username" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="documentitems" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TresorDocumentItem" inverseName="userdevice" inverseEntity="TresorDocumentItem" syncable="YES"/>
         <relationship name="tresors" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tresor" inverseName="userdevices" inverseEntity="Tresor" syncable="YES"/>
-        <relationship name="user" maxCount="1" deletionRule="Nullify" destinationEntity="TresorUser" inverseName="userdevices" inverseEntity="TresorUser" syncable="YES"/>
-    </entity>
-    <entity name="TresorUserPermission" representedClassName="TresorUserPermission" syncable="YES" codeGenerationType="class">
-        <attribute name="approvedelete" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
-        <attribute name="approveread" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
-        <attribute name="approvewrite" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
-        <attribute name="ckdata" optional="YES" attributeType="Binary" syncable="YES"/>
-        <attribute name="delete" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
-        <attribute name="read" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES" syncable="YES"/>
-        <attribute name="silentdelete" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
-        <attribute name="write" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
-        <relationship name="tresor" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Tresor" inverseName="userpermissions" inverseEntity="Tresor" syncable="YES"/>
-        <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TresorUser" inverseName="tresorpermissions" inverseEntity="TresorUser" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Audit" positionX="-362" positionY="-37" width="128" height="208"/>
-        <element name="Schemaversion" positionX="-360" positionY="-135" width="128" height="88"/>
-        <element name="Tresor" positionX="-812" positionY="191" width="128" height="223"/>
-        <element name="TresorDocument" positionX="-720" positionY="482" width="128" height="208"/>
-        <element name="TresorDocumentItem" positionX="-540" positionY="482" width="126" height="208"/>
-        <element name="TresorUser" positionX="-711" positionY="-148" width="128" height="208"/>
-        <element name="TresorUserDevice" positionX="-594" positionY="104" width="128" height="223"/>
-        <element name="TresorUserPermission" positionX="-900" positionY="-142" width="128" height="193"/>
+        <element name="Schemaversion" positionX="-603" positionY="-160" width="128" height="88"/>
+        <element name="Tresor" positionX="-1386" positionY="-67" width="128" height="193"/>
+        <element name="TresorAudit" positionX="-758" positionY="17" width="128" height="223"/>
+        <element name="TresorCommand" positionX="-756" positionY="269" width="128" height="178"/>
+        <element name="TresorDocument" positionX="-1206" positionY="-207" width="128" height="163"/>
+        <element name="TresorDocumentItem" positionX="-1017" positionY="-63" width="126" height="208"/>
+        <element name="TresorUserDevice" positionX="-1197" positionY="198" width="128" height="238"/>
     </elements>
 </model>

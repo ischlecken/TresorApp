@@ -12,6 +12,11 @@ let celeturKitIdentifier = "net.prisnoc.CeleturKit"
 
 public class TresorModel {
   
+  public var currentUserInfo:UserInfo?
+  public var currentDeviceInfo:DeviceInfo?
+  
+  public var userDevices : [TresorUserDevice]?
+  
   let coreDataManager: CoreDataManager
   lazy var cloudKitManager = {
     return CloudKitManager(tresorModel: self)
@@ -27,9 +32,6 @@ public class TresorModel {
   
   let cipherQueue = OperationQueue()
   
-  fileprivate var userList : [TresorUser]?
-  fileprivate var userListInited = false
-  
   public init() {
     self.coreDataManager = CoreDataManager(modelName: "CeleturKit", using:Bundle(identifier:celeturKitIdentifier)!, inAppGroupContainer:appGroup)
   }
@@ -44,7 +46,14 @@ public class TresorModel {
       self.coreDataManager.cloudKitManager = self.cloudKitManager
       
       DispatchQueue.main.async {
-        let _ = self.getUserList()
+        self.userDevices = TresorUserDevice.loadUserDevices(context: self.mainManagedContext)
+        
+        let di = DeviceInfo()
+        if let userDevices = self.userDevices {
+          let _ = di.selectUserDevice(userDevices: userDevices)
+        }
+        
+        self.currentDeviceInfo = di
       }
     }
   }
@@ -68,123 +77,32 @@ public class TresorModel {
     self.coreDataManager.saveChanges(notifyChangesToCloudKit:notifyCloudKit)
   }
   
-  public func getUserList() -> [TresorUser]? {
-    guard !self.userListInited else { return self.userList }
+  public func setCurrentUserInfo(userIdentity:CKUserIdentity) {
+    let ui = UserInfo()
     
-    do {
-      self.userList = try self.mainManagedContext.fetch(TresorUser.fetchRequest())
+    ui.updateUserIdentityInfo(userIdentity: userIdentity)
     
-      self.userListInited = true
-    } catch {
-      celeturKitLogger.error("Error while create objects...",error:error)
-    }
-  
-    return self.userList
+    self.currentUserInfo = ui
   }
   
-  
-  public func createDummyUsers() {
-    do {
-      var newUser = TresorUser.createUser(context: self.mainManagedContext, firstName: "Hugo",lastName: "Müller",appleid: "bla@fasel.de")
-      
-      TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Hugos iPhone")
-      TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Hugos iPad")
-      TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Hugos iWatch")
-      
-      newUser = TresorUser.createUser(context: self.mainManagedContext, firstName: "Manfred",lastName: "Schmid",appleid: "mane@gmx.de")
-      
-      TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Manfreds iPhone")
-      TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Manfreds iPad")
-      TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Manfreds iWatch")
-      TresorUserDevice.createUserDevice(context: self.mainManagedContext, user: newUser, deviceName: "Manfreds iTV")
-      
-      self.saveChanges()
-      
-      self.userList = try self.mainManagedContext.fetch(TresorUser.fetchRequest())
-    } catch {
-      celeturKitLogger.error("Error while create objects...",error:error)
+  public func setCurrentDeviceAPNToken(deviceToken:Data) {
+    if let di = self.currentDeviceInfo {
+      di.updateAPNToken(deviceToken: deviceToken)
     }
   }
   
-  public func getCurrentUserDevice() -> TresorUserDevice? {
-    var result:TresorUserDevice? = nil
-    
-    if let userList = self.getUserList() {
-      result = TresorUserDevice.getCurrentUserDevice(userList: userList)
-    }
-    
-    return result
-  }
-  
-  var currentUserGivenName:String?
-  var currentUserFamilyName:String?
-  var currentUserEMailAddress:String?
-  var currentUserDisplayName:String?
-  var currentUserRecordID:String?
-  var currentAPNToken:String?
-  
-  public func updateAPNToken(deviceToken: Data) {
-    self.currentAPNToken = deviceToken.hexEncodedString()
-    
-    self.createCurrentUserInfo()
-  }
-  
-  public func updateUserIdentityInfo(userIdentity:CKUserIdentity) {
-    if let u = userIdentity.nameComponents,let li = userIdentity.lookupInfo {
-      let formatter = PersonNameComponentsFormatter()
-      
-      formatter.style = PersonNameComponentsFormatter.Style.long
-      
-      self.currentUserDisplayName = formatter.string(from: u)
-      self.currentUserGivenName = u.givenName
-      self.currentUserFamilyName = u.familyName
-      self.currentUserEMailAddress = li.emailAddress
-      self.currentUserRecordID = li.userRecordID?.recordName
-      
-      if self.currentUserEMailAddress == nil {
-        self.currentUserEMailAddress = "bla@me.com"
-      }
-      
-      celeturKitLogger.debug("  LoggedIn Cloud User DisplayName:\(self.currentUserDisplayName ?? "-")")
-      celeturKitLogger.debug("                     userRecordID:\(self.currentUserRecordID ?? "-" )")
-      
-      self.createCurrentUserInfo()
-    }
-  }
   
   func isCurrentDeviceKnown() -> Bool {
-    if let ul = self.userList {
-      for u in ul {
-        if let udlist = u.userdevices {
-          for ud in udlist {
-            if let ud0 = ud as? TresorUserDevice {
-              if let apndt = ud0.apndevicetoken {
-                if apndt == self.currentAPNToken {
-                  return true
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    
-    return false
+    return self.currentDeviceInfo != nil
   }
   
   func createCurrentUserInfo() {
-    if self.isCurrentDeviceKnown() {
-      return
-    }
+    guard let deviceInfo = self.currentDeviceInfo else { return }
     
-    if let apntoken = self.currentAPNToken,
-      let fn = self.currentUserGivenName,
-      let ln = self.currentUserFamilyName,
-      let aid = self.currentUserEMailAddress {
+    if let apntoken = deviceInfo.apnToken, let userName = self.currentUserInfo?.userFamilyName {
       let tempMOC = self.privateChildManagedContext
-      
-      let u = TresorUser.createUser(context: tempMOC, firstName: fn, lastName: ln, appleid: aid)
-      let _ = TresorUserDevice.createCurrentUserDevice(context: tempMOC,user: u, apndeviceToken: apntoken)
+    
+      let _ = TresorUserDevice.createCurrentUserDevice(context: tempMOC,userName:userName, apndeviceToken: apntoken)
       
       tempMOC.perform {
         do {
@@ -198,32 +116,6 @@ public class TresorModel {
     }
   }
   
-  public func saveTresorUsersUsingContacts(contacts:[CNContact], completion: @escaping (_ inner:() throws -> [TresorUser]) -> Void) {
-    let tempMOC = self.privateChildManagedContext
-    let users = contacts.map { TresorUser.createTempUser(context: tempMOC,contact: $0) }
-    
-    tempMOC.perform {
-      do {
-        try tempMOC.save()
-        
-        self.coreDataManager.saveChanges(notifyChangesToCloudKit: true)
-        
-        completion( {return users} )
-      } catch {
-        celeturKitLogger.error("Error saving contacts",error:error)
-        
-        completion( {throw error} )
-      }
-    }
-  }
-  
-  public func deleteTresorUser(user:TresorUser, completion: @escaping (_ inner:() throws -> Void) -> Void) {
-    let _ = user.id!
-    
-    self.mainManagedContext.delete(user)
-    
-    self.coreDataManager.saveChanges(notifyChangesToCloudKit: true)
-  }
   
   public func createTresorDocument(tresor:Tresor, plainText: String, masterKey: TresorKey?) throws -> TresorDocument {
     let newTresorDocument = try TresorDocument.createTresorDocument(context: self.mainManagedContext, tresor: tresor)
@@ -372,11 +264,6 @@ public class TresorModel {
   
   public func createAndFetchTresorFetchedResultsController() throws -> NSFetchedResultsController<Tresor> {
     return try Tresor.createAndFetchTresorFetchedResultsController(context: self.mainManagedContext)
-  }
-  
-  
-  public func createAndFetchUserFetchedResultsController() throws -> NSFetchedResultsController<TresorUser> {
-    return try TresorUser.createAndFetchUserFetchedResultsController(context: self.mainManagedContext)
   }
   
   public func createAndFetchUserdeviceFetchedResultsController() throws -> NSFetchedResultsController<TresorUserDevice> {

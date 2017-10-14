@@ -12,10 +12,11 @@
 		8517BDF11F24F95D009DB663 /* Data+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8517BDF01F24F95D009DB663 /* Data+Extension.swift */; };
 		855462FA1F3F449A00C001F6 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 855462F91F3F449900C001F6 /* String+Extension.swift */; };
 		855462FC1F40854000C001F6 /* SymmetricCipherOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 855462FB1F40853F00C001F6 /* SymmetricCipherOperation.swift */; };
+		85B667CD1F92143C00621A12 /* UserInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85B667CC1F92143C00621A12 /* UserInfo.swift */; };
+		85B667CF1F92148E00621A12 /* DeviceInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85B667CE1F92148E00621A12 /* DeviceInfo.swift */; };
 		85BADF931F6E5F3200DAC130 /* Tresor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BADF921F6E5F3200DAC130 /* Tresor+Extension.swift */; };
 		85BADF951F6E616B00DAC130 /* TresorDocument+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BADF941F6E616B00DAC130 /* TresorDocument+Extension.swift */; };
 		85BF77031F6DD66700FA9460 /* TresorDocumentItem+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BF77021F6DD66700FA9460 /* TresorDocumentItem+Extension.swift */; };
-		85BF77051F6DD8E400FA9460 /* TresorUser+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BF77041F6DD8E400FA9460 /* TresorUser+Extension.swift */; };
 		85BF77071F6DD8F700FA9460 /* TresorUserDevice+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BF77061F6DD8F700FA9460 /* TresorUserDevice+Extension.swift */; };
 		85C5C5861F36E6C100DE7EBC /* TresorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85C5C5851F36E6C100DE7EBC /* TresorModel.swift */; };
 		85C5C58C1F370E1F00DE7EBC /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85C5C5891F370E1E00DE7EBC /* Keychain.swift */; };
@@ -49,10 +50,11 @@
 		8517BDF01F24F95D009DB663 /* Data+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Extension.swift"; sourceTree = "<group>"; };
 		855462F91F3F449900C001F6 /* String+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
 		855462FB1F40853F00C001F6 /* SymmetricCipherOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SymmetricCipherOperation.swift; sourceTree = "<group>"; };
+		85B667CC1F92143C00621A12 /* UserInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfo.swift; sourceTree = "<group>"; };
+		85B667CE1F92148E00621A12 /* DeviceInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceInfo.swift; sourceTree = "<group>"; };
 		85BADF921F6E5F3200DAC130 /* Tresor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Tresor+Extension.swift"; sourceTree = "<group>"; };
 		85BADF941F6E616B00DAC130 /* TresorDocument+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TresorDocument+Extension.swift"; sourceTree = "<group>"; };
 		85BF77021F6DD66700FA9460 /* TresorDocumentItem+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TresorDocumentItem+Extension.swift"; sourceTree = "<group>"; };
-		85BF77041F6DD8E400FA9460 /* TresorUser+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TresorUser+Extension.swift"; sourceTree = "<group>"; };
 		85BF77061F6DD8F700FA9460 /* TresorUserDevice+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TresorUserDevice+Extension.swift"; sourceTree = "<group>"; };
 		85C5C5851F36E6C100DE7EBC /* TresorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TresorModel.swift; sourceTree = "<group>"; };
 		85C5C5891F370E1E00DE7EBC /* Keychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
@@ -108,8 +110,9 @@
 				85F5AC4B1F767E12003B14F9 /* CloudKitPersistenceState.swift */,
 				85E312731F6D408300EB8AD8 /* CoreDataManager.swift */,
 				85C5C5851F36E6C100DE7EBC /* TresorModel.swift */,
+				85B667CC1F92143C00621A12 /* UserInfo.swift */,
+				85B667CE1F92148E00621A12 /* DeviceInfo.swift */,
 				85BADF921F6E5F3200DAC130 /* Tresor+Extension.swift */,
-				85BF77041F6DD8E400FA9460 /* TresorUser+Extension.swift */,
 				85F5AC491F7656A7003B14F9 /* NSManagedObject+Extension.swift */,
 				85F5AC471F764659003B14F9 /* CKRecord+Extension.swift */,
 				85BF77061F6DD8F700FA9460 /* TresorUserDevice+Extension.swift */,
@@ -289,7 +292,6 @@
 				85C5C58E1F37190C00DE7EBC /* TresorKeys.swift in Sources */,
 				85C5C58C1F370E1F00DE7EBC /* Keychain.swift in Sources */,
 				855462FA1F3F449A00C001F6 /* String+Extension.swift in Sources */,
-				85BF77051F6DD8E400FA9460 /* TresorUser+Extension.swift in Sources */,
 				85F5AC4A1F7656A7003B14F9 /* NSManagedObject+Extension.swift in Sources */,
 				85BF77071F6DD8F700FA9460 /* TresorUserDevice+Extension.swift in Sources */,
 				85E312741F6D408300EB8AD8 /* CoreDataManager.swift in Sources */,
@@ -300,10 +302,12 @@
 				85BADF951F6E616B00DAC130 /* TresorDocument+Extension.swift in Sources */,
 				8517BDF11F24F95D009DB663 /* Data+Extension.swift in Sources */,
 				85EEE23E1F1B67CE002CE85E /* CeleturKit.xcdatamodeld in Sources */,
+				85B667CF1F92148E00621A12 /* DeviceInfo.swift in Sources */,
 				855462FC1F40854000C001F6 /* SymmetricCipherOperation.swift in Sources */,
 				85BF77031F6DD66700FA9460 /* TresorDocumentItem+Extension.swift in Sources */,
 				85E121A51F814C800002EEB4 /* UIViewController+Extension.swift in Sources */,
 				85F5AC481F764659003B14F9 /* CKRecord+Extension.swift in Sources */,
+				85B667CD1F92143C00621A12 /* UserInfo.swift in Sources */,
 				85E312761F6D453500EB8AD8 /* CloudKitManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

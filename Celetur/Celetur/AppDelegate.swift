@@ -99,7 +99,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
   func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
     celeturLogger.debug("Registration for remote notifications successfull with token \(deviceToken.hexEncodedString())")
     
-    self.tresorAppModel.tresorModel.updateAPNToken(deviceToken:deviceToken)
+    self.tresorAppModel.tresorModel.setCurrentDeviceAPNToken(deviceToken:deviceToken)
   }
   
   func application(_ application: UIApplication,

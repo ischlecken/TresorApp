@@ -45,7 +45,7 @@ public class CloudKitManager {
   // MARK: - Save Changed from CoreData
   
   func saveChanges() {
-    //celeturKitLogger.debug("CloudKitManager.saveChanges()")
+    celeturKitLogger.debug("CloudKitManager.saveChanges()")
     
     let moc = self.tresorModel.privateManagedContext
     

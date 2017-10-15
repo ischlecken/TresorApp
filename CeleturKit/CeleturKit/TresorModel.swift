@@ -33,12 +33,14 @@ public class TresorModel {
   let cipherQueue = OperationQueue()
   
   public init() {
-    self.coreDataManager = CoreDataManager(modelName: "CeleturKit", using:Bundle(identifier:celeturKitIdentifier)!, inAppGroupContainer:appGroup)
+    self.coreDataManager = CoreDataManager(modelName: "CeleturKit",
+                                           using:Bundle(identifier:celeturKitIdentifier)!,
+                                           inAppGroupContainer:appGroup,
+                                           forUserId: "blafasel")
   }
   
-  
   public func completeSetup() {
-    self.coreDataManager.completeSetup {
+    self.coreDataManager.completeSetup { error in 
       celeturKitLogger.debug("TresorModel.completeSetup()")
       
       self.cloudKitManager.createCloudKitSubscription()
@@ -101,7 +103,7 @@ public class TresorModel {
     
     if let apntoken = deviceInfo.apnToken, let userName = self.currentUserInfo?.userFamilyName {
       let tempMOC = self.privateChildManagedContext
-    
+      
       let _ = TresorUserDevice.createCurrentUserDevice(context: tempMOC,userName:userName, apndeviceToken: apntoken)
       
       tempMOC.perform {
@@ -114,6 +116,21 @@ public class TresorModel {
         }
       }
     }
+  }
+  
+  
+  public func createDummyUserDevices() {
+    TresorUserDevice.createCurrentUserDevice(context: self.mainManagedContext, userName: "Hugo Müller", apndeviceToken: "0000-1111")
+    TresorUserDevice.createUserDevice(context: self.mainManagedContext, userName: "Hugo Müller", deviceName: "Hugos iPhone")
+    TresorUserDevice.createUserDevice(context: self.mainManagedContext, userName: "Hugo Müller", deviceName: "Hugos iPad")
+    TresorUserDevice.createUserDevice(context: self.mainManagedContext, userName: "Hugo Müller", deviceName: "Hugos iWatch")
+    
+    TresorUserDevice.createUserDevice(context: self.mainManagedContext, userName: "Manfred Schmidt", deviceName: "Manfreds iPhone")
+    TresorUserDevice.createUserDevice(context: self.mainManagedContext, userName: "Manfred Schmidt", deviceName: "Manfreds iPad")
+    TresorUserDevice.createUserDevice(context: self.mainManagedContext, userName: "Manfred Schmidt", deviceName: "Manfreds iWatch")
+    TresorUserDevice.createUserDevice(context: self.mainManagedContext, userName: "Manfred Schmidt", deviceName: "Manfreds iTV")
+    
+    self.saveChanges()
   }
   
   
@@ -161,7 +178,7 @@ public class TresorModel {
     context.delete(tresorDocument)
   }
   
- 
+  
   
   public func encryptAndSaveTresorDocumentItem(tempManagedContext: NSManagedObjectContext,
                                                masterKey:TresorKey,

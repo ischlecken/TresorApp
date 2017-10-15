@@ -12,6 +12,9 @@
 		8517BDF11F24F95D009DB663 /* Data+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8517BDF01F24F95D009DB663 /* Data+Extension.swift */; };
 		855462FA1F3F449A00C001F6 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 855462F91F3F449900C001F6 /* String+Extension.swift */; };
 		855462FC1F40854000C001F6 /* SymmetricCipherOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 855462FB1F40853F00C001F6 /* SymmetricCipherOperation.swift */; };
+		85A6A1051F934ABE00EBDD48 /* CeleturKitMetaInfo.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 85A6A1031F934ABE00EBDD48 /* CeleturKitMetaInfo.xcdatamodeld */; };
+		85A6A1071F936BBB00EBDD48 /* URL+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A6A1061F936BBB00EBDD48 /* URL+extension.swift */; };
+		85A6A1091F936D4D00EBDD48 /* Bundle+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A6A1081F936D4D00EBDD48 /* Bundle+extension.swift */; };
 		85B667CD1F92143C00621A12 /* UserInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85B667CC1F92143C00621A12 /* UserInfo.swift */; };
 		85B667CF1F92148E00621A12 /* DeviceInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85B667CE1F92148E00621A12 /* DeviceInfo.swift */; };
 		85BADF931F6E5F3200DAC130 /* Tresor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BADF921F6E5F3200DAC130 /* Tresor+Extension.swift */; };
@@ -50,6 +53,9 @@
 		8517BDF01F24F95D009DB663 /* Data+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Extension.swift"; sourceTree = "<group>"; };
 		855462F91F3F449900C001F6 /* String+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
 		855462FB1F40853F00C001F6 /* SymmetricCipherOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SymmetricCipherOperation.swift; sourceTree = "<group>"; };
+		85A6A1041F934ABE00EBDD48 /* CeleturKitMetaInfo.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CeleturKitMetaInfo.xcdatamodel; sourceTree = "<group>"; };
+		85A6A1061F936BBB00EBDD48 /* URL+extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+extension.swift"; sourceTree = "<group>"; };
+		85A6A1081F936D4D00EBDD48 /* Bundle+extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+extension.swift"; sourceTree = "<group>"; };
 		85B667CC1F92143C00621A12 /* UserInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfo.swift; sourceTree = "<group>"; };
 		85B667CE1F92148E00621A12 /* DeviceInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceInfo.swift; sourceTree = "<group>"; };
 		85BADF921F6E5F3200DAC130 /* Tresor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Tresor+Extension.swift"; sourceTree = "<group>"; };
@@ -132,6 +138,8 @@
 				855462F91F3F449900C001F6 /* String+Extension.swift */,
 				85C5C5891F370E1E00DE7EBC /* Keychain.swift */,
 				85E121A41F814C800002EEB4 /* UIViewController+Extension.swift */,
+				85A6A1061F936BBB00EBDD48 /* URL+extension.swift */,
+				85A6A1081F936D4D00EBDD48 /* Bundle+extension.swift */,
 			);
 			name = Util;
 			sourceTree = "<group>";
@@ -163,6 +171,7 @@
 				855462FB1F40853F00C001F6 /* SymmetricCipherOperation.swift */,
 				85EEE2141F1B4E4B002CE85E /* Info.plist */,
 				85EEE23C1F1B67CE002CE85E /* CeleturKit.xcdatamodeld */,
+				85A6A1031F934ABE00EBDD48 /* CeleturKitMetaInfo.xcdatamodeld */,
 				8517BDE41F2493FC009DB663 /* CeleturKitError.swift */,
 				85C5C58D1F37190C00DE7EBC /* TresorKeys.swift */,
 			);
@@ -296,8 +305,11 @@
 				85BF77071F6DD8F700FA9460 /* TresorUserDevice+Extension.swift in Sources */,
 				85E312741F6D408300EB8AD8 /* CoreDataManager.swift in Sources */,
 				85BADF931F6E5F3200DAC130 /* Tresor+Extension.swift in Sources */,
+				85A6A1071F936BBB00EBDD48 /* URL+extension.swift in Sources */,
 				85C5C5861F36E6C100DE7EBC /* TresorModel.swift in Sources */,
+				85A6A1051F934ABE00EBDD48 /* CeleturKitMetaInfo.xcdatamodeld in Sources */,
 				85EEE23A1F1B52DE002CE85E /* Logger.swift in Sources */,
+				85A6A1091F936D4D00EBDD48 /* Bundle+extension.swift in Sources */,
 				85F5AC4C1F767E12003B14F9 /* CloudKitPersistenceState.swift in Sources */,
 				85BADF951F6E616B00DAC130 /* TresorDocument+Extension.swift in Sources */,
 				8517BDF11F24F95D009DB663 /* Data+Extension.swift in Sources */,
@@ -548,6 +560,16 @@
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
+		85A6A1031F934ABE00EBDD48 /* CeleturKitMetaInfo.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				85A6A1041F934ABE00EBDD48 /* CeleturKitMetaInfo.xcdatamodel */,
+			);
+			currentVersion = 85A6A1041F934ABE00EBDD48 /* CeleturKitMetaInfo.xcdatamodel */;
+			path = CeleturKitMetaInfo.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
 		85EEE23C1F1B67CE002CE85E /* CeleturKit.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (

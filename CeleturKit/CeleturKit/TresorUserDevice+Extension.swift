@@ -5,13 +5,18 @@
 
 extension TresorUserDevice {
   
-  class func createUserDevice(context:NSManagedObjectContext,deviceName:String) {
+  class func createUserDevice(context:NSManagedObjectContext, userName:String, deviceName:String) {
     let newUserDevice = TresorUserDevice(context:context)
     
     newUserDevice.createts = Date()
     newUserDevice.devicename = deviceName
+    newUserDevice.devicesystemname = "iPhone X"
+    newUserDevice.devicesystemversion = "10.0"
+    newUserDevice.deviceuitype = Int16(UIUserInterfaceIdiom.phone.rawValue)
+    
     newUserDevice.id = String.uuid()
     newUserDevice.apndevicetoken = String.uuid()
+    newUserDevice.username = userName
   }
   
   class func createCurrentUserDevice(context:NSManagedObjectContext, userName:String, apndeviceToken:String) {
@@ -53,7 +58,7 @@ extension TresorUserDevice {
     
     fetchRequest.sortDescriptors = [sortDescriptor]
     
-    let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context, sectionNameKeyPath: "user.email", cacheName: nil)
+    let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context, sectionNameKeyPath: "username", cacheName: nil)
     
     do {
       try aFetchedResultsController.performFetch()

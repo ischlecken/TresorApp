@@ -7,20 +7,26 @@ import CloudKit
 
 public class CoreDataManager {
   
-  public typealias CoreDataManagerCompletion = () -> ()
+  public typealias CoreDataManagerCompletion = (Error?) -> ()
   
   fileprivate let modelName: String
+  fileprivate let userId: String?
   fileprivate let timer : DispatchSourceTimer
   fileprivate let appGroupContainerId : String
   fileprivate let bundle : Bundle
   fileprivate var saveToCKIsRunning = false
   
-  var cloudKitManager : CloudKitManager?
+  var cloudKitManager : CloudKitManager? {
+    didSet {
+      setupCloudKitSupport()
+    }
+  }
   
-  public init(modelName: String, using bundle:Bundle, inAppGroupContainer appGroupContainerId:String) {
+  public init(modelName: String, using bundle:Bundle, inAppGroupContainer appGroupContainerId:String, forUserId userId:String? = nil) {
     self.modelName = modelName
     self.appGroupContainerId = appGroupContainerId
     self.bundle = bundle
+    self.userId = userId
     self.timer = DispatchSource.makeTimerSource(flags: [], queue: DispatchQueue.global())
     
     setupCoreDataStack()
@@ -30,13 +36,15 @@ public class CoreDataManager {
   // MARK: - Core Data Stack
   
   fileprivate lazy var managedObjectModel: NSManagedObjectModel? = {
-    return NSManagedObjectModel(contentsOf: self.modelURL)
+    return NSManagedObjectModel(contentsOf: self.bundle.coreDataModelURL(modelName: modelName))
   }()
   
-  fileprivate func addPersistentStore() {
+  fileprivate func addPersistentStore() throws {
     guard let persistentStoreCoordinator = persistentStoreCoordinator else { celeturKitLogger.fatal("Unable to Initialize Persistent Store Coordinator") }
     
-    let persistentStoreURL = self.persistentStoreURL
+    let persistentStoreURL = self.userId != nil ?
+      try URL.coreDataPersistentStoreURL(appGroupId: appGroupContainerId, storeName:modelName, forUser:self.userId!) :
+      URL.coreDataPersistentStoreURL(appGroupId: appGroupContainerId, storeName:modelName)
     do {
       let options = [ NSMigratePersistentStoresAutomaticallyOption : true, NSInferMappingModelAutomaticallyOption : true ]
       try persistentStoreCoordinator.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: persistentStoreURL, options: options)
@@ -77,23 +85,6 @@ public class CoreDataManager {
   }
   
   
-  // MARK: - Computed Properties
-  
-  fileprivate var persistentStoreURL: URL {
-    let containerUrl = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: self.appGroupContainerId)
-    
-    guard containerUrl != nil else { celeturKitLogger.fatal("could not find app group container") }
-    
-    return containerUrl!.appendingPathComponent("\(self.modelName).sqlite")
-  }
-  
-  fileprivate var modelURL: URL {
-    let url = self.bundle.url(forResource: modelName, withExtension: "momd")
-    
-    guard url != nil else { celeturKitLogger.fatal("could not find coredata model") }
-    
-    return url!
-  }
   
   // MARK: - Save changes in main and private MOC
   
@@ -145,40 +136,52 @@ public class CoreDataManager {
   }
   
   fileprivate func updateInfoForChangedObjects() {
-    if self.mainManagedObjectContext.hasChanges || self.privateManagedObjectContext.hasChanges {
-      self.cloudKitManager?.updateInfoForChangedObjects(moc: self.mainManagedObjectContext)
-      self.cloudKitManager?.updateInfoForChangedObjects(moc: self.privateManagedObjectContext)
+    if let ckm = self.cloudKitManager, (self.mainManagedObjectContext.hasChanges || self.privateManagedObjectContext.hasChanges) {
+      ckm.updateInfoForChangedObjects(moc: self.mainManagedObjectContext)
+      ckm.updateInfoForChangedObjects(moc: self.privateManagedObjectContext)
     }
   }
+  
   
   // MARK: - Private Helper Methods
   
   fileprivate func setupCoreDataStack() {
-    timer.schedule(deadline: .now(), repeating: .seconds(10))
-    timer.setEventHandler {
-      self.periodicTask()
+    let _ = mainManagedObjectContext.persistentStoreCoordinator
+  }
+ 
+  fileprivate func setupCloudKitSupport() {
+    self.timer.schedule(deadline: .now(), repeating: .seconds(10))
+    self.timer.setEventHandler {
+      self.saveChangesToCloudKit()
     }
     
-    let _ = mainManagedObjectContext.persistentStoreCoordinator
+    self.timer.resume()
   }
   
   func completeSetup(completion: @escaping CoreDataManagerCompletion) {
     DispatchQueue.global().async {
-      self.addPersistentStore()
+      var errorInfo : Error?
+      
+      do {
+        try self.addPersistentStore()
+      } catch {
+        celeturKitLogger.error("Error adding persistent store",error:error)
+        
+        errorInfo = error
+      }
       
       DispatchQueue.main.async {
-        self.setupNotificationHandling()
-        self.timer.resume()
+        if errorInfo == nil {
+          self.setupNotificationHandling()
+        }
         
-        completion()
+        completion(errorInfo)
       }
     }
   }
   
   
-  // MARK: - Helper Methods
-  
-  
+  // MARK: - Notification Handling
   private func setupNotificationHandling() {
     let notificationCenter = NotificationCenter.default
     
@@ -186,19 +189,9 @@ public class CoreDataManager {
     notificationCenter.addObserver(self, selector: #selector(saveChanges(_:)), name: Notification.Name.UIApplicationDidEnterBackground, object: nil)
   }
   
-  fileprivate func periodicTask() {
-    self.saveChangesToCloudKit()
-  }
-  
-  fileprivate static func applicationDocumentsDirectory() -> URL {
-    let urls = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask) as [URL]
-    
-    return urls[0]
-  }
-  
-  // MARK: - Notification Handling
-  @objc func saveChanges(_ notification: Notification) {
-    self.periodicTask()
+  @objc
+  func saveChanges(_ notification: Notification) {
+    self.saveChanges(notifyChangesToCloudKit: true)
   }
   
   func removeAllEntities(context: NSManagedObjectContext,entityName:String) {

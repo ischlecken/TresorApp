@@ -11,7 +11,6 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   
   var tresorAppState: TresorAppModel?
   let dateFormatter = DateFormatter()
-  var editScratchpadContext : NSManagedObjectContext?
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -23,6 +22,26 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     self.dateFormatter.timeStyle = DateFormatter.Style.short
     
     self.tableView.register(UINib(nibName:"TresorCell",bundle:nil),forCellReuseIdentifier:"tresorCell")
+    
+    NotificationCenter.default.addObserver(self,
+                                           selector: #selector(onTresorModelReady(_:)),
+                                           name: Notification.Name.onTresorModelReady,
+                                           object:self.tresorAppState?.tresorModel)
+  }
+  
+  
+  deinit {
+    NotificationCenter.default.removeObserver(self)
+  }
+  
+  @objc
+  func onTresorModelReady(_ notification: Notification) {
+    celeturLogger.debug("onTresorModelReady")
+    
+    self._fetchedResultsController = nil
+    let _ = self.fetchedResultsController
+    
+    self.tableView.reloadData()
   }
   
   override func viewWillAppear(_ animated: Bool) {
@@ -46,8 +65,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     if let ident = segue.identifier {
       switch ident {
       case "showTresorDocument":
-        if let indexPath = tableView.indexPathForSelectedRow {
-          let object = fetchedResultsController.object(at: indexPath)
+        if let indexPath = tableView.indexPathForSelectedRow, let object = fetchedResultsController?.object(at: indexPath) {
           let controller = segue.destination as! TresorDocumentViewController
           
           controller.tresorAppState = self.tresorAppState
@@ -59,23 +77,13 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
       case "showEditTresor":
         let controller = (segue.destination as! UINavigationController).topViewController as! EditTresorViewController
         controller.tresorAppState = self.tresorAppState
-        
-        do {
-          self.editScratchpadContext = self.tresorAppState?.tresorModel.privateChildManagedContext
-          if let t = sender as? Tresor {
-            controller.tresor = self.editScratchpadContext?.object(with: t.objectID) as? Tresor
-          } else {
-            controller.tresor = try Tresor.createTempTresor(context: self.editScratchpadContext!)
-          }
-        } catch {
-          celeturLogger.error("Error creating temp tresor object",error:error)
-        }
+        controller.tresor = self.tresorAppState?.tresorModel.createScratchpadTresorObject(tresor:sender as? Tresor)
         
       case "showSettings":
         let controller = (segue.destination as! UINavigationController).topViewController as! SettingsViewController
         controller.tresorAppState = self.tresorAppState
         
-      
+        
       default: break
       }
     }
@@ -83,43 +91,31 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   
   @IBAction func unwindToTresor(segue: UIStoryboardSegue) {
     if segue.identifier == "saveUnwindToTresor" {
-        let controller = segue.source as! EditTresorViewController
-       
-        if let esc = self.editScratchpadContext {
-          let _ = controller.getUpdatedModel()
-          
-          esc.perform {
-            do {
-              try esc.save()
-              
-              self.tresorAppState?.tresorModel.saveChanges()
-            } catch {
-              celeturLogger.error("Error while saving tresor object",error:error)
-            }
-          }
-        }
+      if let controller = segue.source as? EditTresorViewController {
+        controller.saveTempTresor()
+      }
     } else if segue.identifier == "settingsUnwindToTresor" {
     }
-    
-    self.editScratchpadContext = nil
   }
   
   // MARK: - Table View
   
   override func numberOfSections(in tableView: UITableView) -> Int {
-    return fetchedResultsController.sections?.count ?? 0
+    return fetchedResultsController?.sections?.count ?? 0
   }
   
   override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    let sectionInfo = fetchedResultsController.sections![section]
-    return sectionInfo.numberOfObjects
+    let sectionInfo = fetchedResultsController?.sections![section]
+    
+    return sectionInfo?.numberOfObjects ?? 0
   }
   
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "tresorCell", for: indexPath) as? TresorTableViewCell
-    let tresor = fetchedResultsController.object(at: indexPath)
     
-    configureCell(cell!, withTresor: tresor)
+    if let tresor = fetchedResultsController?.object(at: indexPath) {
+      configureCell(cell!, withTresor: tresor)
+    }
     
     return cell!
   }
@@ -136,31 +132,15 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   override func tableView(_ tableView: UITableView, editActionsForRowAt: IndexPath) -> [UITableViewRowAction]? {
     
     let editAction = UITableViewRowAction(style: .normal, title: "Edit") { action, index in
-      celeturLogger.debug("edit button tapped")
-      self.performSegue(withIdentifier: "showEditTresor", sender: self.fetchedResultsController.object(at: editActionsForRowAt))
+      if let object = self.fetchedResultsController?.object(at: editActionsForRowAt) {
+        self.performSegue(withIdentifier: "showEditTresor", sender: object)
+      }
     }
     editAction.backgroundColor = .orange
     
     let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { action, index in
-      if let context = self.tresorAppState?.mainManagedContext() {
-        let tresor = self.fetchedResultsController.object(at: index)
-        
-        self.tresorAppState?.tresorModel.deleteTresor(context: context, tresor: tresor)
-        
-        do {
-          try context.save()
-          
-          self.tresorAppState?.tresorModel.saveChanges()
-        } catch {
-          celeturLogger.error("Error while deleting tresor object",error:error)
-          
-          do {
-            try self._fetchedResultsController?.performFetch()
-            self.tableView.reloadData()
-          } catch {
-            celeturLogger.error("Error while refreshing fetchedResultsController", error: error)
-          }
-        }
+      if let tresor = self.fetchedResultsController?.object(at: index) {
+        self.tresorAppState?.tresorModel.deleteTresorAndSave(tresor: tresor)
       }
     }
     
@@ -189,9 +169,9 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   
   // MARK: - Fetched results controller
   
-  var fetchedResultsController: NSFetchedResultsController<Tresor> {
+  var fetchedResultsController: NSFetchedResultsController<Tresor>? {
     if _fetchedResultsController != nil {
-      return _fetchedResultsController!
+      return _fetchedResultsController
     }
     
     do {
@@ -202,9 +182,9 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
       celeturLogger.error("CeleturKitError while creating FetchedResultsController",error:error)
     }
     
-    return _fetchedResultsController!
+    return _fetchedResultsController
   }
-  var _fetchedResultsController: NSFetchedResultsController<Tresor>? = nil
+  var _fetchedResultsController: NSFetchedResultsController<Tresor>?
   
   func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
     tableView.beginUpdates()

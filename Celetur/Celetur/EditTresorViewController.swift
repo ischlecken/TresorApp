@@ -9,7 +9,7 @@ import CeleturKit
 class EditTresorViewController: UITableViewController {
   
   var tresorAppState: TresorAppModel?
-  var tresor: Tresor!
+  var tresor: TresorModel.TempTresorObject?
   
   @IBOutlet weak var nameTextfield: UITextField!
   @IBOutlet weak var descriptionTextfield: UITextField!
@@ -17,26 +17,38 @@ class EditTresorViewController: UITableViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    if let deviceId = self.tresorAppState?.tresorModel.currentDeviceInfo?.userDevice?.id, self.tresor.owneruserdeviceid == nil {
-      self.tresor.owneruserdeviceid = deviceId
+    if let deviceId = self.tresorAppState?.tresorModel.currentDeviceInfo?.userDevice?.id, self.tresor?.tempTresor.owneruserdeviceid == nil {
+      self.tresor?.tempTresor.owneruserdeviceid = deviceId
     }
     
     self.nameTextfield.becomeFirstResponder()
-    if let t  = self.tresor {
+    if let t  = self.tresor?.tempTresor {
       self.nameTextfield.text = t.name
       self.descriptionTextfield.text = t.tresordescription
     }
     
   }
   
-  func getUpdatedModel() -> Tresor {
-    self.tresor?.name = self.nameTextfield!.text
-    self.tresor?.tresordescription = self.descriptionTextfield!.text
-    self.tresor?.changets = Date()
+  func saveTempTresor() {
+    if let t = self.tresor?.tempTresor {
+      t.name = self.nameTextfield!.text
+      t.tresordescription = self.descriptionTextfield!.text
+      t.changets = Date()
+    }
     
-    return self.tresor!
+    if let moc = self.tresor?.tempManagedObjectContext {
+      moc.perform {
+        do {
+          try moc.save()
+          
+          self.tresorAppState?.tresorModel.saveChanges()
+        } catch {
+          celeturLogger.error("Error while saving tresor object",error:error)
+        }
+      }
+    }
+    
   }
-  
   
   // MARK: - Table View
   
@@ -61,12 +73,12 @@ class EditTresorViewController: UITableViewController {
   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     guard let userDevice = self.getUserDevice(forPath: indexPath) else { return }
     
-    let contains = self.tresor!.userdevices?.contains(userDevice)
-    
-    if contains ?? false {
-      self.tresor.removeFromUserdevices(userDevice)
-    } else {
-      self.tresor.addToUserdevices(userDevice)
+    if let t = self.tresor?.tempTresor {
+      if t.userdevices?.contains(userDevice) ?? false {
+        t.removeFromUserdevices(userDevice)
+      } else {
+        t.addToUserdevices(userDevice)
+      }
     }
     
     self.tableView.reloadRows(at:[indexPath] , with: UITableViewRowAnimation.fade)
@@ -98,11 +110,14 @@ class EditTresorViewController: UITableViewController {
   func configureCell(_ cell: UITableViewCell, withUserDevice userDevice: TresorUserDevice) {
     cell.textLabel?.text = userDevice.devicename
     cell.detailTextLabel?.text = userDevice.id
-    
-    let contains = self.tresor!.userdevices?.contains(userDevice)
-    
-    cell.accessoryType = contains != nil && contains! ? .checkmark : .none
+    cell.accessoryType = .none
     cell.indentationLevel = 0
+    
+    if let t = self.tresor?.tempTresor {
+      if t.userdevices?.contains(userDevice) ?? false {
+        cell.accessoryType = .checkmark
+      }
+    }
   }
   
   

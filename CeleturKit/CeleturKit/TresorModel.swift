@@ -7,84 +7,104 @@ import Foundation
 import Contacts
 import CloudKit
 
+extension Notification.Name {
+  public static let onTresorModelReady = Notification.Name("onTresorModelReady")
+}
+
+
 let appGroup = "group.net.prisnoc.Celetur"
 let celeturKitIdentifier = "net.prisnoc.CeleturKit"
 
 public class TresorModel {
   
-  public var currentUserInfo:UserInfo?
-  public var currentDeviceInfo:DeviceInfo?
+  public var currentUserInfo : UserInfo?
+  public var currentDeviceInfo : DeviceInfo?
   
   public var userDevices : [TresorUserDevice]?
   
-  let coreDataManager: CoreDataManager
-  lazy var cloudKitManager = {
-    return CloudKitManager(tresorModel: self)
-  }()
-  
-  lazy var cloudKitPersistenceState : CloudKitPersistenceState = {
-    let ckps = CloudKitPersistenceState(appGroupContainerId: appGroup)
-    
-    ckps.load()
-    
-    return ckps
-  }()
-  
+  public var tresorCoreDataManager : CoreDataManager?
   let cipherQueue = OperationQueue()
   
   public init() {
-    self.coreDataManager = CoreDataManager(modelName: "CeleturKit",
-                                           using:Bundle(identifier:celeturKitIdentifier)!,
-                                           inAppGroupContainer:appGroup,
-                                           forUserId: "blafasel")
   }
   
   public func completeSetup() {
-    self.coreDataManager.completeSetup { error in 
-      celeturKitLogger.debug("TresorModel.completeSetup()")
+    self.requestUserDiscoverabilityPermission()
+  }
+  
+  fileprivate func switchTresorCoreDataManager() {
+    guard let u = self.currentUserInfo else { return }
+    
+    let cdm = CoreDataManager(modelName: "CeleturKit",
+                              using:Bundle(identifier:celeturKitIdentifier)!,
+                              inAppGroupContainer:appGroup,
+                              forUserId: u.userRecordID)
+    
+    cdm.completeSetup { error in
+      celeturKitLogger.debug("TresorModel.switchTresorCoreDataManager()")
       
-      self.cloudKitManager.createCloudKitSubscription()
-      self.cloudKitManager.requestUserDiscoverabilityPermission()
-      self.coreDataManager.cloudKitManager = self.cloudKitManager
-      
-      DispatchQueue.main.async {
-        self.userDevices = TresorUserDevice.loadUserDevices(context: self.mainManagedContext)
+      do {
+        let ckps = try CloudKitPersistenceState(appGroupContainerId: appGroup, forUserId:u.userRecordID)
         
-        let di = DeviceInfo()
-        if let userDevices = self.userDevices {
-          let _ = di.selectUserDevice(userDevices: userDevices)
+        let ckm = CloudKitManager(cloudKitPersistenceState: ckps, coreDataManager: cdm)
+        ckm.createCloudKitSubscription()
+        
+        cdm.cloudKitManager = ckm
+        
+        DispatchQueue.main.async {
+          self.userDevices = TresorUserDevice.loadUserDevices(context: cdm.mainManagedObjectContext)
+          
+          let di = DeviceInfo()
+          if let userDevices = self.userDevices {
+            let _ = di.selectUserDevice(userDevices: userDevices)
+          }
+          
+          self.currentDeviceInfo = di
+          self.tresorCoreDataManager = cdm
+          
+          NotificationCenter.default.post(name: .onTresorModelReady, object: self)
         }
-        
-        self.currentDeviceInfo = di
+      } catch {
+        celeturKitLogger.error("Error while setup core data manager ...",error:error)
       }
     }
   }
   
-  
-  public var privateManagedContext : NSManagedObjectContext {
-    return self.coreDataManager.privateManagedObjectContext
-  }
-  
-  
-  public var mainManagedContext : NSManagedObjectContext {
-    return self.coreDataManager.mainManagedObjectContext
-  }
-  
-  
-  public var privateChildManagedContext : NSManagedObjectContext {
-    return self.coreDataManager.privateChildManagedObjectContext()
-  }
-  
   public func saveChanges(notifyCloudKit:Bool=true) {
-    self.coreDataManager.saveChanges(notifyChangesToCloudKit:notifyCloudKit)
+    guard let cdm = self.tresorCoreDataManager else { return }
+    
+    cdm.saveChanges(notifyChangesToCloudKit:notifyCloudKit)
   }
   
-  public func setCurrentUserInfo(userIdentity:CKUserIdentity) {
-    let ui = UserInfo()
-    
-    ui.updateUserIdentityInfo(userIdentity: userIdentity)
-    
-    self.currentUserInfo = ui
+  
+  func requestUserDiscoverabilityPermission() {
+    CKContainer.default().requestApplicationPermission(CKApplicationPermissions.userDiscoverability) { (status, error) in
+      if let error=error {
+        let _ = CloudKitManager.dumpCloudKitError(context: "UserDiscoverabilityPermission", error: error)
+      }
+      
+      //celeturKitLogger.debug("status:\(status.rawValue)")
+      
+      if status == CKApplicationPermissionStatus.granted {
+        CKContainer.default().fetchUserRecordID(completionHandler: { (recordID, error) in
+          if let r = recordID {
+            //celeturKitLogger.debug("recordID:\(r)")
+            
+            CKContainer.default().discoverUserIdentity(withUserRecordID: r, completionHandler: { (userIdentity, error) in
+              if let u = userIdentity {
+                let ui = UserInfo()
+                
+                ui.updateUserIdentityInfo(userIdentity: u)
+                
+                self.currentUserInfo = ui
+                
+                self.switchTresorCoreDataManager()
+              }
+            })
+          }
+        })
+      }
+    }
   }
   
   public func setCurrentDeviceAPNToken(deviceToken:Data) {
@@ -101,16 +121,18 @@ public class TresorModel {
   func createCurrentUserInfo() {
     guard let deviceInfo = self.currentDeviceInfo else { return }
     
-    if let apntoken = deviceInfo.apnToken, let userName = self.currentUserInfo?.userFamilyName {
-      let tempMOC = self.privateChildManagedContext
+    if let apntoken = deviceInfo.apnToken,
+      let userName = self.currentUserInfo?.userFamilyName,
+      let cdm = self.tresorCoreDataManager {
       
+      let tempMOC = cdm.privateChildManagedObjectContext()
       let _ = TresorUserDevice.createCurrentUserDevice(context: tempMOC,userName:userName, apndeviceToken: apntoken)
       
       tempMOC.perform {
         do {
           try tempMOC.save()
           
-          self.coreDataManager.saveChanges(notifyChangesToCloudKit: true)
+          cdm.saveChanges(notifyChangesToCloudKit: true)
         } catch {
           celeturKitLogger.error("Error saving contacts",error:error)
         }
@@ -120,38 +142,60 @@ public class TresorModel {
   
   
   public func createDummyUserDevices() {
-    TresorUserDevice.createCurrentUserDevice(context: self.mainManagedContext, userName: "Hugo Müller", apndeviceToken: "0000-1111")
-    TresorUserDevice.createUserDevice(context: self.mainManagedContext, userName: "Hugo Müller", deviceName: "Hugos iPhone")
-    TresorUserDevice.createUserDevice(context: self.mainManagedContext, userName: "Hugo Müller", deviceName: "Hugos iPad")
-    TresorUserDevice.createUserDevice(context: self.mainManagedContext, userName: "Hugo Müller", deviceName: "Hugos iWatch")
-    
-    TresorUserDevice.createUserDevice(context: self.mainManagedContext, userName: "Manfred Schmidt", deviceName: "Manfreds iPhone")
-    TresorUserDevice.createUserDevice(context: self.mainManagedContext, userName: "Manfred Schmidt", deviceName: "Manfreds iPad")
-    TresorUserDevice.createUserDevice(context: self.mainManagedContext, userName: "Manfred Schmidt", deviceName: "Manfreds iWatch")
-    TresorUserDevice.createUserDevice(context: self.mainManagedContext, userName: "Manfred Schmidt", deviceName: "Manfreds iTV")
-    
-    self.saveChanges()
+    if let moc = self.tresorCoreDataManager?.mainManagedObjectContext {
+      TresorUserDevice.createCurrentUserDevice(context: moc, userName: "Hugo Müller", apndeviceToken: "0000-1111")
+      TresorUserDevice.createUserDevice(context: moc, userName: "Hugo Müller", deviceName: "Hugos iPhone")
+      TresorUserDevice.createUserDevice(context: moc, userName: "Hugo Müller", deviceName: "Hugos iPad")
+      TresorUserDevice.createUserDevice(context: moc, userName: "Hugo Müller", deviceName: "Hugos iWatch")
+      
+      TresorUserDevice.createUserDevice(context: moc, userName: "Manfred Schmidt", deviceName: "Manfreds iPhone")
+      TresorUserDevice.createUserDevice(context: moc, userName: "Manfred Schmidt", deviceName: "Manfreds iPad")
+      TresorUserDevice.createUserDevice(context: moc, userName: "Manfred Schmidt", deviceName: "Manfreds iWatch")
+      TresorUserDevice.createUserDevice(context: moc, userName: "Manfred Schmidt", deviceName: "Manfreds iTV")
+      
+      self.saveChanges()
+    }
   }
   
   
-  public func createTresorDocument(tresor:Tresor, plainText: String, masterKey: TresorKey?) throws -> TresorDocument {
-    let newTresorDocument = try TresorDocument.createTresorDocument(context: self.mainManagedContext, tresor: tresor)
+  public func createTresorDocument(tresor:Tresor, plainText: String, masterKey: TresorKey?) throws -> TresorDocument? {
+    var result : TresorDocument?
     
-    for ud in tresor.userdevices! {
-      let userdevice = ud as! TresorUserDevice
+    if let moc = self.tresorCoreDataManager?.mainManagedObjectContext {
+      let newTresorDocument = try TresorDocument.createTresorDocument(context: moc, tresor: tresor)
       
-      let item = try self.createTresorDocumentItem(tresorDocument: newTresorDocument,
-                                                   plainText: plainText,
-                                                   userDevice: userdevice,
-                                                   masterKey: masterKey!)
+      for ud in tresor.userdevices! {
+        let userdevice = ud as! TresorUserDevice
+        
+        let item = try self.createTresorDocumentItem(tresorDocument: newTresorDocument,
+                                                     plainText: plainText,
+                                                     userDevice: userdevice,
+                                                     masterKey: masterKey!)
+        
+        newTresorDocument.addToDocumentitems(item!)
+        userdevice.addToDocumentitems(item!)
+      }
       
-      newTresorDocument.addToDocumentitems(item)
-      userdevice.addToDocumentitems(item)
+      self.saveChanges()
+      
+      result = newTresorDocument
     }
     
-    self.saveChanges()
-    
-    return newTresorDocument
+    return result
+  }
+  
+  public func deleteTresorAndSave(tresor: Tresor) {
+    if let moc = self.tresorCoreDataManager?.mainManagedObjectContext {
+      self.deleteTresor(context: moc, tresor: tresor)
+      
+      do {
+        try moc.save()
+        
+        self.saveChanges()
+      } catch {
+        celeturKitLogger.error("Error while deleting tresor object",error:error)
+      }
+    }
   }
   
   public func deleteTresor(context:NSManagedObjectContext, tresor:Tresor) {
@@ -220,39 +264,45 @@ public class TresorModel {
   public func createTresorDocumentItem(tresorDocument:TresorDocument,
                                        plainText: String,
                                        userDevice:TresorUserDevice,
-                                       masterKey:TresorKey) throws -> TresorDocumentItem {
-    let newTresorDocumentItem = TresorDocumentItem.createPendingTresorDocumentItem(context:self.mainManagedContext,
-                                                                                   tresorDocument: tresorDocument,
-                                                                                   userDevice:userDevice)
+                                       masterKey:TresorKey) throws -> TresorDocumentItem? {
+    var result : TresorDocumentItem?
     
-    tresorDocument.addToDocumentitems(newTresorDocumentItem)
-    userDevice.addToDocumentitems(newTresorDocumentItem)
-    
-    do {
-      let key = masterKey.accessToken!
-      let operation = AES256EncryptionOperation(key:key,inputString: plainText, iv:nil)
-      try operation.createRandomIV()
+    if let moc = self.tresorCoreDataManager?.mainManagedObjectContext {
+      let newTresorDocumentItem = TresorDocumentItem.createPendingTresorDocumentItem(context:moc,
+                                                                                     tresorDocument: tresorDocument,
+                                                                                     userDevice:userDevice)
       
-      operation.completionBlock = {
-        DispatchQueue.main.async {
-          newTresorDocumentItem.type = "main"
-          newTresorDocumentItem.mimetype = "application/json"
-          newTresorDocumentItem.status = "encrypted"
-          newTresorDocumentItem.payload = operation.outputData
-          newTresorDocumentItem.nonce = operation.iv
-          
-          self.saveChanges()
-          
-          celeturKitLogger.debug("plain:\(plainText) key:\(key) encryptedText:\(String(describing: operation.outputData?.hexEncodedString()))")
+      tresorDocument.addToDocumentitems(newTresorDocumentItem)
+      userDevice.addToDocumentitems(newTresorDocumentItem)
+      
+      do {
+        let key = masterKey.accessToken!
+        let operation = AES256EncryptionOperation(key:key,inputString: plainText, iv:nil)
+        try operation.createRandomIV()
+        
+        operation.completionBlock = {
+          DispatchQueue.main.async {
+            newTresorDocumentItem.type = "main"
+            newTresorDocumentItem.mimetype = "application/json"
+            newTresorDocumentItem.status = "encrypted"
+            newTresorDocumentItem.payload = operation.outputData
+            newTresorDocumentItem.nonce = operation.iv
+            
+            self.saveChanges()
+            
+            celeturKitLogger.debug("plain:\(plainText) key:\(key) encryptedText:\(String(describing: operation.outputData?.hexEncodedString()))")
+          }
         }
+        
+        self.cipherQueue.addOperation(operation)
+        
+        result = newTresorDocumentItem
+      } catch {
+        celeturKitLogger.error("Error while saving tresordocumentitem", error: error)
       }
-      
-      self.cipherQueue.addOperation(operation)
-    } catch {
-      celeturKitLogger.error("Error while saving tresordocumentitem", error: error)
     }
     
-    return newTresorDocumentItem
+    return result
   }
   
   public func decryptTresorDocumentItemPayload(tresorDocumentItem:TresorDocumentItem,
@@ -279,53 +329,60 @@ public class TresorModel {
     }
   }
   
-  public func createAndFetchTresorFetchedResultsController() throws -> NSFetchedResultsController<Tresor> {
-    return try Tresor.createAndFetchTresorFetchedResultsController(context: self.mainManagedContext)
+  public func createAndFetchTresorFetchedResultsController() throws -> NSFetchedResultsController<Tresor>? {
+    var result : NSFetchedResultsController<Tresor>?
+    
+    if let moc = self.tresorCoreDataManager?.mainManagedObjectContext {
+      result = try Tresor.createAndFetchTresorFetchedResultsController(context: moc)
+    }
+    
+    return result
   }
   
-  public func createAndFetchUserdeviceFetchedResultsController() throws -> NSFetchedResultsController<TresorUserDevice> {
-    return try TresorUserDevice.createAndFetchUserdeviceFetchedResultsController(context: self.mainManagedContext)
+  public func createAndFetchUserdeviceFetchedResultsController() throws -> NSFetchedResultsController<TresorUserDevice>? {
+    var result : NSFetchedResultsController<TresorUserDevice>?
+    
+    if let moc = self.tresorCoreDataManager?.mainManagedObjectContext {
+      result = try TresorUserDevice.createAndFetchUserdeviceFetchedResultsController(context: moc)
+    }
+    
+    return result
   }
   
   
-  public func createAndFetchTresorDocumentItemFetchedResultsController(tresor:Tresor?) throws -> NSFetchedResultsController<TresorDocumentItem> {
-    return try TresorDocumentItem.createAndFetchTresorDocumentItemFetchedResultsController(context: self.mainManagedContext, tresor: tresor)
+  public func createAndFetchTresorDocumentItemFetchedResultsController(tresor:Tresor?) throws -> NSFetchedResultsController<TresorDocumentItem>? {
+    var result : NSFetchedResultsController<TresorDocumentItem>?
+    
+    if let moc = self.tresorCoreDataManager?.mainManagedObjectContext {
+      result = try TresorDocumentItem.createAndFetchTresorDocumentItemFetchedResultsController(context: moc, tresor: tresor)
+    }
+    
+    return result
   }
   
   public func fetchChanges(in databaseScope: CKDatabaseScope, completion: @escaping () -> Void) {
-    self.cloudKitManager.fetchChanges(in: databaseScope, completion: completion)
-  }
-  
-  public func isObjectChanged(o:NSManagedObject) -> Bool {
-    return self.cloudKitPersistenceState.isObjectChanged(o:o)
-  }
-  
-  public func isObjectDeleted(o:NSManagedObject) -> Bool {
-    return self.cloudKitPersistenceState.isObjectDeleted(o:o)
-  }
-  
-  public func deleteObject(o:NSManagedObject) {
-    self.cloudKitPersistenceState.addDeletedObject(o: o)
+    self.tresorCoreDataManager?.cloudKitManager?.fetchChanges(in: databaseScope, completion: completion)
   }
   
   public func resetChangeTokens() {
-    self.cloudKitPersistenceState.flushChangedIds()
-    self.cloudKitPersistenceState.flushServerChangeTokens()
+    self.tresorCoreDataManager?.cloudKitManager?.ckPersistenceState.flushChangedIds()
+    self.tresorCoreDataManager?.cloudKitManager?.ckPersistenceState.flushServerChangeTokens()
   }
   
   public func removeAllCloudKitData() {
-    self.cloudKitManager.deleteAllRecordsForZone()
+    self.tresorCoreDataManager?.cloudKitManager?.deleteAllRecordsForZone()
   }
   
   public func removeAllCoreData() {
-    let tempMoc = self.coreDataManager.privateChildManagedObjectContext()
+    guard let cdm = self.tresorCoreDataManager else { return }
+    
+    let tempMoc = cdm.privateChildManagedObjectContext()
     
     do {
-      self.coreDataManager.removeAllEntities(context: tempMoc, entityName: "TresorDocumentItem")
-      self.coreDataManager.removeAllEntities(context: tempMoc, entityName: "TresorDocument")
-      self.coreDataManager.removeAllEntities(context: tempMoc, entityName: "Tresor")
-      self.coreDataManager.removeAllEntities(context: tempMoc, entityName: "TresorUserDevice")
-      self.coreDataManager.removeAllEntities(context: tempMoc, entityName: "TresorUser")
+      cdm.removeAllEntities(context: tempMoc, entityName: "TresorDocumentItem")
+      cdm.removeAllEntities(context: tempMoc, entityName: "TresorDocument")
+      cdm.removeAllEntities(context: tempMoc, entityName: "Tresor")
+      cdm.removeAllEntities(context: tempMoc, entityName: "TresorUserDevice")
       
       try tempMoc.save()
       
@@ -341,4 +398,64 @@ public class TresorModel {
     self.removeAllCoreData()
   }
   
+  
+  public struct TempTresorObject {
+    public var tempManagedObjectContext : NSManagedObjectContext
+    public var tempTresor : Tresor
+    
+    init(context:NSManagedObjectContext, tresor:Tresor) {
+      self.tempManagedObjectContext = context
+      self.tempTresor = tresor
+    }
+  }
+  
+  public func createScratchpadTresorObject(tresor: Tresor?) -> TempTresorObject? {
+    var result : TempTresorObject?
+    
+    if let cdm = self.tresorCoreDataManager {
+      do {
+        let scratchpadContext = cdm.privateChildManagedObjectContext()
+        var tempTresor : Tresor?
+        
+        if let t = tresor {
+          tempTresor = scratchpadContext.object(with: t.objectID) as? Tresor
+        } else {
+          tempTresor = try Tresor.createTempTresor(context: scratchpadContext)
+        }
+        
+        result = TempTresorObject(context:scratchpadContext, tresor:tempTresor!)
+      } catch {
+        celeturKitLogger.error("Error creating temp tresor object",error:error)
+      }
+    }
+    
+    return result
+  }
+  
+  public func saveDocumentItemModelData(tresorDocumentItem: TresorDocumentItem, model : [String:Any], masterKey: TresorKey) {
+    if let moc = self.tresorCoreDataManager?.privateChildManagedObjectContext() {
+      moc.perform {
+        self.encryptAndSaveTresorDocumentItem(tempManagedContext: moc,
+                                              masterKey: masterKey,
+                                              tresorDocumentItem: tresorDocumentItem,
+                                              payload: model)
+        
+        self.saveChanges()
+      }
+    }
+  }
+  
+  public func deleteTresorUserDevice(userDevice:TresorUserDevice) {
+    if let moc = self.tresorCoreDataManager?.mainManagedObjectContext {
+      moc.delete(userDevice)
+      
+      do {
+        try moc.save()
+        
+        self.saveChanges()
+      } catch {
+        celeturKitLogger.error("Error while deleting TresorUserDevice", error: error)
+      }
+    }
+  }
 }

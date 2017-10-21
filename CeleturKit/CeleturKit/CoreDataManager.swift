@@ -5,6 +5,7 @@
 import CoreData
 import CloudKit
 
+
 public class CoreDataManager {
   
   public typealias CoreDataManagerCompletion = (Error?) -> ()
@@ -131,7 +132,7 @@ public class CoreDataManager {
         self.saveToCKIsRunning = false
       }
       
-      ckm.saveChanges()
+      ckm.saveChanges(context: self.privateManagedObjectContext)
     }
   }
   

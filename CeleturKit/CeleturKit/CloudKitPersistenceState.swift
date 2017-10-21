@@ -77,10 +77,20 @@ class CloudKitPersistenceState {
 
   var saveLock = NSLock()
   
-  init(appGroupContainerId:String) {
-    self.serverChangeTokensFilePath = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupContainerId)!.appendingPathComponent("ckserverchangetokens.plist").path
-    self.changedIdsFilePath = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupContainerId)!.appendingPathComponent("changedids.plist").path
-    self.deletedIdsFilePath = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupContainerId)!.appendingPathComponent("deletedids.plist").path
+  init(appGroupContainerId:String, forUserId userId:String? = nil) throws {
+    let dirURL : URL
+    
+    if let userId = userId {
+      dirURL = try URL.appGroupSubdirectoryURL(appGroupId: appGroupContainerId, dirName: userId)
+    } else {
+      dirURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupContainerId)!
+    }
+    
+    self.serverChangeTokensFilePath = dirURL.appendingPathComponent("ckserverchangetokens.plist").path
+    self.changedIdsFilePath = dirURL.appendingPathComponent("changedids.plist").path
+    self.deletedIdsFilePath = dirURL.appendingPathComponent("deletedids.plist").path
+    
+    self.load()
   }
   
   func load() {

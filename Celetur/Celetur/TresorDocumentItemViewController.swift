@@ -35,46 +35,22 @@ class TresorDocumentItemViewController: UITableViewController {
     
     configureView()
     
+    /*
     NotificationCenter.default.addObserver(self, selector: #selector(contextDidSave(_:)),
                                            name: Notification.Name.NSManagedObjectContextObjectsDidChange,
-                                           object:self.tresorAppState?.mainManagedContext())
+                                           object:self.tresorDocumentItem?.managedObjectContext)
+   */
   }
   
   deinit {
-    NotificationCenter.default.removeObserver(self)
+  //  NotificationCenter.default.removeObserver(self)
   }
   
-  @objc func contextDidSave(_ notification: Notification) {
-    /*
-    celeturLogger.debug("MOCObjectsDidChange")
-    
-    guard let userInfo = notification.userInfo else { return }
-    
-    if let inserts = userInfo[NSInsertedObjectsKey] as? Set<NSManagedObject>, inserts.count > 0 {
-      for insert in inserts {
-        celeturLogger.debug("inserts:"+String(describing:insert))
-      }
-    }
-    
-    if let updates = userInfo[NSUpdatedObjectsKey] as? Set<NSManagedObject>, updates.count > 0 {
-      for update in updates {
-        celeturLogger.debug("updates:"+String(describing:update))
-      }
-     
-    }
-    
-    if let deletes = userInfo[NSDeletedObjectsKey] as? Set<NSManagedObject>, deletes.count > 0 {
-      for delete in deletes {
-        celeturLogger.debug("delete:"+String(describing:delete))
-      }
-    }
- */
-    
-    self.configureView()
+  @objc
+  func contextDidSave(_ notification: Notification) {
   }
   
   func configureView() {
-    
     if let item = tresorDocumentItem {
       if let label = createtsLabel {
         
@@ -149,19 +125,14 @@ class TresorDocumentItemViewController: UITableViewController {
     }
   }
   
-  @IBAction func unwindToTresorDocumentItem(segue: UIStoryboardSegue) {
+  @IBAction
+  func unwindToTresorDocumentItem(segue: UIStoryboardSegue) {
     if "saveEditTresorDocumentItem" == segue.identifier {
-      let model = (segue.source as? EditTresorDocumentItemViewController)?.model
-      let scratchpadContext = self.tresorAppState?.tresorModel.privateChildManagedContext
+      if let m = (segue.source as? EditTresorDocumentItemViewController)?.model,
+        let tdi = self.tresorDocumentItem,
+        let k = self.tresorAppState?.masterKey {
       
-      scratchpadContext?.perform {
-        
-        self.tresorAppState?.tresorModel.encryptAndSaveTresorDocumentItem(tempManagedContext: scratchpadContext!,
-                                                                              masterKey: (self.tresorAppState?.masterKey)!,
-                                                                              tresorDocumentItem: self.tresorDocumentItem!,
-                                                                              payload: model!)
-        
-        self.tresorAppState?.tresorModel.saveChanges()
+        self.tresorAppState?.tresorModel.saveDocumentItemModelData(tresorDocumentItem: tdi, model : m, masterKey: k)
       }
     }
   }

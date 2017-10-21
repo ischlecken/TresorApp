@@ -19,11 +19,11 @@ class UserDeviceViewController: UITableViewController, NSFetchedResultsControlle
   // MARK: - Table view data source
   
   override func numberOfSections(in tableView: UITableView) -> Int {
-    return fetchedResultsController.sections?.count ?? 0
+    return fetchedResultsController?.sections?.count ?? 0
   }
   
   override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-    if let sections = fetchedResultsController.sections {
+    if let sections = fetchedResultsController?.sections {
       let currentSection = sections[section]
       
       return currentSection.name
@@ -33,16 +33,17 @@ class UserDeviceViewController: UITableViewController, NSFetchedResultsControlle
   }
   
   override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    let sectionInfo = fetchedResultsController.sections![section]
+    let sectionInfo = fetchedResultsController?.sections![section]
     
-    return sectionInfo.numberOfObjects
+    return sectionInfo?.numberOfObjects ?? 0
   }
   
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "userdeviceCell", for: indexPath)
-    let userdevice = fetchedResultsController.object(at: indexPath)
     
-    configureCell(cell, withUserdevice: userdevice)
+    if let userdevice = fetchedResultsController?.object(at: indexPath) {
+      configureCell(cell, withUserdevice: userdevice)
+    }
     
     return cell
   }
@@ -54,17 +55,8 @@ class UserDeviceViewController: UITableViewController, NSFetchedResultsControlle
   // Override to support editing the table view.
   override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
     if editingStyle == .delete {
-      let userdevice = fetchedResultsController.object(at: indexPath)
-      let context = self.tresorAppState?.mainManagedContext()
-      
-      context?.delete(userdevice)
-      
-      do {
-        try context?.save()
-        
-        self.tresorAppState?.tresorModel.saveChanges()
-      } catch {
-        celeturLogger.error("Error while deleting TresorUser", error: error)
+      if let userdevice = fetchedResultsController?.object(at: indexPath) {
+        self.tresorAppState?.tresorModel.deleteTresorUserDevice(userDevice: userdevice)
       }
     }
   }
@@ -101,9 +93,9 @@ class UserDeviceViewController: UITableViewController, NSFetchedResultsControlle
   
   // MARK: - Fetched results controller
   
-  var fetchedResultsController: NSFetchedResultsController<TresorUserDevice> {
+  var fetchedResultsController: NSFetchedResultsController<TresorUserDevice>? {
     if _fetchedResultsController != nil {
-      return _fetchedResultsController!
+      return _fetchedResultsController
     }
     
     do {
@@ -114,9 +106,9 @@ class UserDeviceViewController: UITableViewController, NSFetchedResultsControlle
       celeturLogger.error("CeleturKitError while creating FetchedResultsController",error:error)
     }
     
-    return _fetchedResultsController!
+    return _fetchedResultsController
   }
-  var _fetchedResultsController: NSFetchedResultsController<TresorUserDevice>? = nil
+  var _fetchedResultsController: NSFetchedResultsController<TresorUserDevice>?
   
   func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
     tableView.beginUpdates()

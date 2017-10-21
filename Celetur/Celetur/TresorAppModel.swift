@@ -43,10 +43,6 @@ class TresorAppModel {
     self.tresorModel.completeSetup()
   }
   
-  func mainManagedContext() -> NSManagedObjectContext {
-    return self.tresorModel.mainManagedContext
-  }
-  
   public func fetchChanges(in databaseScope: CKDatabaseScope, completion: @escaping () -> Void) {
     self.tresorModel.fetchChanges(in: databaseScope,completion: completion)
   }

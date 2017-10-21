@@ -132,7 +132,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   
   override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
     if editingStyle == .delete {
-      if let context = self.tresorAppState?.mainManagedContext() {
+      if let context = self.tresorAppState?.tresorModel.tresorCoreDataManager?.mainManagedObjectContext {
         
         if indexPath.row == 0 {
           if let tresorDocument = fetchedResultsController.object(at: indexPath).document {
@@ -180,13 +180,6 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     
     cell.textLabel?.textColor = tresorDocumentItem.status == "encrypted" ? UIColor.black : UIColor.red
     cell.textLabel?.font = UIFont.systemFont(ofSize: UIFont.systemFontSize)
-    
-    if self.tresorAppState?.tresorModel.isObjectChanged(o:tresorDocumentItem) ?? false {
-      cell.textLabel?.font = UIFont.italicSystemFont(ofSize: UIFont.systemFontSize)
-    } else if self.tresorAppState?.tresorModel.isObjectDeleted(o:tresorDocumentItem) ?? false {
-      cell.textLabel?.font = UIFont.italicSystemFont(ofSize: UIFont.systemFontSize)
-      cell.textLabel?.textColor = UIColor.lightGray
-    }
     
     let tdiUserDevice = tresorDocumentItem.userdevice
     

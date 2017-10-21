@@ -28,10 +28,16 @@ public class TresorModel {
   
   let cipherQueue = OperationQueue()
   
+  let initModelDispatchGroup : DispatchGroup
+  
   public init() {
+    self.initModelDispatchGroup = DispatchGroup()
   }
   
   public func completeSetup() {
+    celeturKitLogger.debug("TresorModel.completeSetup() --enter--")
+    self.initModelDispatchGroup.enter()
+
     self.requestUserDiscoverabilityPermission()
     
     let cdm = CoreDataManager(modelName: "CeleturKitMetaInfo",
@@ -44,7 +50,16 @@ public class TresorModel {
         celeturKitLogger.debug("TresorMetaInfo ready")
         
         self.tresorMetaInfoCoreDataManager = cdm
+        
+        celeturKitLogger.debug("TresorModel.completeSetup() --leave--")
+        self.initModelDispatchGroup.leave()
       }
+    }
+    
+    self.initModelDispatchGroup.notify(queue: DispatchQueue.main) {
+      celeturKitLogger.debug("TresorModel.initModelDispatchGroup.notify()")
+      
+      NotificationCenter.default.post(name: .onTresorModelReady, object: self)
     }
   }
   
@@ -80,7 +95,8 @@ public class TresorModel {
           
           self.saveUserInfo(userInfo:u)
           
-          NotificationCenter.default.post(name: .onTresorModelReady, object: self)
+          celeturKitLogger.debug("TresorModel.switchTresorCoreDataManager() --leave--")
+          self.initModelDispatchGroup.leave()
         }
       } catch {
         celeturKitLogger.error("Error while setup core data manager ...",error:error)
@@ -128,6 +144,9 @@ public class TresorModel {
   
   
   func requestUserDiscoverabilityPermission() {
+    celeturKitLogger.debug("TresorModel.requestUserDiscoverabilityPermission() --enter--")
+    self.initModelDispatchGroup.enter()
+    
     CKContainer.default().requestApplicationPermission(CKApplicationPermissions.userDiscoverability) { (status, error) in
       if let error=error {
         let _ = CloudKitManager.dumpCloudKitError(context: "UserDiscoverabilityPermission", error: error)

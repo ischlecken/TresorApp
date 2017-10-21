@@ -93,6 +93,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     // TEST-TOKEN
     // 7000000000000000000000aaaaaaabbbbbbbcccccccdddddddeeeeeeefffffff
     // 703115609b3d27416922deee926a38697601f2c713185bfd2c80055b0cf7dfda
+    
+    #if (arch(i386) || arch(x86_64))
+      if let deviceToken = Data(fromHexEncodedString: "7000000000000000000000aaaaaaabbbbbbbcccccccdddddddeeeeeeefffffff") {
+        celeturLogger.info("Emulate registration in Simulator")
+        
+        self.tresorAppModel.tresorModel.setCurrentDeviceAPNToken(deviceToken:deviceToken)
+      }
+    #endif
   }
   
   // 2

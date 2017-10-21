@@ -177,6 +177,8 @@ public class TresorModel {
   }
   
   public func setCurrentDeviceAPNToken(deviceToken:Data) {
+    celeturKitLogger.debug("setCurrentDeviceAPNToken(\(deviceToken.hexEncodedString()))")
+    
     if let di = self.currentDeviceInfo {
       di.updateAPNToken(deviceToken: deviceToken)
     }

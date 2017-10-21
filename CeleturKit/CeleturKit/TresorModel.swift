@@ -23,6 +23,9 @@ public class TresorModel {
   public var userDevices : [TresorUserDevice]?
   
   public var tresorCoreDataManager : CoreDataManager?
+  
+  var tresorMetaInfoCoreDataManager : CoreDataManager?
+  
   let cipherQueue = OperationQueue()
   
   public init() {
@@ -30,6 +33,19 @@ public class TresorModel {
   
   public func completeSetup() {
     self.requestUserDiscoverabilityPermission()
+    
+    let cdm = CoreDataManager(modelName: "CeleturKitMetaInfo",
+                              using:Bundle(identifier:celeturKitIdentifier)!,
+                              inAppGroupContainer:appGroup,
+                              forUserId: nil)
+    
+    cdm.completeSetup { error in
+      if error == nil {
+        celeturKitLogger.debug("TresorMetaInfo ready")
+        
+        self.tresorMetaInfoCoreDataManager = cdm
+      }
+    }
   }
   
   fileprivate func switchTresorCoreDataManager() {
@@ -62,10 +78,44 @@ public class TresorModel {
           self.currentDeviceInfo = di
           self.tresorCoreDataManager = cdm
           
+          self.saveUserInfo(userInfo:u)
+          
           NotificationCenter.default.post(name: .onTresorModelReady, object: self)
         }
       } catch {
         celeturKitLogger.error("Error while setup core data manager ...",error:error)
+      }
+    }
+  }
+  
+  fileprivate func saveUserInfo(userInfo u : UserInfo) {
+    if let metacdm = self.tresorMetaInfoCoreDataManager {
+      let moc = metacdm.mainManagedObjectContext
+      
+      let fetchRequest : NSFetchRequest<TresorUser> = TresorUser.fetchRequest()
+      fetchRequest.predicate = NSPredicate(format: "id = %@", (u.userRecordID)!)
+      fetchRequest.fetchBatchSize = 1
+      
+      do {
+        var tresorUser : TresorUser?
+        
+        let records = try moc.fetch(fetchRequest)
+        if records.count>0 {
+          tresorUser = records[0]
+        }
+        
+        if tresorUser == nil {
+          tresorUser = TresorUser(context: moc)
+          
+          tresorUser?.id = u.userRecordID
+          tresorUser?.createts = Date()
+        }
+        
+        tresorUser?.username = u.userDisplayName
+        
+        metacdm.saveChanges(notifyChangesToCloudKit:false)
+      } catch {
+        celeturKitLogger.error("Error while saving tresoruser info...",error:error)
       }
     }
   }

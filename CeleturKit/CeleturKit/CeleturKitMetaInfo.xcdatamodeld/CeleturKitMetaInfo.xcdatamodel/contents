@@ -1,12 +1,26 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="13240" systemVersion="" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="TresorUser" representedClassName="TresorUser" syncable="YES" codeGenerationType="class">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="13241" systemVersion="" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="DeviceInfo" representedClassName="DeviceInfo" syncable="YES" codeGenerationType="class">
+        <attribute name="apndevicetoken" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="createts" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="devicemodel" attributeType="String" syncable="YES"/>
+        <attribute name="devicename" attributeType="String" syncable="YES"/>
+        <attribute name="devicesystemname" attributeType="String" syncable="YES"/>
+        <attribute name="devicesystemversion" attributeType="String" syncable="YES"/>
+        <attribute name="deviceuitype" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="id" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="UserInfo" representedClassName="UserInfo" syncable="YES" codeGenerationType="class">
         <attribute name="createts" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="id" attributeType="String" syncable="YES"/>
-        <attribute name="userimage" optional="YES" attributeType="Binary" syncable="YES"/>
-        <attribute name="username" attributeType="String" syncable="YES"/>
+        <attribute name="userDisplayName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="userEMailAddress" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="userFamilyName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="userGivenName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="userImage" optional="YES" attributeType="Binary" syncable="YES"/>
     </entity>
     <elements>
-        <element name="TresorUser" positionX="-63" positionY="-18" width="128" height="105"/>
+        <element name="DeviceInfo" positionX="-28217" positionY="-9766" width="128" height="165"/>
+        <element name="UserInfo" positionX="-28406" positionY="-9766" width="146" height="148"/>
     </elements>
 </model>

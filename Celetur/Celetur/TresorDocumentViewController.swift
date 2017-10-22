@@ -31,7 +31,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     self.dateFormatter.dateStyle = DateFormatter.Style.short
     self.dateFormatter.timeStyle = DateFormatter.Style.short
     
-    self.currentUserDevice = self.tresorAppState?.tresorModel.currentDeviceInfo?.userDevice
+    self.currentUserDevice = self.tresorAppState?.tresorModel.currentTresorUserDevice
   }
   
   @objc

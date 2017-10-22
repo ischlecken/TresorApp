@@ -15,8 +15,8 @@
 		85A6A1051F934ABE00EBDD48 /* CeleturKitMetaInfo.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 85A6A1031F934ABE00EBDD48 /* CeleturKitMetaInfo.xcdatamodeld */; };
 		85A6A1071F936BBB00EBDD48 /* URL+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A6A1061F936BBB00EBDD48 /* URL+extension.swift */; };
 		85A6A1091F936D4D00EBDD48 /* Bundle+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A6A1081F936D4D00EBDD48 /* Bundle+extension.swift */; };
-		85B667CD1F92143C00621A12 /* UserInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85B667CC1F92143C00621A12 /* UserInfo.swift */; };
-		85B667CF1F92148E00621A12 /* DeviceInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85B667CE1F92148E00621A12 /* DeviceInfo.swift */; };
+		85B667CD1F92143C00621A12 /* UserInfo+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85B667CC1F92143C00621A12 /* UserInfo+Extension.swift */; };
+		85B667CF1F92148E00621A12 /* DeviceInfo+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85B667CE1F92148E00621A12 /* DeviceInfo+Extension.swift */; };
 		85BADF931F6E5F3200DAC130 /* Tresor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BADF921F6E5F3200DAC130 /* Tresor+Extension.swift */; };
 		85BADF951F6E616B00DAC130 /* TresorDocument+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BADF941F6E616B00DAC130 /* TresorDocument+Extension.swift */; };
 		85BF77031F6DD66700FA9460 /* TresorDocumentItem+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BF77021F6DD66700FA9460 /* TresorDocumentItem+Extension.swift */; };
@@ -56,8 +56,8 @@
 		85A6A1041F934ABE00EBDD48 /* CeleturKitMetaInfo.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CeleturKitMetaInfo.xcdatamodel; sourceTree = "<group>"; };
 		85A6A1061F936BBB00EBDD48 /* URL+extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+extension.swift"; sourceTree = "<group>"; };
 		85A6A1081F936D4D00EBDD48 /* Bundle+extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+extension.swift"; sourceTree = "<group>"; };
-		85B667CC1F92143C00621A12 /* UserInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfo.swift; sourceTree = "<group>"; };
-		85B667CE1F92148E00621A12 /* DeviceInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceInfo.swift; sourceTree = "<group>"; };
+		85B667CC1F92143C00621A12 /* UserInfo+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserInfo+Extension.swift"; sourceTree = "<group>"; };
+		85B667CE1F92148E00621A12 /* DeviceInfo+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeviceInfo+Extension.swift"; sourceTree = "<group>"; };
 		85BADF921F6E5F3200DAC130 /* Tresor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Tresor+Extension.swift"; sourceTree = "<group>"; };
 		85BADF941F6E616B00DAC130 /* TresorDocument+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TresorDocument+Extension.swift"; sourceTree = "<group>"; };
 		85BF77021F6DD66700FA9460 /* TresorDocumentItem+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TresorDocumentItem+Extension.swift"; sourceTree = "<group>"; };
@@ -116,8 +116,8 @@
 				85F5AC4B1F767E12003B14F9 /* CloudKitPersistenceState.swift */,
 				85E312731F6D408300EB8AD8 /* CoreDataManager.swift */,
 				85C5C5851F36E6C100DE7EBC /* TresorModel.swift */,
-				85B667CC1F92143C00621A12 /* UserInfo.swift */,
-				85B667CE1F92148E00621A12 /* DeviceInfo.swift */,
+				85B667CC1F92143C00621A12 /* UserInfo+Extension.swift */,
+				85B667CE1F92148E00621A12 /* DeviceInfo+Extension.swift */,
 				85BADF921F6E5F3200DAC130 /* Tresor+Extension.swift */,
 				85F5AC491F7656A7003B14F9 /* NSManagedObject+Extension.swift */,
 				85F5AC471F764659003B14F9 /* CKRecord+Extension.swift */,
@@ -314,12 +314,12 @@
 				85BADF951F6E616B00DAC130 /* TresorDocument+Extension.swift in Sources */,
 				8517BDF11F24F95D009DB663 /* Data+Extension.swift in Sources */,
 				85EEE23E1F1B67CE002CE85E /* CeleturKit.xcdatamodeld in Sources */,
-				85B667CF1F92148E00621A12 /* DeviceInfo.swift in Sources */,
+				85B667CF1F92148E00621A12 /* DeviceInfo+Extension.swift in Sources */,
 				855462FC1F40854000C001F6 /* SymmetricCipherOperation.swift in Sources */,
 				85BF77031F6DD66700FA9460 /* TresorDocumentItem+Extension.swift in Sources */,
 				85E121A51F814C800002EEB4 /* UIViewController+Extension.swift in Sources */,
 				85F5AC481F764659003B14F9 /* CKRecord+Extension.swift in Sources */,
-				85B667CD1F92143C00621A12 /* UserInfo.swift in Sources */,
+				85B667CD1F92143C00621A12 /* UserInfo+Extension.swift in Sources */,
 				85E312761F6D453500EB8AD8 /* CloudKitManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -19,18 +19,25 @@ extension TresorUserDevice {
     newUserDevice.username = userName
   }
   
-  class func createCurrentUserDevice(context:NSManagedObjectContext, userName:String, apndeviceToken:String) {
+  class func createCurrentUserDevice(context:NSManagedObjectContext, deviceInfo:DeviceInfo) -> TresorUserDevice {
     let newUserDevice = TresorUserDevice(context:context)
     
     newUserDevice.createts = Date()
-    newUserDevice.devicename = UIDevice.current.name
-    newUserDevice.devicesystemname = UIDevice.current.systemName
-    newUserDevice.devicesystemversion = UIDevice.current.systemVersion
-    newUserDevice.deviceuitype = Int16(UIDevice.current.userInterfaceIdiom.rawValue)
+    newUserDevice.id = deviceInfo.id
     
-    newUserDevice.id = UIDevice.current.identifierForVendor?.uuidString
-    newUserDevice.apndevicetoken = apndeviceToken
-    newUserDevice.username = userName
+    return newUserDevice
+  }
+  
+  
+  func updateCurrentUserDevice(deviceInfo:DeviceInfo, userName:String) {
+    self.devicename = deviceInfo.devicename
+    self.devicemodel = deviceInfo.devicemodel
+    self.devicesystemname = deviceInfo.devicesystemname
+    self.devicesystemversion = deviceInfo.devicesystemversion
+    self.deviceuitype = deviceInfo.deviceuitype
+    
+    self.username = userName
+    self.apndevicetoken = deviceInfo.apndevicetoken
   }
   
   

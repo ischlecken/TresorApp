@@ -17,7 +17,7 @@ class EditTresorViewController: UITableViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    if let deviceId = self.tresorAppState?.tresorModel.currentDeviceInfo?.userDevice?.id, self.tresor?.tempTresor.owneruserdeviceid == nil {
+    if let deviceId = self.tresorAppState?.tresorModel.currentTresorUserDevice?.id, self.tresor?.tempTresor.owneruserdeviceid == nil {
       self.tresor?.tempTresor.owneruserdeviceid = deviceId
     }
     

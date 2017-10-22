@@ -95,8 +95,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     // 703115609b3d27416922deee926a38697601f2c713185bfd2c80055b0cf7dfda
     
     #if (arch(i386) || arch(x86_64))
-      if let deviceToken = Data(fromHexEncodedString: "7000000000000000000000aaaaaaabbbbbbbcccccccdddddddeeeeeeefffffff") {
-        celeturLogger.info("Emulate registration in Simulator")
+      let fakeId = "\(UIDevice.current.identifierForVendor?.uuidString ?? "")"
+      
+      if let deviceToken = fakeId.data(using: .utf8) {
+        celeturLogger.info("Emulate registration in Simulator using \(fakeId)")
         
         self.tresorAppModel.tresorModel.setCurrentDeviceAPNToken(deviceToken:deviceToken)
       }

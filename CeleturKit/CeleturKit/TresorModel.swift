@@ -19,19 +19,17 @@ public class TresorModel {
   
   public var currentUserInfo : UserInfo?
   public var currentDeviceInfo : DeviceInfo?
-  
+  public var currentTresorUserDevice : TresorUserDevice?
   public var userDevices : [TresorUserDevice]?
-  
   public var tresorCoreDataManager : CoreDataManager?
   
   var tresorMetaInfoCoreDataManager : CoreDataManager?
+  var apnDeviceToken : Data?
   
+  let initModelDispatchGroup  = DispatchGroup()
   let cipherQueue = OperationQueue()
   
-  let initModelDispatchGroup : DispatchGroup
-  
   public init() {
-    self.initModelDispatchGroup = DispatchGroup()
   }
   
   public func completeSetup() {
@@ -51,6 +49,8 @@ public class TresorModel {
         
         self.tresorMetaInfoCoreDataManager = cdm
         
+        self.loadDeviceInfo()
+        
         celeturKitLogger.debug("TresorModel.completeSetup() --leave--")
         self.initModelDispatchGroup.leave()
       }
@@ -63,19 +63,19 @@ public class TresorModel {
     }
   }
   
-  fileprivate func switchTresorCoreDataManager() {
-    guard let u = self.currentUserInfo else { return }
+  fileprivate func switchTresorCoreDataManager(userIdentity:CKUserIdentity) {
+    guard let userId = userIdentity.userRecordID?.recordName else { return }
     
     let cdm = CoreDataManager(modelName: "CeleturKit",
                               using:Bundle(identifier:celeturKitIdentifier)!,
                               inAppGroupContainer:appGroup,
-                              forUserId: u.userRecordID)
+                              forUserId: userId)
     
     cdm.completeSetup { error in
       celeturKitLogger.debug("TresorModel.switchTresorCoreDataManager()")
       
       do {
-        let ckps = try CloudKitPersistenceState(appGroupContainerId: appGroup, forUserId:u.userRecordID)
+        let ckps = try CloudKitPersistenceState(appGroupContainerId: appGroup, forUserId:userId)
         
         let ckm = CloudKitManager(cloudKitPersistenceState: ckps, coreDataManager: cdm)
         ckm.createCloudKitSubscription()
@@ -85,15 +85,9 @@ public class TresorModel {
         DispatchQueue.main.async {
           self.userDevices = TresorUserDevice.loadUserDevices(context: cdm.mainManagedObjectContext)
           
-          let di = DeviceInfo()
-          if let userDevices = self.userDevices {
-            let _ = di.selectUserDevice(userDevices: userDevices)
-          }
-          
-          self.currentDeviceInfo = di
           self.tresorCoreDataManager = cdm
           
-          self.saveUserInfo(userInfo:u)
+          self.currentUserInfo = UserInfo.loadUserInfo(self.tresorMetaInfoCoreDataManager!,userIdentity:userIdentity)
           
           celeturKitLogger.debug("TresorModel.switchTresorCoreDataManager() --leave--")
           self.initModelDispatchGroup.leave()
@@ -104,34 +98,61 @@ public class TresorModel {
     }
   }
   
-  fileprivate func saveUserInfo(userInfo u : UserInfo) {
+  
+  fileprivate func loadDeviceInfo() {
     if let metacdm = self.tresorMetaInfoCoreDataManager {
       let moc = metacdm.mainManagedObjectContext
       
-      let fetchRequest : NSFetchRequest<TresorUser> = TresorUser.fetchRequest()
-      fetchRequest.predicate = NSPredicate(format: "id = %@", (u.userRecordID)!)
+      let fetchRequest : NSFetchRequest<DeviceInfo> = DeviceInfo.fetchRequest()
       fetchRequest.fetchBatchSize = 1
       
       do {
-        var tresorUser : TresorUser?
+        var deviceInfo : DeviceInfo?
         
         let records = try moc.fetch(fetchRequest)
         if records.count>0 {
-          tresorUser = records[0]
+          deviceInfo = records[0]
+        } else {
+          deviceInfo = DeviceInfo.createCurrentUserDevice(context: moc)
         }
         
-        if tresorUser == nil {
-          tresorUser = TresorUser(context: moc)
-          
-          tresorUser?.id = u.userRecordID
-          tresorUser?.createts = Date()
+        if let adt = self.apnDeviceToken {
+          deviceInfo!.updateAPNToken(deviceToken: adt)
         }
         
-        tresorUser?.username = u.userDisplayName
+        self.currentDeviceInfo = deviceInfo
         
         metacdm.saveChanges(notifyChangesToCloudKit:false)
       } catch {
-        celeturKitLogger.error("Error while saving tresoruser info...",error:error)
+        celeturKitLogger.error("Error while saving device info...",error:error)
+      }
+    }
+  }
+  
+  fileprivate func loadTresorUserDevice() {
+    if let cdm = self.tresorCoreDataManager, let cdi = self.currentDeviceInfo, let userName = self.currentUserInfo?.userDisplayName {
+      let moc = cdm.mainManagedObjectContext
+      
+      let fetchRequest : NSFetchRequest<TresorUserDevice> = TresorUserDevice.fetchRequest()
+      fetchRequest.fetchBatchSize = 1
+      
+      do {
+        var tresorUserDevice : TresorUserDevice?
+        
+        let records = try moc.fetch(fetchRequest)
+        if records.count>0 {
+          tresorUserDevice = records[0]
+        } else {
+          tresorUserDevice = TresorUserDevice.createCurrentUserDevice(context: moc, deviceInfo: cdi)
+        }
+        
+        tresorUserDevice!.updateCurrentUserDevice(deviceInfo: cdi, userName: userName)
+        
+        cdm.saveChanges(notifyChangesToCloudKit:true)
+        
+        self.currentTresorUserDevice = tresorUserDevice
+      } catch {
+        celeturKitLogger.error("Error while saving tresor userdevice info...",error:error)
       }
     }
   }
@@ -161,13 +182,7 @@ public class TresorModel {
             
             CKContainer.default().discoverUserIdentity(withUserRecordID: r, completionHandler: { (userIdentity, error) in
               if let u = userIdentity {
-                let ui = UserInfo()
-                
-                ui.updateUserIdentityInfo(userIdentity: u)
-                
-                self.currentUserInfo = ui
-                
-                self.switchTresorCoreDataManager()
+                self.switchTresorCoreDataManager(userIdentity:u)
               }
             })
           }
@@ -179,8 +194,10 @@ public class TresorModel {
   public func setCurrentDeviceAPNToken(deviceToken:Data) {
     celeturKitLogger.debug("setCurrentDeviceAPNToken(\(deviceToken.hexEncodedString()))")
     
-    if let di = self.currentDeviceInfo {
-      di.updateAPNToken(deviceToken: deviceToken)
+    self.apnDeviceToken = deviceToken
+    
+    if let cdi = self.currentDeviceInfo {
+      cdi.updateAPNToken(deviceToken: deviceToken)
     }
   }
   
@@ -189,32 +206,9 @@ public class TresorModel {
     return self.currentDeviceInfo != nil
   }
   
-  func createCurrentUserInfo() {
-    guard let deviceInfo = self.currentDeviceInfo else { return }
-    
-    if let apntoken = deviceInfo.apnToken,
-      let userName = self.currentUserInfo?.userFamilyName,
-      let cdm = self.tresorCoreDataManager {
-      
-      let tempMOC = cdm.privateChildManagedObjectContext()
-      let _ = TresorUserDevice.createCurrentUserDevice(context: tempMOC,userName:userName, apndeviceToken: apntoken)
-      
-      tempMOC.perform {
-        do {
-          try tempMOC.save()
-          
-          cdm.saveChanges(notifyChangesToCloudKit: true)
-        } catch {
-          celeturKitLogger.error("Error saving contacts",error:error)
-        }
-      }
-    }
-  }
-  
   
   public func createDummyUserDevices() {
     if let moc = self.tresorCoreDataManager?.mainManagedObjectContext {
-      TresorUserDevice.createCurrentUserDevice(context: moc, userName: "Hugo Müller", apndeviceToken: "0000-1111")
       TresorUserDevice.createUserDevice(context: moc, userName: "Hugo Müller", deviceName: "Hugos iPhone")
       TresorUserDevice.createUserDevice(context: moc, userName: "Hugo Müller", deviceName: "Hugos iPad")
       TresorUserDevice.createUserDevice(context: moc, userName: "Hugo Müller", deviceName: "Hugos iWatch")

@@ -43,7 +43,7 @@ public class CloudKitManager {
   // MARK: - Save Changed from CoreData
   
   func saveChanges(context:NSManagedObjectContext) {
-    celeturKitLogger.debug("CloudKitManager.saveChanges()")
+    //celeturKitLogger.debug("CloudKitManager.saveChanges()")
     
     let moc = context
     

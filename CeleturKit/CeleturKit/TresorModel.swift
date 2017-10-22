@@ -30,6 +30,24 @@ public class TresorModel {
   let cipherQueue = OperationQueue()
   
   public init() {
+    NotificationCenter.default.addObserver(self,
+                                           selector: #selector(checkICloudAvailability),
+                                           name: .CKAccountChanged,
+                                           object: nil)
+    
+  }
+  
+  deinit {
+    NotificationCenter.default.removeObserver(self)
+  }
+  
+  @objc
+  func checkICloudAvailability(_ notification: Notification? = nil) {
+    celeturKitLogger.debug("checkICloudAvailability()")
+    
+    if let _ = self.tresorCoreDataManager {
+      self.requestUserDiscoverabilityPermission()
+    }
   }
   
   public func completeSetup() {
@@ -88,6 +106,8 @@ public class TresorModel {
           self.tresorCoreDataManager = cdm
           
           self.currentUserInfo = UserInfo.loadUserInfo(self.tresorMetaInfoCoreDataManager!,userIdentity:userIdentity)
+          
+          self.loadTresorUserDevice()
           
           celeturKitLogger.debug("TresorModel.switchTresorCoreDataManager() --leave--")
           self.initModelDispatchGroup.leave()
@@ -202,8 +222,10 @@ public class TresorModel {
   }
   
   
-  func isCurrentDeviceKnown() -> Bool {
-    return self.currentDeviceInfo != nil
+  public func isCurrentDevice(tresorUserDevice: TresorUserDevice) -> Bool {
+    guard let cdi = self.currentDeviceInfo else { return false }
+    
+    return cdi.id == tresorUserDevice.id
   }
   
   

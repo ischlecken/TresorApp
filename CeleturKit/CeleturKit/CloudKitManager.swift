@@ -254,6 +254,38 @@ public class CloudKitManager {
     
   }
   
+  
+  class func isCloudAvailable(completion: @escaping (Error?) -> Void) {
+    
+    CKContainer.default().accountStatus() { (accountStatus, error) in
+      
+      guard error == nil else {
+        self.dumpCloudKitError(context: "isCloudAvailable", error: error!)
+        return
+      }
+      
+      switch accountStatus {
+      case .available:
+        if FileManager.default.ubiquityIdentityToken != nil {
+          completion(nil)
+        }
+        else {
+          completion(CeleturKitError.cloudkitNotSignedIn)
+        }
+      case .noAccount:
+        celeturKitLogger.debug("isCloudAvailable() .noAccount")
+        completion(CeleturKitError.cloudkitNotAvailable)
+      case .restricted:
+        celeturKitLogger.debug("isCloudAvailable() .restricted")
+        completion(CeleturKitError.cloudkitNotAvailable)
+      case .couldNotDetermine:
+        celeturKitLogger.debug("isCloudAvailable() .couldNotDetermine")
+        completion(CeleturKitError.cloudkitNotAvailable)
+      }
+    }
+    
+  }
+  
   // MARK: - Init CloudKit Objects
   
   

@@ -20,4 +20,7 @@ public enum CeleturKitError: Error {
   
   case randomBytesError(error:OSStatus)
   
+  case cloudkitNotSignedIn
+  case cloudkitNotAvailable
+  
 }

@@ -63,7 +63,17 @@ class UserDeviceViewController: UITableViewController, NSFetchedResultsControlle
   
   func configureCell(_ cell: UITableViewCell, withUserdevice userdevice: TresorUserDevice) {
     cell.textLabel!.text = userdevice.devicename
+    cell.textLabel?.textColor = UIColor.darkText
     cell.detailTextLabel!.text = userdevice.id
+    
+    if self.tresorAppState?.tresorModel.isCurrentDevice(tresorUserDevice:userdevice) ?? false {
+      cell.textLabel?.font = UIFont.boldSystemFont(ofSize: UIFont.systemFontSize)
+      cell.textLabel?.textColor = UIColor.blue
+      cell.detailTextLabel?.font = UIFont.boldSystemFont(ofSize: UIFont.systemFontSize)
+    } else {
+      cell.textLabel?.font = UIFont.systemFont(ofSize: UIFont.systemFontSize)
+      cell.detailTextLabel?.font = UIFont.systemFont(ofSize: UIFont.systemFontSize)
+    }
   }
   
   /*

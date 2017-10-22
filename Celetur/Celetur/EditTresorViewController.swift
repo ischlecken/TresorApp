@@ -17,8 +17,12 @@ class EditTresorViewController: UITableViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    if let deviceId = self.tresorAppState?.tresorModel.currentTresorUserDevice?.id, self.tresor?.tempTresor.owneruserdeviceid == nil {
-      self.tresor?.tempTresor.owneruserdeviceid = deviceId
+    if let userDevice = self.tresorAppState?.tresorModel.currentTresorUserDevice, self.tresor?.tempTresor.owneruserdeviceid == nil {
+      self.tresor?.tempTresor.owneruserdeviceid = userDevice.id
+      
+      if let udnew = self.tresor?.tempManagedObjectContext.object(with: userDevice.objectID) as? TresorUserDevice {
+        self.tresor?.tempTresor.addToUserdevices(udnew)
+      }
     }
     
     self.nameTextfield.becomeFirstResponder()
@@ -73,15 +77,21 @@ class EditTresorViewController: UITableViewController {
   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     guard let userDevice = self.getUserDevice(forPath: indexPath) else { return }
     
-    if let t = self.tresor?.tempTresor {
-      if t.userdevices?.contains(userDevice) ?? false {
-        t.removeFromUserdevices(userDevice)
+    if let t = self.tresor?.tempTresor, let deviceId = self.tresorAppState?.tresorModel.currentDeviceInfo?.id, userDevice.id != deviceId {
+      
+      let foundUserDevice = t.findUserDevice(userDevice: userDevice)
+      if let ud = foundUserDevice {
+        t.removeFromUserdevices(ud)
       } else {
-        t.addToUserdevices(userDevice)
+        if let udnew = self.tresor?.tempManagedObjectContext.object(with: userDevice.objectID) as? TresorUserDevice {
+          t.addToUserdevices(udnew)
+        }
       }
-    }
     
-    self.tableView.reloadRows(at:[indexPath] , with: UITableViewRowAnimation.fade)
+      self.tableView.reloadRows(at:[indexPath] , with: .fade)
+    } else {
+      self.tableView.reloadRows(at:[indexPath] , with: .none)
+    }
   }
   
   override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
@@ -113,10 +123,16 @@ class EditTresorViewController: UITableViewController {
     cell.accessoryType = .none
     cell.indentationLevel = 0
     
-    if let t = self.tresor?.tempTresor {
-      if t.userdevices?.contains(userDevice) ?? false {
-        cell.accessoryType = .checkmark
-      }
+    if self.tresorAppState?.tresorModel.isCurrentDevice(tresorUserDevice: userDevice) ?? false {
+      cell.textLabel?.textColor = UIColor.blue
+      cell.textLabel?.font = UIFont.boldSystemFont(ofSize: UIFont.systemFontSize)
+    } else {
+      cell.textLabel?.textColor = UIColor.darkText
+      cell.textLabel?.font = UIFont.systemFont(ofSize: UIFont.systemFontSize)
+    }
+    
+    if let t = self.tresor?.tempTresor, t.findUserDevice(userDevice:userDevice) != nil {
+      cell.accessoryType = .checkmark
     }
   }
   

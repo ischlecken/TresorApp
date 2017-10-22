@@ -40,4 +40,20 @@ public extension Tresor {
     
     return aFetchedResultsController
   }
+  
+  public func findUserDevice(userDevice:TresorUserDevice) -> TresorUserDevice? {
+    var result : TresorUserDevice?
+    
+    if let udlist = self.userdevices {
+      for case let ud as TresorUserDevice in udlist  {
+        if ud.id == userDevice.id {
+          result = ud
+          
+          break
+        }
+      }
+    }
+    
+    return result
+  }
 }

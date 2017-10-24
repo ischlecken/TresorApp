@@ -222,10 +222,10 @@ public class TresorModel {
   }
   
   
-  public func isCurrentDevice(tresorUserDevice: TresorUserDevice) -> Bool {
-    guard let cdi = self.currentDeviceInfo else { return false }
+  public func isCurrentDevice(tresorUserDevice: TresorUserDevice?) -> Bool {
+    guard let cdi = self.currentDeviceInfo,let tud = tresorUserDevice else { return false }
     
-    return cdi.id == tresorUserDevice.id
+    return cdi.id == tud.id
   }
   
   
@@ -248,19 +248,25 @@ public class TresorModel {
   public func createTresorDocument(tresor:Tresor, plainText: String, masterKey: TresorKey?) throws -> TresorDocument? {
     var result : TresorDocument?
     
-    if let moc = self.tresorCoreDataManager?.mainManagedObjectContext {
+    if let moc = self.tresorCoreDataManager?.mainManagedObjectContext,let currentDeviceKey = masterKey?.accessToken {
       let newTresorDocument = try TresorDocument.createTresorDocument(context: moc, tresor: tresor)
       
       for ud in tresor.userdevices! {
-        let userdevice = ud as! TresorUserDevice
+        let userDevice = ud as! TresorUserDevice
+        let isUserDeviceCurrentDevice = self.isCurrentDevice(tresorUserDevice: userDevice)
         
-        let item = try self.createTresorDocumentItem(tresorDocument: newTresorDocument,
-                                                     plainText: plainText,
-                                                     userDevice: userdevice,
-                                                     masterKey: masterKey!)
-        
-        newTresorDocument.addToDocumentitems(item!)
-        userdevice.addToDocumentitems(item!)
+        if let key = isUserDeviceCurrentDevice ? currentDeviceKey : userDevice.messagekey {
+          let status = isUserDeviceCurrentDevice ? "encrypted" : "shouldBeEncryptedByDevice"
+          
+          if let item = try self.createTresorDocumentItem(tresorDocument: newTresorDocument,
+                                                       plainText: plainText,
+                                                       userDevice: userDevice,
+                                                       key: key,
+                                                       status: status) {
+            newTresorDocument.addToDocumentitems(item)
+            userDevice.addToDocumentitems(item)
+          }
+        }
       }
       
       self.saveChanges()
@@ -348,10 +354,11 @@ public class TresorModel {
   
   // "{ \"title\": \"gmx.de\",\"user\":\"bla@fasel.de\",\"password\":\"hugo\"}"
   
-  public func createTresorDocumentItem(tresorDocument:TresorDocument,
+  fileprivate func createTresorDocumentItem(tresorDocument:TresorDocument,
                                        plainText: String,
-                                       userDevice:TresorUserDevice,
-                                       masterKey:TresorKey) throws -> TresorDocumentItem? {
+                                       userDevice: TresorUserDevice,
+                                       key: Data,
+                                       status: String) throws -> TresorDocumentItem? {
     var result : TresorDocumentItem?
     
     if let moc = self.tresorCoreDataManager?.mainManagedObjectContext {
@@ -363,7 +370,6 @@ public class TresorModel {
       userDevice.addToDocumentitems(newTresorDocumentItem)
       
       do {
-        let key = masterKey.accessToken!
         let operation = AES256EncryptionOperation(key:key,inputString: plainText, iv:nil)
         try operation.createRandomIV()
         
@@ -371,7 +377,7 @@ public class TresorModel {
           DispatchQueue.main.async {
             newTresorDocumentItem.type = "main"
             newTresorDocumentItem.mimetype = "application/json"
-            newTresorDocumentItem.status = "encrypted"
+            newTresorDocumentItem.status = status
             newTresorDocumentItem.payload = operation.outputData
             newTresorDocumentItem.nonce = operation.iv
             

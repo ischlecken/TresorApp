@@ -14,8 +14,6 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   
   let dateFormatter = DateFormatter()
   
-  var currentUserDevice: TresorUserDevice?
-  
   override func viewDidLoad() {
     super.viewDidLoad()
     // Do any additional setup after loading the view, typically from a nib.
@@ -30,8 +28,6 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     self.title = tresor?.tresordescription
     self.dateFormatter.dateStyle = DateFormatter.Style.short
     self.dateFormatter.timeStyle = DateFormatter.Style.short
-    
-    self.currentUserDevice = self.tresorAppState?.tresorModel.currentTresorUserDevice
   }
   
   @objc
@@ -177,20 +173,34 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   
   func configureCell(_ cell: UITableViewCell, withTresorDocumentItem tresorDocumentItem: TresorDocumentItem) {
     cell.textLabel!.text = "Id:\(tresorDocumentItem.id!)"
-    
-    cell.textLabel?.textColor = tresorDocumentItem.status == "encrypted" ? UIColor.black : UIColor.red
     cell.textLabel?.font = UIFont.systemFont(ofSize: UIFont.systemFontSize)
+    cell.indentationLevel = 1
     
-    let tdiUserDevice = tresorDocumentItem.userdevice
-    
-    if tdiUserDevice?.id == self.currentUserDevice?.id && tresorDocumentItem.status == "encrypted" {
-      cell.textLabel?.textColor = UIColor.blue
+    if let tdiUserDevice = tresorDocumentItem.userdevice {
+      let formatedCreatets = self.dateFormatter.string(from: tresorDocumentItem.createts!)
+      cell.detailTextLabel!.text = "Device:"+(tresorDocumentItem.userdevice?.devicename ?? "-") + " " + formatedCreatets
+      
+      cell.detailTextLabel!.textColor = UIColor.lightGray
+      
+      if self.tresorAppState?.tresorModel.isCurrentDevice(tresorUserDevice: tdiUserDevice) ?? false {
+        cell.textLabel?.font = UIFont.boldSystemFont(ofSize: UIFont.systemFontSize)
+        
+        cell.detailTextLabel!.textColor = UIColor.black
+      }
     }
     
-    let formatedCreatets = self.dateFormatter.string(from: tresorDocumentItem.createts!)
-    cell.detailTextLabel!.text = "Device:"+(tresorDocumentItem.userdevice?.devicename ?? "-") + " " + formatedCreatets
-    
-    cell.indentationLevel = 1
+    if let s = tresorDocumentItem.status {
+      switch s {
+      case "pending":
+        cell.textLabel?.textColor = UIColor.red
+      case "encrypted":
+        cell.textLabel?.textColor = UIColor.black
+      case "shouldBeEncryptedByDevice":
+        cell.textLabel?.textColor = UIColor.magenta
+      default:
+        cell.textLabel?.textColor = UIColor.lightGray
+      }
+    }
   }
   
   

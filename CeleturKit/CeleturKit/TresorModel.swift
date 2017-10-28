@@ -316,10 +316,11 @@ public class TresorModel {
   
   
   
-  public func encryptAndSaveTresorDocumentItem(tempManagedContext: NSManagedObjectContext,
-                                               masterKey:TresorKey,
+  fileprivate func encryptAndSaveTresorDocumentItem(tempManagedContext: NSManagedObjectContext,
+                                               key:Data,
                                                tresorDocumentItem:TresorDocumentItem,
-                                               payload: Any) {
+                                               payload: Any,
+                                               status: TresorDocumentItemStatus) {
     
     do {
       let tdi = tempManagedContext.object(with: tresorDocumentItem.objectID) as! TresorDocumentItem
@@ -328,14 +329,15 @@ public class TresorModel {
       try tempManagedContext.save()
       
       let payload = try JSONSerialization.data( withJSONObject: payload, options: [])
-      let key = masterKey.accessToken
-      let operation = AES256EncryptionOperation(key:key!, inputData: payload, iv:nil)
+      let operation = AES256EncryptionOperation(key:key, inputData: payload, iv:nil)
       try operation.createRandomIV()
       
       operation.start()
       
       if operation.isFinished {
-        tdi.status = TresorDocumentItemStatus.encrypted.rawValue
+        celeturKitLogger.debug("encryptAndSaveTresorDocumentItem() item:\(tresorDocumentItem.id ?? "-") status:\(status)")
+        
+        tdi.status = status.rawValue
         tdi.type = "main"
         tdi.mimetype = "application/json"
         tdi.payload = operation.outputData
@@ -523,10 +525,24 @@ public class TresorModel {
   public func saveDocumentItemModelData(tresorDocumentItem: TresorDocumentItem, model : [String:Any], masterKey: TresorKey) {
     if let moc = self.tresorCoreDataManager?.privateChildManagedObjectContext() {
       moc.perform {
-        self.encryptAndSaveTresorDocumentItem(tempManagedContext: moc,
-                                              masterKey: masterKey,
-                                              tresorDocumentItem: tresorDocumentItem,
-                                              payload: model)
+        for case let it as TresorDocumentItem in (tresorDocumentItem.document?.documentitems)! {
+          celeturKitLogger.debug("saveDocumentItemModelData(): docItem:\(it.id ?? "-")")
+          if let ud = it.userdevice {
+            let isUserDeviceCurrentDevice = self.isCurrentDevice(tresorUserDevice: ud)
+            
+            celeturKitLogger.debug("  saveDocumentItemModelData(): userdevice:\(ud.id ?? "-") isUserDeviceCurrentDevice:\(isUserDeviceCurrentDevice)")
+            
+            if let key = isUserDeviceCurrentDevice ? masterKey.accessToken : ud.messagekey {
+              let status : TresorDocumentItemStatus = isUserDeviceCurrentDevice ? .encrypted : .shouldBeEncryptedByDevice
+              
+              self.encryptAndSaveTresorDocumentItem(tempManagedContext: moc,
+                                                    key: key,
+                                                    tresorDocumentItem: it,
+                                                    payload: model,
+                                                    status: status)
+            }
+          }
+        }
         
         self.saveChanges()
       }
@@ -534,7 +550,7 @@ public class TresorModel {
   }
   
   public func deleteTresorUserDevice(userDevice:TresorUserDevice) {
-    if let moc = self.tresorCoreDataManager?.mainManagedObjectContext {
+    if let moc = userDevice.managedObjectContext {
       moc.delete(userDevice)
       
       do {
@@ -547,7 +563,56 @@ public class TresorModel {
     }
   }
   
-  public func encryptAllDocumentItemsThatShouldBeEncryptedByDevice(tresor:Tresor, masterKey: TresorKey) {
+  public func encryptAllDocumentItemsThatShouldBeEncryptedByDevice(tresor: Tresor, masterKey: TresorKey) {
+    guard let documents = tresor.documents else { return }
     
+    celeturKitLogger.debug("encryptAllDocumentItemsThatShouldBeEncryptedByDevice()")
+    
+    for case let tresorDocument as TresorDocument in documents {
+      if let items = tresorDocument.documentitems {
+        for case let item as TresorDocumentItem in items {
+          if item.itemStatus == .shouldBeEncryptedByDevice,
+            let ud = item.userdevice,
+            let payload = item.payload,
+            let nonce = item.nonce,
+            let messageKey = ud.messagekey {
+            if self.isCurrentDevice(tresorUserDevice: ud) {
+              celeturKitLogger.debug("item \(item.id ?? "-") should be encrypted by device...")
+              
+              let operation = AES256DecryptionOperation(key: messageKey,inputData: payload, iv:nonce)
+              
+              operation.completionBlock = {
+                do {
+                  if let d = try operation.jsonOutputObject() {
+                    celeturKitLogger.debug("payload:\(d)")
+                    
+                    let encryptOperation = AES256EncryptionOperation(key:masterKey.accessToken! ,inputData: operation.outputData!, iv:nil)
+                    try encryptOperation.createRandomIV()
+                    
+                    encryptOperation.completionBlock = {
+                      item.managedObjectContext?.perform {
+                        item.type = "main"
+                        item.mimetype = "application/json"
+                        item.status = TresorDocumentItemStatus.encrypted.rawValue
+                        item.payload = encryptOperation.outputData
+                        item.nonce = encryptOperation.iv
+                        
+                        self.saveChanges()
+                      }
+                    }
+                    
+                    self.cipherQueue.addOperation(encryptOperation)
+                  }
+                } catch {
+                  celeturKitLogger.error("error decoding payload", error: error)
+                }
+              }
+              
+              self.cipherQueue.addOperation(operation)
+            }
+          }
+        }
+      }
+    }
   }
 }

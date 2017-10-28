@@ -9,7 +9,13 @@ import CeleturKit
 
 class TresorDocumentViewController: UITableViewController, NSFetchedResultsControllerDelegate {
   
-  var tresor: Tresor?
+  var tresor: Tresor? {
+    didSet {
+      if let t = tresor {
+        self.tresorAppState?.encryptAllDocumentItemsThatShouldBeEncryptedByDevice(tresor: t)
+      }
+    }
+  }
   var tresorAppState: TresorAppModel?
   
   let dateFormatter = DateFormatter()

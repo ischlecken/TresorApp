@@ -85,16 +85,17 @@ class TresorDocumentItemViewController: UITableViewController {
               return
             }
             
-            if let d = deop.outputData {
-              do {
-                self.model = (try JSONSerialization.jsonObject(with: d, options: []) as? [String:Any])!
+            do {
+              if let d = try deop.jsonOutputObject() {
+                self.model = d
                 self.modelIndex = Array(self.model.keys)
                 
-                self.setDataLabel(data: d, error: nil)
-              } catch {
-                celeturLogger.error("Error while decoding json",error:error)
-                self.setDataLabel(data: d, error: error)
+                self.setDataLabel(data: deop.outputData!, error: nil)
+              } else {
+                self.setDataLabel(data: nil, error: nil)
               }
+            } catch {
+              self.setDataLabel(data: nil, error: error)
             }
           }
         }

@@ -76,4 +76,10 @@ class TresorAppModel {
       self.appDelegate?.setTitle(title: "Celetur (Offline)")
     }
   }
+  
+  public func encryptAllDocumentItemsThatShouldBeEncryptedByDevice(tresor: Tresor) {
+    guard let mk = self.masterKey else { return }
+    
+    self.tresorModel.encryptAllDocumentItemsThatShouldBeEncryptedByDevice(tresor: tresor, masterKey: mk)
+  }
 }

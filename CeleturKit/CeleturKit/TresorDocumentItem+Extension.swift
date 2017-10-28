@@ -64,8 +64,6 @@ extension TresorDocumentItem {
         result = TresorDocumentItemStatus(rawValue:s)
       }
       
-      celeturKitLogger.debug("itemStatus:\(self.status ?? "-"):\(result?.rawValue ?? "-")")
-      
       return result
     }
   }

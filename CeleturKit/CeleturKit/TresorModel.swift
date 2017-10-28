@@ -11,7 +11,6 @@ extension Notification.Name {
   public static let onTresorModelReady = Notification.Name("onTresorModelReady")
 }
 
-
 let appGroup = "group.net.prisnoc.Celetur"
 let celeturKitIdentifier = "net.prisnoc.CeleturKit"
 
@@ -256,7 +255,7 @@ public class TresorModel {
         let isUserDeviceCurrentDevice = self.isCurrentDevice(tresorUserDevice: userDevice)
         
         if let key = isUserDeviceCurrentDevice ? currentDeviceKey : userDevice.messagekey {
-          let status = isUserDeviceCurrentDevice ? "encrypted" : "shouldBeEncryptedByDevice"
+          let status : TresorDocumentItemStatus = isUserDeviceCurrentDevice ? .encrypted : .shouldBeEncryptedByDevice
           
           if let item = try self.createTresorDocumentItem(tresorDocument: newTresorDocument,
                                                        plainText: plainText,
@@ -325,7 +324,7 @@ public class TresorModel {
     do {
       let tdi = tempManagedContext.object(with: tresorDocumentItem.objectID) as! TresorDocumentItem
       
-      tdi.status = "pending"
+      tdi.status = TresorDocumentItemStatus.pending.rawValue
       try tempManagedContext.save()
       
       let payload = try JSONSerialization.data( withJSONObject: payload, options: [])
@@ -336,13 +335,13 @@ public class TresorModel {
       operation.start()
       
       if operation.isFinished {
-        tdi.status = "encrypted"
+        tdi.status = TresorDocumentItemStatus.encrypted.rawValue
         tdi.type = "main"
         tdi.mimetype = "application/json"
         tdi.payload = operation.outputData
         tdi.nonce = operation.iv
       } else {
-        tdi.status = "failed"
+        tdi.status = TresorDocumentItemStatus.failed.rawValue
       }
       tdi.changets = Date()
       
@@ -358,7 +357,7 @@ public class TresorModel {
                                        plainText: String,
                                        userDevice: TresorUserDevice,
                                        key: Data,
-                                       status: String) throws -> TresorDocumentItem? {
+                                       status: TresorDocumentItemStatus) throws -> TresorDocumentItem? {
     var result : TresorDocumentItem?
     
     if let moc = self.tresorCoreDataManager?.mainManagedObjectContext {
@@ -377,7 +376,7 @@ public class TresorModel {
           DispatchQueue.main.async {
             newTresorDocumentItem.type = "main"
             newTresorDocumentItem.mimetype = "application/json"
-            newTresorDocumentItem.status = status
+            newTresorDocumentItem.status = status.rawValue
             newTresorDocumentItem.payload = operation.outputData
             newTresorDocumentItem.nonce = operation.iv
             
@@ -401,20 +400,16 @@ public class TresorModel {
   public func decryptTresorDocumentItemPayload(tresorDocumentItem:TresorDocumentItem,
                                                masterKey:TresorKey,
                                                completion: ((SymmetricCipherOperation?)->Void)?) {
-    var result : SymmetricCipherOperation?
-    
     if let payload = tresorDocumentItem.payload, let nonce = tresorDocumentItem.nonce {
       let operation = AES256DecryptionOperation(key:masterKey.accessToken!,inputData: payload, iv:nonce)
       
-      result = operation
-      
       if let c = completion {
-        result!.completionBlock = {
-          c(result)
+        operation.completionBlock = {
+          c(operation)
         }
       }
       
-      self.cipherQueue.addOperation(result!)
+      self.cipherQueue.addOperation(operation)
     } else {
       if let c = completion {
         c(nil)
@@ -550,5 +545,9 @@ public class TresorModel {
         celeturKitLogger.error("Error while deleting TresorUserDevice", error: error)
       }
     }
+  }
+  
+  public func encryptAllDocumentItemsThatShouldBeEncryptedByDevice(tresor:Tresor, masterKey: TresorKey) {
+    
   }
 }

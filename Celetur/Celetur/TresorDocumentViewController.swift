@@ -174,31 +174,15 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   func configureCell(_ cell: UITableViewCell, withTresorDocumentItem tresorDocumentItem: TresorDocumentItem) {
     cell.textLabel!.text = "Id:\(tresorDocumentItem.id!)"
     cell.textLabel?.font = UIFont.systemFont(ofSize: UIFont.systemFontSize)
+    cell.textLabel?.textColor = tresorDocumentItem.itemStatusColor
     cell.indentationLevel = 1
     
     if let tdiUserDevice = tresorDocumentItem.userdevice {
-      let formatedCreatets = self.dateFormatter.string(from: tresorDocumentItem.createts!)
-      cell.detailTextLabel!.text = "Device:"+(tresorDocumentItem.userdevice?.devicename ?? "-") + " " + formatedCreatets
-      
-      cell.detailTextLabel!.textColor = UIColor.lightGray
+      cell.detailTextLabel!.text = "Device:"+(tdiUserDevice.devicename ?? "-") + " " + (tdiUserDevice.id ?? "-")
+      cell.detailTextLabel!.textColor = tresorDocumentItem.itemStatusColor
       
       if self.tresorAppState?.tresorModel.isCurrentDevice(tresorUserDevice: tdiUserDevice) ?? false {
         cell.textLabel?.font = UIFont.boldSystemFont(ofSize: UIFont.systemFontSize)
-        
-        cell.detailTextLabel!.textColor = UIColor.black
-      }
-    }
-    
-    if let s = tresorDocumentItem.status {
-      switch s {
-      case "pending":
-        cell.textLabel?.textColor = UIColor.red
-      case "encrypted":
-        cell.textLabel?.textColor = UIColor.black
-      case "shouldBeEncryptedByDevice":
-        cell.textLabel?.textColor = UIColor.magenta
-      default:
-        cell.textLabel?.textColor = UIColor.lightGray
       }
     }
   }
@@ -248,10 +232,10 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
                   newIndexPath: IndexPath?) {
     switch type {
     case .insert:
-    
+      
       let newIndexPath1 = IndexPath(row:newIndexPath!.row+1,section:newIndexPath!.section)
       tableView.insertRows(at: [newIndexPath1], with: .fade)
-    
+      
     case .delete:
       let indexPath1 = IndexPath(row:indexPath!.row+1,section:indexPath!.section)
       
@@ -263,14 +247,14 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
       let cell = tableView.cellForRow(at: indexPath1)
       
       configureCell(cell!, withTresorDocumentItem: (anObject as? TresorDocumentItem)!)
-    
+      
     case .move:
       let indexPath1 = IndexPath(row:indexPath!.row+1,section:indexPath!.section)
       let newIndexPath1 = IndexPath(row:newIndexPath!.row+1,section:newIndexPath!.section)
       
       let cell = tableView.cellForRow(at: indexPath1)
-       
-     configureCell(cell!, withTresorDocumentItem: (anObject as? TresorDocumentItem)!)
+      
+      configureCell(cell!, withTresorDocumentItem: (anObject as? TresorDocumentItem)!)
       tableView.moveRow(at: indexPath1, to: newIndexPath1)
     }
   }

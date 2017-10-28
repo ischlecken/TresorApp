@@ -3,6 +3,14 @@
 //  CeleturKit
 //
 
+public enum TresorDocumentItemStatus : String {
+  case pending
+  case failed
+  case encrypted
+  case shouldBeEncryptedByDevice
+}
+
+
 extension TresorDocumentItem {
 
   class func createPendingTresorDocumentItem(context:NSManagedObjectContext,
@@ -13,7 +21,7 @@ extension TresorDocumentItem {
     result.createts = Date()
     result.changets = result.createts
     result.id = String.uuid()
-    result.status = "pending"
+    result.status = TresorDocumentItemStatus.pending.rawValue
     result.document = tresorDocument
     result.userdevice = userDevice
     
@@ -47,6 +55,43 @@ extension TresorDocumentItem {
     
     return aFetchedResultsController
   }
+  
+  public var itemStatus: TresorDocumentItemStatus? {
+    get {
+      var result : TresorDocumentItemStatus?
+      
+      if let s=self.status {
+        result = TresorDocumentItemStatus(rawValue:s)
+      }
+      
+      celeturKitLogger.debug("itemStatus:\(self.status ?? "-"):\(result?.rawValue ?? "-")")
+      
+      return result
+    }
+  }
+  
+  public var itemStatusColor: UIColor {
+    get {
+      var result = UIColor.lightGray
+      
+      if let s = self.itemStatus {
+        switch s {
+        case .pending:
+          result = UIColor.blue
+        case .encrypted:
+          result = UIColor.black
+        case .shouldBeEncryptedByDevice:
+          result = UIColor.magenta
+        case .failed:
+          result = UIColor.red
+        }
+      }
+      
+      return result
+    }
+  }
+  
+  
 }
 
 

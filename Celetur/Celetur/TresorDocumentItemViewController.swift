@@ -76,7 +76,12 @@ class TresorDocumentItemViewController: UITableViewController {
             (decryptOperation:SymmetricCipherOperation?) in
             
             guard let deop=decryptOperation else {
-              self.setDataLabel(data: nil)
+              self.setDataLabel(data: nil, error: nil)
+              return
+            }
+            
+            if let e=deop.error {
+              self.setDataLabel(data:nil, error: e)
               return
             }
             
@@ -85,9 +90,10 @@ class TresorDocumentItemViewController: UITableViewController {
                 self.model = (try JSONSerialization.jsonObject(with: d, options: []) as? [String:Any])!
                 self.modelIndex = Array(self.model.keys)
                 
-                self.setDataLabel(data: d)
+                self.setDataLabel(data: d, error: nil)
               } catch {
                 celeturLogger.error("Error while decoding json",error:error)
+                self.setDataLabel(data: d, error: error)
               }
             }
           }
@@ -96,9 +102,11 @@ class TresorDocumentItemViewController: UITableViewController {
     }
   }
   
-  func setDataLabel(data:Data?) {
+  func setDataLabel(data:Data?, error:Error?) {
     DispatchQueue.main.async {
-      if let d=data {
+      if let e=error {
+        self.dataLabel!.text = e.localizedDescription
+      } else if let d=data {
         self.dataLabel!.text = String(data: d, encoding: String.Encoding.utf8)
       }
       

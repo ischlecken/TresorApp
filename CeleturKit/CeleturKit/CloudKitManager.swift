@@ -47,9 +47,9 @@ public class CloudKitManager {
     let records = self.ckPersistenceState.changedRecords(moc: moc, zoneId: self.tresorZoneId)
     let deletedRecordIds = self.ckPersistenceState.deletedRecordIds(moc:moc, zoneId: self.tresorZoneId)
     
-    celeturKitLogger.debug("CloudKitManager.saveChanges() records:\(records.count) deletedRecordIds:\(deletedRecordIds.count)")
-    
     if records.count>0 || deletedRecordIds.count>0 {
+      celeturKitLogger.debug("CloudKitManager.saveChanges() records:\(records.count) deletedRecordIds:\(deletedRecordIds.count)")
+      
       let modifyOperation = CKModifyRecordsOperation(recordsToSave: records, recordIDsToDelete: deletedRecordIds)
       
       modifyOperation.completionBlock = {
@@ -68,20 +68,29 @@ public class CloudKitManager {
           if let sr=savedRecords {
             for r in sr {
               r.dumpRecordInfo(prefix: "  ")
-              
-              self.ckPersistenceState.changedObjectHasBeenSaved(entityId: r.recordID.recordName)
             }
+            
+            let entityIds = sr.map({ (r) -> String in
+              return r.recordID.recordName
+            })
+            
+            self.ckPersistenceState.changedObjectHasBeenSaved(entityIds: entityIds)
           }
           
           if let dr=deletedRecordIDs {
             for dri in dr {
               celeturKitLogger.debug("CloudKitManager.saveChanges()  record \(dri.recordName) in \(dri.zoneID.zoneName) deleted")
-              
-              self.ckPersistenceState.deletedObjectHasBeenDeleted(entityId: dri.recordName)
             }
+            
+            let entityIds = dr.map({ (r) -> String in
+              return r.recordName
+            })
+            
+            self.ckPersistenceState.deletedObjectHasBeenDeleted(entityIds: entityIds)
           }
           
           //self.ckPersistenceState.flushChangedIds()
+          self.ckPersistenceState.saveChangedIds()
           
           if let savedRecords = savedRecords {
             if savedRecords.count>0 {
@@ -440,7 +449,9 @@ public class CloudKitManager {
     }
     let operation = CKFetchRecordZoneChangesOperation(recordZoneIDs: zoneIDs, optionsByRecordZoneID: optionsByRecordZoneID)
     
-    if let cdm = self.coreDataManager,let tempMOC = self.coreDataManager?.privateChildManagedObjectContext() {
+    if let cdm = self.coreDataManager,
+      let tempMOC = self.coreDataManager?.privateChildManagedObjectContext() {
+      
       operation.recordChangedBlock = { (record) in
         let o = record.updateManagedObject(context: tempMOC)
         

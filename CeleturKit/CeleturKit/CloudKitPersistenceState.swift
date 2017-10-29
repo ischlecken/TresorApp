@@ -33,6 +33,47 @@ class CKServerChangeTokenModel : NSObject, NSCoding {
   }
 }
 
+
+@objc
+class CKAddedObjectInfo : NSObject, NSCoding, NSCopying {
+  
+  var entityType : String
+  var entityId : String
+  var objectUri : String
+  
+  func encode(with aCoder: NSCoder) {
+    aCoder.encode(self.entityId, forKey: "entityid")
+    aCoder.encode(self.entityType, forKey: "entitytype")
+    aCoder.encode(self.objectUri, forKey: "objecturi")
+  }
+  
+  required convenience init?(coder aDecoder: NSCoder) {
+    let id = aDecoder.decodeObject(forKey: "entityid") as? String
+    let type = aDecoder.decodeObject(forKey: "entitytype") as? String
+    let uri = aDecoder.decodeObject(forKey: "objecturi") as? String
+    
+    self.init(type: type!, id: id!, uri: uri!)
+  }
+  
+  init(type:String,id:String,uri:String) {
+    self.entityType = type
+    self.entityId = id
+    self.objectUri = uri
+  }
+  
+  static func == (lhs: CKAddedObjectInfo, rhs: CKAddedObjectInfo) -> Bool {
+    return lhs.entityId == rhs.entityId
+  }
+  
+  override var hashValue: Int {
+    return self.entityId.hashValue
+  }
+  
+  func copy(with zone: NSZone? = nil) -> Any {
+    return CKAddedObjectInfo(type: self.entityType, id: self.entityId, uri: self.objectUri)
+  }
+}
+
 @objc
 class CKDeletedObjectInfo : NSObject, NSCoding {
   
@@ -72,7 +113,7 @@ class CloudKitPersistenceState {
   var deletedIdsFilePath: String
   
   var changeTokens : [String:CKServerChangeTokenModel]?
-  var changedObjectIds : Set<String>?
+  var changedObjectIds : Set<CKAddedObjectInfo>?
   var deletedObjectIds : Set<CKDeletedObjectInfo>?
 
   var saveLock = NSLock()
@@ -96,7 +137,7 @@ class CloudKitPersistenceState {
   func load() {
     celeturKitLogger.debug("CloudKitPersistenceState.load()")
     
-    self.changedObjectIds = NSKeyedUnarchiver.unarchiveObject(withFile: self.changedIdsFilePath) as? Set<String>
+    self.changedObjectIds = NSKeyedUnarchiver.unarchiveObject(withFile: self.changedIdsFilePath) as? Set<CKAddedObjectInfo>
     self.deletedObjectIds = NSKeyedUnarchiver.unarchiveObject(withFile: self.deletedIdsFilePath) as? Set<CKDeletedObjectInfo>
     self.changeTokens = NSKeyedUnarchiver.unarchiveObject(withFile: self.serverChangeTokensFilePath) as? [String:CKServerChangeTokenModel]
   }
@@ -122,7 +163,7 @@ class CloudKitPersistenceState {
       self.saveLock.unlock()
     }
     
-    self.changedObjectIds = Set<String>()
+    self.changedObjectIds = Set<CKAddedObjectInfo>()
     self.deletedObjectIds = Set<CKDeletedObjectInfo>()
  
     NSKeyedArchiver.archiveRootObject(self.changedObjectIds as Any, toFile: self.changedIdsFilePath)
@@ -130,49 +171,101 @@ class CloudKitPersistenceState {
   }
   
   func addChangedObject(o:NSManagedObject) {
-    guard let entityId = o.value(forKey: "id") as? String, let entityType = o.entity.name else { return }
+    guard let entityId = o.value(forKey: "id") as? String,
+      let entityType = o.entity.name
+      else { return }
     
     self.saveLock.lock()
     defer {
       self.saveLock.unlock()
     }
     
-    celeturKitLogger.debug("CloudKitPersistenceState.addChangedObject(\(entityType): \(entityId))")
+    let uri = o.objectID.uriRepresentation().absoluteString
     
-    var c : Set<String> = self.changedObjectIds ?? Set<String>()
-    c.insert(entityId)
+    var c : Set<CKAddedObjectInfo> = self.changedObjectIds ?? Set<CKAddedObjectInfo>()
+    
+    var found = false
+    for aoi in c {
+      if aoi.entityId == entityId {
+        found = true
+        break
+      }
+    }
+    
+    if !found {
+      c.insert(CKAddedObjectInfo(type: entityType, id: entityId, uri: uri) )
+    }
+    
+    self.changedObjectIds = c
   
+    celeturKitLogger.debug("CloudKitPersistenceState.addChangedObject(\(entityType),\(entityId)): \(c.count)")
   }
   
-  func changedObjectHasBeenSaved(entityId:String) {
-    celeturKitLogger.debug("CloudKitPersistenceState.changedObjectHasBeenSaved(\(entityId))")
+  func findChangedObject(entityId:String) -> [CKAddedObjectInfo] {
+    var result = [CKAddedObjectInfo]()
     
-    self.saveLock.lock()
-    defer {
-      self.saveLock.unlock()
-    }
-    
-    if var c = self.changedObjectIds {
-      let removed = c.remove(entityId)
-      
-      celeturKitLogger.debug("CloudKitPersistenceState.changedObjectHasBeenSaved(\(entityId)) removed:\(removed ?? "-")")
-    }
-  }
-  
-  func isObjectChanged(o:NSManagedObject) -> Bool {
-    guard let entityId = o.value(forKey: "id") as? String, let _ = self.changedObjectIds else { return false }
-    
-    self.saveLock.lock()
-    defer {
-      self.saveLock.unlock()
-    }
-    
-    var result = false
     if let c = self.changedObjectIds {
-      result = c.contains(entityId)
+      for aoi in c {
+        if aoi.entityId == entityId {
+          result.append(aoi)
+        }
+      }
     }
     
     return result
+  }
+  
+  func changedObjectHasBeenSaved(entityIds:[String]) {
+    self.saveLock.lock()
+    defer {
+      self.saveLock.unlock()
+    }
+    
+    let removed = self.removeEntityIdFromChangedObjects(entityIds: entityIds)
+    if removed.count>0 {
+      celeturKitLogger.debug("CloudKitPersistenceState.changedObjectHasBeenSaved(\(entityIds))")
+    } else {
+      celeturKitLogger.debug("CloudKitPersistenceState.changedObjectHasBeenSaved(\(entityIds)) not found")
+    }
+  }
+  
+  fileprivate func removeEntityIdFromChangedObjects(entityIds:[String]) -> [CKAddedObjectInfo] {
+    var removed = [CKAddedObjectInfo]()
+    
+    if let c = self.changedObjectIds {
+      var newC = Set<CKAddedObjectInfo>()
+      
+      for aoi in c {
+        var found : CKAddedObjectInfo?
+        
+        for entityId in entityIds {
+          if aoi.entityId == entityId {
+            found = aoi
+          }
+        }
+        
+        if let f = found {
+          removed.append(f)
+        } else {
+          newC.insert(aoi)
+        }
+      }
+      
+      self.changedObjectIds = newC
+    }
+    
+    return removed
+  }
+  
+  func isObjectChanged(o:NSManagedObject) -> Bool {
+    guard let entityId = o.value(forKey: "id") as? String else { return false }
+    
+    self.saveLock.lock()
+    defer {
+      self.saveLock.unlock()
+    }
+    
+    return self.findChangedObject(entityId: entityId).count>0
   }
   
   func addDeletedObject(o:NSManagedObject) {
@@ -183,36 +276,55 @@ class CloudKitPersistenceState {
       self.saveLock.unlock()
     }
     
-    celeturKitLogger.debug("CloudKitPersistenceState.addDeletedObject(\(entityType): \(entityId))")
-    if self.deletedObjectIds == nil {
-      self.deletedObjectIds = Set<CKDeletedObjectInfo>()
+    let _ = self.removeEntityIdFromChangedObjects(entityIds: [entityId])
+    
+    var d : Set<CKDeletedObjectInfo> = self.deletedObjectIds ?? Set<CKDeletedObjectInfo>()
+    
+    var found = false
+    
+    for doi in d {
+      if doi.entityId == entityId {
+        found = true
+        break;
+      }
     }
     
-    if var c = self.changedObjectIds {
-      c.remove(entityId)
+    if !found {
+      d.insert(CKDeletedObjectInfo(type:entityType, id: entityId))
     }
+    self.deletedObjectIds = d
     
-    self.deletedObjectIds?.insert(CKDeletedObjectInfo(type:entityType, id: entityId))
+    celeturKitLogger.debug("CloudKitPersistenceState.addDeletedObject(\(entityType),\(entityId)): \(d.count)")
   }
   
   
-  func deletedObjectHasBeenDeleted(entityId:String) {
+  func deletedObjectHasBeenDeleted(entityIds:[String]) {
     if let _ = self.deletedObjectIds {
       self.saveLock.lock()
       defer {
         self.saveLock.unlock()
       }
       
-      if var d = self.deletedObjectIds {
+      if let d = self.deletedObjectIds {
+        var newD = Set<CKDeletedObjectInfo>()
+        
         for delinfo in d {
-          if delinfo.entityId == entityId {
-            let removed = d.remove(delinfo)
-            
-            celeturKitLogger.debug("CloudKitPersistenceState.deletedObjectHasBeenDeleted(\(entityId)): removed:\(removed ?? nil)")
-            
-            break
+          var found : CKDeletedObjectInfo?
+          
+          for entityId in entityIds {
+            if delinfo.entityId == entityId {
+              found = delinfo
+              
+              break
+            }
+          }
+          
+          if found == nil {
+            newD.insert(delinfo)
           }
         }
+        
+        self.deletedObjectIds = newD
       }
     }
   }
@@ -279,8 +391,8 @@ class CloudKitPersistenceState {
     var records = [CKRecord]()
     
     if let coi = self.changedObjectIds {
-      for urlString in coi {
-        if let url = URL(string:urlString),
+      for aoi in coi {
+        if let url = URL(string:aoi.objectUri),
           let oID = moc.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: url),
           let r = moc.object(with: oID).mapToRecord(zoneId: zoneId) {
             records.append(r)

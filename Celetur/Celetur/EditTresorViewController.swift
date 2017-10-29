@@ -61,7 +61,11 @@ class EditTresorViewController: UITableViewController {
   }
   
   override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return self.tresorAppState?.tresorModel.userDevices?.count ?? 0
+    let userDevicesCount = self.tresorAppState?.tresorModel.userDevices?.count ?? 0
+    
+    celeturLogger.debug("userDevicesCount:\(userDevicesCount)")
+    
+    return userDevicesCount
   }
   
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

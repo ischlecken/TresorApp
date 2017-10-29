@@ -54,6 +54,12 @@ class TresorAppModel {
     } catch {
       celeturLogger.error("could not start reachability notifier",error:error)
     }
+    
+    NotificationCenter.default.addObserver(self,
+                                           selector: #selector(tresorUserInfoChanged(_:)),
+                                           name: Notification.Name.onTresorUserInfoChanged,
+                                           object:self.tresorModel)
+    
   }
   
   public func fetchChanges(in databaseScope: CKDatabaseScope, completion: @escaping () -> Void) {
@@ -74,6 +80,16 @@ class TresorAppModel {
     case .none:
       celeturLogger.debug("Network not reachable")
       self.appDelegate?.setTitle(title: "Celetur (Offline)")
+    }
+  }
+  
+  @objc
+  func tresorUserInfoChanged(_ note: Notification) {
+    if let userName = self.tresorModel.currentUserInfo?.userDisplayName {
+      self.appDelegate?.setTitle(title: "Celetur\n\(userName)")
+      
+    } else {
+      self.appDelegate?.setTitle(title: "Celetur\nno icloud user")
     }
   }
   

@@ -27,6 +27,22 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
                                            selector: #selector(onTresorModelReady(_:)),
                                            name: Notification.Name.onTresorModelReady,
                                            object:self.tresorAppState?.tresorModel)
+    
+    var titleView = UILabel()
+    
+    titleView.text = "Celetur\nsecond line"
+    titleView.textColor = UIColor.blue
+    titleView.textAlignment = .center
+    titleView.numberOfLines = 0
+    titleView.adjustsFontSizeToFitWidth = true
+    
+    self.navigationItem.titleView = titleView
+  }
+  
+  func setTitleInfo(titleinfo:String) {
+    let titleLabel = self.navigationItem.titleView as? UILabel
+    
+    titleLabel?.text = titleinfo
   }
   
   

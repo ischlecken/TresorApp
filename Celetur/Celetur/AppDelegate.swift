@@ -52,7 +52,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     let masterNavigationController = splitViewController.viewControllers[0] as! UINavigationController
     let controller = masterNavigationController.topViewController as! TresorViewController
     
-    controller.title = title
+    controller.setTitleInfo(titleinfo: title)
   }
   
   func applicationWillResignActive(_ application: UIApplication) {

@@ -9,6 +9,7 @@ import CloudKit
 
 extension Notification.Name {
   public static let onTresorModelReady = Notification.Name("onTresorModelReady")
+  public static let onTresorUserInfoChanged = Notification.Name("onTresorUserInfoChanged")
 }
 
 let appGroup = "group.net.prisnoc.Celetur"
@@ -19,8 +20,12 @@ public class TresorModel {
   public var currentUserInfo : UserInfo?
   public var currentDeviceInfo : DeviceInfo?
   public var currentTresorUserDevice : TresorUserDevice?
-  public var userDevices : [TresorUserDevice]?
   public var tresorCoreDataManager : CoreDataManager?
+  public var userDevices: [TresorUserDevice]? {
+    guard let moc = self.tresorCoreDataManager?.mainManagedObjectContext else { return nil }
+    
+    return TresorUserDevice.loadUserDevices(context: moc)
+  }
   
   var tresorMetaInfoCoreDataManager : CoreDataManager?
   var apnDeviceToken : Data?
@@ -100,8 +105,6 @@ public class TresorModel {
         cdm.cloudKitManager = ckm
         
         DispatchQueue.main.async {
-          self.userDevices = TresorUserDevice.loadUserDevices(context: cdm.mainManagedObjectContext)
-          
           self.tresorCoreDataManager = cdm
           
           self.currentUserInfo = UserInfo.loadUserInfo(self.tresorMetaInfoCoreDataManager!,userIdentity:userIdentity)
@@ -110,6 +113,8 @@ public class TresorModel {
           
           celeturKitLogger.debug("TresorModel.switchTresorCoreDataManager() --leave--")
           self.initModelDispatchGroup.leave()
+          
+          NotificationCenter.default.post(name: .onTresorUserInfoChanged, object: self)
         }
       } catch {
         celeturKitLogger.error("Error while setup core data manager ...",error:error)

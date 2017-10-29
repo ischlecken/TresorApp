@@ -72,11 +72,24 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   
   // MARK: - Segues
   
+  override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+    var result = true
+    
+    if identifier == "showTresorDocumentItemDetail", let indexPath = tableView.indexPathForSelectedRow {
+      result = indexPath.row-1>=0
+    }
+    
+    return result
+  }
+  
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     if segue.identifier == "showTresorDocumentItemDetail" {
       if let indexPath = tableView.indexPathForSelectedRow {
-        
         let newIndexPath = IndexPath(row: indexPath.row-1, section: indexPath.section)
+        
+        if newIndexPath.row<0 {
+          return
+        }
         
         let object = fetchedResultsController.object(at: newIndexPath)
         let controller = (segue.destination as! UINavigationController).topViewController as! TresorDocumentItemViewController

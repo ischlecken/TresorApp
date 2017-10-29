@@ -118,7 +118,6 @@ class CloudKitPersistenceState {
     celeturKitLogger.debug("CloudKitPersistenceState.flushChangedIds()")
     
     self.saveLock.lock()
-    
     defer {
       self.saveLock.unlock()
     }
@@ -131,56 +130,114 @@ class CloudKitPersistenceState {
   }
   
   func addChangedObject(o:NSManagedObject) {
-    let uri = o.objectID.uriRepresentation().absoluteString
+    guard let entityId = o.value(forKey: "id") as? String, let entityType = o.entity.name else { return }
     
     self.saveLock.lock()
     defer {
       self.saveLock.unlock()
     }
     
-    let entityId = o.value(forKey: "id") as? String
-    let entityType = o.entity.name
+    celeturKitLogger.debug("CloudKitPersistenceState.addChangedObject(\(entityType): \(entityId))")
     
-    celeturKitLogger.debug("CloudKitPersistenceState.addChangedObject(\(entityType ?? "nil"): \(entityId ?? "nil"))")
-    if self.changedObjectIds == nil {
-      self.changedObjectIds = Set<String>()
+    var c : Set<String> = self.changedObjectIds ?? Set<String>()
+    c.insert(entityId)
+  
+  }
+  
+  func changedObjectHasBeenSaved(entityId:String) {
+    celeturKitLogger.debug("CloudKitPersistenceState.changedObjectHasBeenSaved(\(entityId))")
+    
+    self.saveLock.lock()
+    defer {
+      self.saveLock.unlock()
     }
     
-    self.changedObjectIds?.insert(uri)
+    if var c = self.changedObjectIds {
+      let removed = c.remove(entityId)
+      
+      celeturKitLogger.debug("CloudKitPersistenceState.changedObjectHasBeenSaved(\(entityId)) removed:\(removed ?? "-")")
+    }
   }
   
   func isObjectChanged(o:NSManagedObject) -> Bool {
-    return self.changedObjectIds != nil && self.changedObjectIds?.contains(o.objectID.uriRepresentation().absoluteString) ?? false
-  }
-  
-  func addDeletedObject(o:NSManagedObject) {
-    let uri = o.objectID.uriRepresentation().absoluteString
-    let entityType = o.entity.name
-    let entityId = o.value(forKey: "id") as? String
+    guard let entityId = o.value(forKey: "id") as? String, let _ = self.changedObjectIds else { return false }
     
     self.saveLock.lock()
     defer {
       self.saveLock.unlock()
     }
     
-    celeturKitLogger.debug("CloudKitPersistenceState.addDeletedObject(\(entityType ?? "nil"): \(entityId ?? "nil"))")
+    var result = false
+    if let c = self.changedObjectIds {
+      result = c.contains(entityId)
+    }
+    
+    return result
+  }
+  
+  func addDeletedObject(o:NSManagedObject) {
+    guard let entityId = o.value(forKey: "id") as? String, let entityType = o.entity.name else { return }
+  
+    self.saveLock.lock()
+    defer {
+      self.saveLock.unlock()
+    }
+    
+    celeturKitLogger.debug("CloudKitPersistenceState.addDeletedObject(\(entityType): \(entityId))")
     if self.deletedObjectIds == nil {
       self.deletedObjectIds = Set<CKDeletedObjectInfo>()
     }
     
     if var c = self.changedObjectIds {
-      c.remove(uri)
+      c.remove(entityId)
     }
     
-    if let et = entityType, let ei = entityId {
-      self.deletedObjectIds?.insert(CKDeletedObjectInfo(type:et, id: ei))
+    self.deletedObjectIds?.insert(CKDeletedObjectInfo(type:entityType, id: entityId))
+  }
+  
+  
+  func deletedObjectHasBeenDeleted(entityId:String) {
+    if let _ = self.deletedObjectIds {
+      self.saveLock.lock()
+      defer {
+        self.saveLock.unlock()
+      }
+      
+      if var d = self.deletedObjectIds {
+        for delinfo in d {
+          if delinfo.entityId == entityId {
+            let removed = d.remove(delinfo)
+            
+            celeturKitLogger.debug("CloudKitPersistenceState.deletedObjectHasBeenDeleted(\(entityId)): removed:\(removed ?? nil)")
+            
+            break
+          }
+        }
+      }
     }
   }
   
   func isObjectDeleted(o:NSManagedObject) -> Bool {
-    let delInfo = CKDeletedObjectInfo(type:o.entity.name!, id: o.value(forKey: "id") as! String)
+    guard let entityId = o.value(forKey: "id") as? String, let _ = self.deletedObjectIds else { return false }
+      
+    var result = false
     
-    return self.deletedObjectIds != nil && self.deletedObjectIds?.contains(delInfo) ?? false
+    self.saveLock.lock()
+    defer {
+      self.saveLock.unlock()
+    }
+    
+    if let d = self.deletedObjectIds {
+      for delinfo in d {
+        if delinfo.entityId == entityId {
+          result = true
+          
+          break
+        }
+      }
+    }
+  
+    return result
   }
   
   

@@ -43,12 +43,11 @@ public class CloudKitManager {
   // MARK: - Save Changed from CoreData
   
   func saveChanges(context:NSManagedObjectContext) {
-    //celeturKitLogger.debug("CloudKitManager.saveChanges()")
-    
     let moc = context
-    
     let records = self.ckPersistenceState.changedRecords(moc: moc, zoneId: self.tresorZoneId)
     let deletedRecordIds = self.ckPersistenceState.deletedRecordIds(moc:moc, zoneId: self.tresorZoneId)
+    
+    celeturKitLogger.debug("CloudKitManager.saveChanges() records:\(records.count) deletedRecordIds:\(deletedRecordIds.count)")
     
     if records.count>0 || deletedRecordIds.count>0 {
       let modifyOperation = CKModifyRecordsOperation(recordsToSave: records, recordIDsToDelete: deletedRecordIds)
@@ -69,16 +68,20 @@ public class CloudKitManager {
           if let sr=savedRecords {
             for r in sr {
               r.dumpRecordInfo(prefix: "  ")
+              
+              self.ckPersistenceState.changedObjectHasBeenSaved(entityId: r.recordID.recordName)
             }
           }
           
           if let dr=deletedRecordIDs {
             for dri in dr {
               celeturKitLogger.debug("CloudKitManager.saveChanges()  record \(dri.recordName) in \(dri.zoneID.zoneName) deleted")
+              
+              self.ckPersistenceState.deletedObjectHasBeenDeleted(entityId: dri.recordName)
             }
           }
           
-          self.ckPersistenceState.flushChangedIds()
+          //self.ckPersistenceState.flushChangedIds()
           
           if let savedRecords = savedRecords {
             if savedRecords.count>0 {

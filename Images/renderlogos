@@ -1,0 +1,13 @@
+#!/bin/sh
+
+DIMENSIONS="512 1024"
+SVG=celetur-logo.svg
+OUTPUT=celeturlogo
+BRT="java -jar /Users/fe/Development/3rdParty/batik-1.9/batik-rasterizer-1.9.jar"
+
+for d in $DIMENSIONS
+do
+  filename="$OUTPUT-$d.png"
+  cmd="$BRT -m 'image/png' -w $d -h $d -d $filename $SVG"
+  eval $cmd
+done

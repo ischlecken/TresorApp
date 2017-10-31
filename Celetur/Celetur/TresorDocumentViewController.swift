@@ -59,10 +59,10 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   @IBAction
   func insertNewObject(_ sender: Any) {
     do {
-      let plainText = "{ \"title\": \"gmx.de\",\"user\":\"bla@fasel.de\",\"password\":\"hugo\"}"
+      let model = [ "title": "gmx.de", "description": "Mail Konto", "user": "bla@fasel.de", "password":"hugo"]
       
       let _ = try self.tresorAppState?.tresorModel.createTresorDocument(tresor: self.tresor!,
-                                                                        plainText: plainText,
+                                                                        model: model,
                                                                         masterKey:self.tresorAppState?.masterKey)
       
     } catch {
@@ -177,17 +177,21 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   
   func configureCellForTresorDocument(_ cell: UITableViewCell, withTresorDocument tresorDocument: TresorDocument?) {
     cell.textLabel!.text = "Document"
-    
+    cell.indentationLevel = 0
     cell.textLabel?.textColor = UIColor.black
     
-    var formatedCreatets = "-"
-    
-    if let createts = tresorDocument?.createts {
-      formatedCreatets = self.dateFormatter.string(from: createts)
+    if let doc = tresorDocument {
+      if let docMetaInfo = doc.getMetaInfo(), let title = docMetaInfo["title"] {
+        cell.textLabel?.text = title
+      }
+      
+      var formatedCreatets = "-"
+      if let createts = tresorDocument?.createts {
+        formatedCreatets = self.dateFormatter.string(from: createts)
+      }
+      
+      cell.detailTextLabel!.text = "created at " + formatedCreatets
     }
-    
-    cell.detailTextLabel!.text = "created at " + formatedCreatets
-    cell.indentationLevel = 0
   }
   
   func configureCell(_ cell: UITableViewCell, withTresorDocumentItem tresorDocumentItem: TresorDocumentItem) {

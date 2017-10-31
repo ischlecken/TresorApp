@@ -44,6 +44,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     
     self.tresorAppModel.completeSetup(appDelegate:self)
     
+    UINavigationBar.appearance().barTintColor = .celeturBarTintColor
+    UINavigationBar.appearance().tintColor = .celeturTintColor
+    UINavigationBar.appearance().titleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.celeturTintColor]
+    UINavigationBar.appearance().isTranslucent = false
+    
     return true
   }
   

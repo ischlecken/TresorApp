@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="13240" systemVersion="" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="13241" systemVersion="" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Tresor" representedClassName="Tresor" syncable="YES" codeGenerationType="class">
         <attribute name="changets" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="ckdata" optional="YES" attributeType="Binary" syncable="YES"/>
@@ -70,6 +70,7 @@
         <attribute name="devicesystemversion" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="deviceuitype" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="id" attributeType="String" syncable="YES"/>
+        <attribute name="messageencryption" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="messagekey" optional="YES" attributeType="Binary" syncable="YES"/>
         <attribute name="username" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="documentitems" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TresorDocumentItem" inverseName="userdevice" inverseEntity="TresorDocumentItem" syncable="YES"/>
@@ -81,6 +82,6 @@
         <element name="TresorCommand" positionX="-756" positionY="269" width="128" height="178"/>
         <element name="TresorDocument" positionX="-1206" positionY="-207" width="128" height="163"/>
         <element name="TresorDocumentItem" positionX="-1017" positionY="-63" width="126" height="208"/>
-        <element name="TresorUserDevice" positionX="-1197" positionY="198" width="128" height="238"/>
+        <element name="TresorUserDevice" positionX="-1197" positionY="198" width="128" height="253"/>
     </elements>
 </model>

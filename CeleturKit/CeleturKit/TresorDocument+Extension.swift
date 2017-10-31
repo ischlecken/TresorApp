@@ -15,4 +15,32 @@ extension TresorDocument {
     
     return newTresorDocument
   }
+  
+  public func setMetaInfo(title:String, description: String?) {
+    var metaInfo = [ "title":title ]
+  
+    if let d = description {
+      metaInfo["description"] = d
+    }
+    
+    do {
+      self.metainfo = try JSONSerialization.data(withJSONObject: metaInfo, options: [])
+    } catch {
+      celeturKitLogger.error("Error serializing metainfo json",error:error)
+    }
+  }
+  
+  public func getMetaInfo() -> [String:String]? {
+    var result : [String:String]?
+    
+    if let m = self.metainfo {
+      do {
+        result = try JSONSerialization.jsonObject(with: m, options: []) as? [String:String]
+      } catch {
+        celeturKitLogger.error("Error serializing metainfo json",error:error)
+      }
+    }
+    
+    return result
+  }
 }

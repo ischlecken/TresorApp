@@ -20,6 +20,7 @@ extension TresorUserDevice {
     
     do {
       newUserDevice.messagekey = try Data(withRandomData:SymmetricCipherAlgorithm.aes_256.requiredKeySize())
+      newUserDevice.messageencryption = "aes256"
     } catch {
       celeturKitLogger.error("error create messagekey", error: error)
     }
@@ -34,6 +35,7 @@ extension TresorUserDevice {
     
     do {
       newUserDevice.messagekey = try Data(withRandomData:SymmetricCipherAlgorithm.aes_256.requiredKeySize())
+      newUserDevice.messageencryption = "aes256"
     } catch {
       celeturKitLogger.error("error create messagekey", error: error)
     }

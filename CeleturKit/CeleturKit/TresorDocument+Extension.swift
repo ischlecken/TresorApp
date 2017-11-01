@@ -27,7 +27,11 @@ extension TresorDocument {
     self.nonce = try Data(withRandomData:SymmetricCipherAlgorithm.aes_256.requiredBlockSize())
   }
   
-  convenience init(context: NSManagedObjectContext, masterKey: TresorKey?, tresor: Tresor, model: PayloadModelType) throws {
+  convenience init(context: NSManagedObjectContext,
+                   masterKey: TresorKey?,
+                   tresor: Tresor,
+                   model: PayloadModelType,
+                   completion: @escaping ()->Void ) throws {
     try self.init(context: context, tresor: tresor)
     
     if let payload = PayloadModel.jsonData(model: model),
@@ -44,12 +48,13 @@ extension TresorDocument {
             let isUserDeviceCurrentDevice = currentDeviceInfo?.isCurrentDevice(tresorUserDevice: userDevice) ?? false
             
             if let key = isUserDeviceCurrentDevice ? currentDeviceKey : userDevice.messagekey {
-              let _ = try TresorDocumentItem.createTresorDocumentItem(context: context,
-                                                                      tresorDocument: self,
-                                                                      userDevice: userDevice,
-                                                                      key: key,
-                                                                      payload: payload,
-                                                                      status: isUserDeviceCurrentDevice ? .encrypted : .shouldBeEncryptedByDevice)
+              let tdi = TresorDocumentItem(context: context, tresorDocument: self, userDevice: userDevice)
+              
+              tdi.encryptPayload(key: key, payload: payload, status: isUserDeviceCurrentDevice ? .encrypted : .shouldBeEncryptedByDevice) {
+                DispatchQueue.main.async {
+                  completion()
+                }
+              }
             }
           }
         } catch {

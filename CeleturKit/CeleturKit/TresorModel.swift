@@ -210,9 +210,9 @@ public class TresorModel {
       let newTresorDocument = try TresorDocument(context: moc,
                                                  masterKey: masterKey,
                                                  tresor: tresor,
-                                                 model: model)
-      
-      self.saveChanges()
+                                                 model: model) {
+        self.saveChanges()
+      }
       
       result = newTresorDocument
     }
@@ -237,7 +237,9 @@ public class TresorModel {
             if let key = isUserDeviceCurrentDevice ? masterKey.accessToken : ud.messagekey {
               let status : TresorDocumentItemStatus = isUserDeviceCurrentDevice ? .encrypted : .shouldBeEncryptedByDevice
               
-              tresorDocumentItem.encryptPayload(context: moc, key: key, payload: payload, status: status)
+              tresorDocumentItem.encryptPayload(key: key, payload: payload, status: status) {
+                self.saveChanges()
+              }
             }
           }
         }
@@ -245,8 +247,6 @@ public class TresorModel {
         if let title = model["title"] as? String {
           tresorDocument.setMetaInfo(title: title, description: model["description"] as? String)
         }
-        
-        self.saveChanges()
       }
     }
   }
@@ -270,7 +270,9 @@ public class TresorModel {
     for case let tresorDocument as TresorDocument in documents {
       if let items = tresorDocument.documentitems {
         for case let item as TresorDocumentItem in items where item.itemStatus == .shouldBeEncryptedByDevice {
-          item.encryptMessagePayload(tresorModel: self, masterKey: masterKey)
+          item.encryptMessagePayload(masterKey: masterKey) {
+            self.saveChanges()
+          }
         }
       }
     }

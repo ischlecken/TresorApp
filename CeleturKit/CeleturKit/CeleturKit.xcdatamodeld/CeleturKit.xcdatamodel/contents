@@ -7,7 +7,6 @@
         <attribute name="id" attributeType="String" syncable="YES"/>
         <attribute name="name" attributeType="String" syncable="YES"/>
         <attribute name="nonce" optional="YES" attributeType="Binary" syncable="YES"/>
-        <attribute name="owneruserdeviceid" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="tresordescription" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="documents" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TresorDocument" inverseName="tresor" inverseEntity="TresorDocument" syncable="YES"/>
         <relationship name="userdevices" toMany="YES" deletionRule="Nullify" destinationEntity="TresorUserDevice" inverseName="tresors" inverseEntity="TresorUserDevice" syncable="YES"/>
@@ -77,7 +76,7 @@
         <relationship name="tresors" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tresor" inverseName="userdevices" inverseEntity="Tresor" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Tresor" positionX="-1386" positionY="-67" width="128" height="193"/>
+        <element name="Tresor" positionX="-1386" positionY="-67" width="128" height="180"/>
         <element name="TresorAudit" positionX="-758" positionY="17" width="128" height="223"/>
         <element name="TresorCommand" positionX="-756" positionY="269" width="128" height="178"/>
         <element name="TresorDocument" positionX="-1206" positionY="-207" width="128" height="163"/>

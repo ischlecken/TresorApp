@@ -17,12 +17,11 @@ class EditTresorViewController: UITableViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    if let userDevice = self.tresorAppState?.tresorModel.currentTresorUserDevice, self.tresor?.tempTresor.owneruserdeviceid == nil {
-      self.tresor?.tempTresor.owneruserdeviceid = userDevice.id
+    if let userDevice = self.tresorAppState?.tresorModel.currentTresorUserDevice,
+      self.tresor?.tempTresor.userdevices?.count==0,
+      let udnew = self.tresor?.tempManagedObjectContext.object(with: userDevice.objectID) as? TresorUserDevice {
       
-      if let udnew = self.tresor?.tempManagedObjectContext.object(with: userDevice.objectID) as? TresorUserDevice {
-        self.tresor?.tempTresor.addToUserdevices(udnew)
-      }
+      self.tresor?.tempTresor.addToUserdevices(udnew)
     }
     
     self.nameTextfield.becomeFirstResponder()

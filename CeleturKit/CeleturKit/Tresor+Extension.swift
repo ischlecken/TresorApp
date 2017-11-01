@@ -56,4 +56,16 @@ public extension Tresor {
     
     return result
   }
+  
+  public func deleteTresor() {
+    if let docs = self.documents {
+      for doc in docs {
+        if let o = doc as? TresorDocument {
+          o.deleteTresorDocument()
+        }
+      }
+    }
+    
+    self.managedObjectContext?.delete(self)
+  }
 }

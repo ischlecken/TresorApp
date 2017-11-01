@@ -9,7 +9,7 @@ import CeleturKit
 class EditTresorViewController: UITableViewController {
   
   var tresorAppState: TresorAppModel?
-  var tresor: TresorModel.TempTresorObject?
+  var tresor: TempTresorObject?
   
   @IBOutlet weak var nameTextfield: UITextField!
   @IBOutlet weak var descriptionTextfield: UITextField!
@@ -61,11 +61,7 @@ class EditTresorViewController: UITableViewController {
   }
   
   override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    let userDevicesCount = self.tresorAppState?.tresorModel.userDevices?.count ?? 0
-    
-    celeturLogger.debug("userDevicesCount:\(userDevicesCount)")
-    
-    return userDevicesCount
+    return self.tresorAppState?.tresorModel.userDevices?.count ?? 0
   }
   
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -81,11 +77,13 @@ class EditTresorViewController: UITableViewController {
   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     guard let userDevice = self.getUserDevice(forPath: indexPath) else { return }
     
-    if let t = self.tresor?.tempTresor, let deviceId = self.tresorAppState?.tresorModel.currentDeviceInfo?.id, userDevice.id != deviceId {
+    if let t = self.tresor?.tempTresor {
       
       let foundUserDevice = t.findUserDevice(userDevice: userDevice)
       if let ud = foundUserDevice {
-        t.removeFromUserdevices(ud)
+        if let tc = t.userdevices?.count, tc>1 {
+          t.removeFromUserdevices(ud)
+        }
       } else {
         if let udnew = self.tresor?.tempManagedObjectContext.object(with: userDevice.objectID) as? TresorUserDevice {
           t.addToUserdevices(udnew)
@@ -127,12 +125,14 @@ class EditTresorViewController: UITableViewController {
     cell.accessoryType = .none
     cell.indentationLevel = 0
     
-    if self.tresorAppState?.tresorModel.isCurrentDevice(tresorUserDevice: userDevice) ?? false {
+    if currentDeviceInfo?.isCurrentDevice(tresorUserDevice: userDevice) ?? false {
       cell.textLabel?.textColor = UIColor.blue
       cell.textLabel?.font = UIFont.boldSystemFont(ofSize: UIFont.systemFontSize)
+      cell.detailTextLabel?.font = UIFont.boldSystemFont(ofSize: UIFont.systemFontSize)
     } else {
       cell.textLabel?.textColor = UIColor.darkText
       cell.textLabel?.font = UIFont.systemFont(ofSize: UIFont.systemFontSize)
+      cell.detailTextLabel?.font = UIFont.systemFont(ofSize: UIFont.systemFontSize)
     }
     
     if let t = self.tresor?.tempTresor, t.findUserDevice(userDevice:userDevice) != nil {

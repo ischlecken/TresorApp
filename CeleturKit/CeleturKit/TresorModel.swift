@@ -18,7 +18,6 @@ let celeturKitIdentifier = "net.prisnoc.CeleturKit"
 public class TresorModel {
   
   public var currentUserInfo : UserInfo?
-  public var currentDeviceInfo : DeviceInfo?
   public var currentTresorUserDevice : TresorUserDevice?
   public var tresorCoreDataManager : CoreDataManager?
   public var userDevices: [TresorUserDevice]? {
@@ -31,7 +30,6 @@ public class TresorModel {
   var apnDeviceToken : Data?
   
   let initModelDispatchGroup  = DispatchGroup()
-  let cipherQueue = OperationQueue()
   
   public init() {
     NotificationCenter.default.addObserver(self,
@@ -71,7 +69,7 @@ public class TresorModel {
         
         self.tresorMetaInfoCoreDataManager = cdm
         
-        self.loadDeviceInfo()
+        self.loadCurrentDeviceInfo()
         
         celeturKitLogger.debug("TresorModel.completeSetup() --leave--")
         self.initModelDispatchGroup.leave()
@@ -109,7 +107,7 @@ public class TresorModel {
           
           self.currentUserInfo = UserInfo.loadUserInfo(self.tresorMetaInfoCoreDataManager!,userIdentity:userIdentity)
           
-          self.loadTresorUserDevice()
+          self.loadCurrentTresorUserDevice()
           
           celeturKitLogger.debug("TresorModel.switchTresorCoreDataManager() --leave--")
           self.initModelDispatchGroup.leave()
@@ -123,38 +121,17 @@ public class TresorModel {
   }
   
   
-  fileprivate func loadDeviceInfo() {
+  fileprivate func loadCurrentDeviceInfo() {
     if let metacdm = self.tresorMetaInfoCoreDataManager {
       let moc = metacdm.mainManagedObjectContext
       
-      let fetchRequest : NSFetchRequest<DeviceInfo> = DeviceInfo.fetchRequest()
-      fetchRequest.fetchBatchSize = 1
-      
-      do {
-        var deviceInfo : DeviceInfo?
-        
-        let records = try moc.fetch(fetchRequest)
-        if records.count>0 {
-          deviceInfo = records[0]
-        } else {
-          deviceInfo = DeviceInfo.createCurrentUserDevice(context: moc)
-        }
-        
-        if let adt = self.apnDeviceToken {
-          deviceInfo!.updateAPNToken(deviceToken: adt)
-        }
-        
-        self.currentDeviceInfo = deviceInfo
-        
-        metacdm.saveChanges(notifyChangesToCloudKit:false)
-      } catch {
-        celeturKitLogger.error("Error while saving device info...",error:error)
-      }
+      DeviceInfo.loadCurrentDeviceInfo(context: moc, apnDeviceToken: self.apnDeviceToken)
+      metacdm.saveChanges(notifyChangesToCloudKit:false)
     }
   }
   
-  fileprivate func loadTresorUserDevice() {
-    if let cdm = self.tresorCoreDataManager, let cdi = self.currentDeviceInfo, let userName = self.currentUserInfo?.userDisplayName {
+  fileprivate func loadCurrentTresorUserDevice() {
+    if let cdm = self.tresorCoreDataManager, let cdi = currentDeviceInfo, let userName = self.currentUserInfo?.userDisplayName {
       let moc = cdm.mainManagedObjectContext
       
       let fetchRequest : NSFetchRequest<TresorUserDevice> = TresorUserDevice.fetchRequest()
@@ -220,110 +197,20 @@ public class TresorModel {
     
     self.apnDeviceToken = deviceToken
     
-    if let cdi = self.currentDeviceInfo {
+    if let cdi = currentDeviceInfo {
       cdi.updateAPNToken(deviceToken: deviceToken)
     }
   }
   
   
-  public func isCurrentDevice(tresorUserDevice: TresorUserDevice?) -> Bool {
-    guard let cdi = self.currentDeviceInfo,let tud = tresorUserDevice else { return false }
+  public func createTresorDocument(tresor:Tresor, model: PayloadModelType, masterKey: TresorKey?) throws -> TresorDocument? {
+    var result  : TresorDocument?
     
-    return cdi.id == tud.id
-  }
-  
-  
-  public func createDummyUserDevices() {
-    if let moc = self.tresorCoreDataManager?.mainManagedObjectContext {
-      TresorUserDevice.createUserDevice(context: moc, userName: "Hugo Müller", deviceName: "Hugos iPhone")
-      TresorUserDevice.createUserDevice(context: moc, userName: "Hugo Müller", deviceName: "Hugos iPad")
-      TresorUserDevice.createUserDevice(context: moc, userName: "Hugo Müller", deviceName: "Hugos iWatch")
-      
-      TresorUserDevice.createUserDevice(context: moc, userName: "Manfred Schmidt", deviceName: "Manfreds iPhone")
-      TresorUserDevice.createUserDevice(context: moc, userName: "Manfred Schmidt", deviceName: "Manfreds iPad")
-      TresorUserDevice.createUserDevice(context: moc, userName: "Manfred Schmidt", deviceName: "Manfreds iWatch")
-      TresorUserDevice.createUserDevice(context: moc, userName: "Manfred Schmidt", deviceName: "Manfreds iTV")
-      
-      self.saveChanges()
-    }
-  }
-  
-  
-  
-  
-  public func deleteTresorAndSave(tresor: Tresor) {
-    if let moc = self.tresorCoreDataManager?.mainManagedObjectContext {
-      self.deleteTresor(context: moc, tresor: tresor)
-      
-      do {
-        try moc.save()
-        
-        self.saveChanges()
-      } catch {
-        celeturKitLogger.error("Error while deleting tresor object",error:error)
-      }
-    }
-  }
-  
-  public func deleteTresor(context:NSManagedObjectContext, tresor:Tresor) {
-    if let docs = tresor.documents {
-      for doc in docs {
-        if let o = doc as? TresorDocument {
-          self.deleteTresorDocument(context: context, tresorDocument: o)
-        }
-      }
-    }
-    
-    context.delete(tresor)
-  }
-  
-  public func deleteTresorDocument(context:NSManagedObjectContext, tresorDocument:TresorDocument) {
-    if let docItems = tresorDocument.documentitems {
-      for item in docItems {
-        if let o = item as? NSManagedObject {
-          context.delete(o)
-        }
-      }
-    }
-    
-    context.delete(tresorDocument)
-  }
-  
-  
-  public func createTresorDocument(tresor:Tresor, model: [String:Any], masterKey: TresorKey?) throws -> TresorDocument? {
-    var result : TresorDocument?
-    var payload : Data?
-    
-    do {
-      payload = try JSONSerialization.data(withJSONObject: model, options: [])
-    } catch {
-      celeturKitLogger.error("Error while serializing json object", error: error)
-    }
-    
-    if let payload = payload, let moc = self.tresorCoreDataManager?.mainManagedObjectContext,let currentDeviceKey = masterKey?.accessToken {
-      let newTresorDocument = try TresorDocument.createTresorDocument(context: moc, tresor: tresor)
-      
-      if let title = model["title"] as? String {
-        newTresorDocument.setMetaInfo(title: title, description: model["description"] as? String)
-      }
-      
-      for ud in tresor.userdevices! {
-        let userDevice = ud as! TresorUserDevice
-        let isUserDeviceCurrentDevice = self.isCurrentDevice(tresorUserDevice: userDevice)
-        
-        if let key = isUserDeviceCurrentDevice ? currentDeviceKey : userDevice.messagekey {
-          let status : TresorDocumentItemStatus = isUserDeviceCurrentDevice ? .encrypted : .shouldBeEncryptedByDevice
-          
-          if let item = try self.createTresorDocumentItem(tresorDocument: newTresorDocument,
-                                                          payload: payload,
-                                                          userDevice: userDevice,
-                                                          key: key,
-                                                          status: status) {
-            newTresorDocument.addToDocumentitems(item)
-            userDevice.addToDocumentitems(item)
-          }
-        }
-      }
+    if let moc = self.tresorCoreDataManager?.privateChildManagedObjectContext() {
+      let newTresorDocument = try TresorDocument(context: moc,
+                                                 masterKey: masterKey,
+                                                 tresor: tresor,
+                                                 model: model)
       
       self.saveChanges()
       
@@ -333,82 +220,30 @@ public class TresorModel {
     return result
   }
   
-  fileprivate func createTresorDocumentItem(tresorDocument:TresorDocument,
-                                       payload: Data,
-                                       userDevice: TresorUserDevice,
-                                       key: Data,
-                                       status: TresorDocumentItemStatus) throws -> TresorDocumentItem? {
-    var result : TresorDocumentItem?
-    
-    if let moc = self.tresorCoreDataManager?.mainManagedObjectContext {
-      let newTresorDocumentItem = TresorDocumentItem.createPendingTresorDocumentItem(context:moc,
-                                                                                     tresorDocument: tresorDocument,
-                                                                                     userDevice:userDevice)
-      
-      tresorDocument.addToDocumentitems(newTresorDocumentItem)
-      userDevice.addToDocumentitems(newTresorDocumentItem)
-      
-      do {
-        let operation = AES256EncryptionOperation(key:key, inputData: payload, iv:nil)
-        try operation.createRandomIV()
-        
-        operation.completionBlock = {
-          DispatchQueue.main.async {
-            newTresorDocumentItem.type = "main"
-            newTresorDocumentItem.mimetype = "application/json"
-            newTresorDocumentItem.status = status.rawValue
-            newTresorDocumentItem.payload = operation.outputData
-            newTresorDocumentItem.nonce = operation.iv
-            
-            self.saveChanges()
-            
-            celeturKitLogger.debug("key:\(key) encryptedText:\(String(describing: operation.outputData?.hexEncodedString()))")
-          }
-        }
-        
-        self.cipherQueue.addOperation(operation)
-        
-        result = newTresorDocumentItem
-      } catch {
-        celeturKitLogger.error("Error while saving tresordocumentitem", error: error)
-      }
-    }
-    
-    return result
-  }
   
-  public func saveDocumentItemModelData(tresorDocumentItem: TresorDocumentItem, model : [String:Any], masterKey: TresorKey) {
-    var payload : Data?
-    
-    do {
-      payload = try JSONSerialization.data(withJSONObject: model, options: [])
-    } catch {
-      celeturKitLogger.error("Error while serializing json object", error: error)
-    }
-    
-    if let payload = payload, let tresorDocument = tresorDocumentItem.document, let moc = self.tresorCoreDataManager?.privateChildManagedObjectContext() {
-      moc.perform {
-        if let title = model["title"] as? String {
-          tresorDocument.setMetaInfo(title: title, description: model["description"] as? String)
-        }
+  public func saveDocumentItemModelData(tresorDocumentItem: TresorDocumentItem, model : PayloadModelType, masterKey: TresorKey) {
+    if let payload = PayloadModel.jsonData(model: model),
+      let tresorDocument = tresorDocumentItem.document,
+      let moc = self.tresorCoreDataManager?.privateChildManagedObjectContext() {
       
+      moc.perform {
         for case let it as TresorDocumentItem in (tresorDocumentItem.document?.documentitems)! {
           celeturKitLogger.debug("saveDocumentItemModelData(): docItem:\(it.id ?? "-")")
           if let ud = it.userdevice {
-            let isUserDeviceCurrentDevice = self.isCurrentDevice(tresorUserDevice: ud)
+            let isUserDeviceCurrentDevice = currentDeviceInfo?.isCurrentDevice(tresorUserDevice: ud) ?? false
             
             celeturKitLogger.debug("  saveDocumentItemModelData(): userdevice:\(ud.id ?? "-") isUserDeviceCurrentDevice:\(isUserDeviceCurrentDevice)")
             
             if let key = isUserDeviceCurrentDevice ? masterKey.accessToken : ud.messagekey {
               let status : TresorDocumentItemStatus = isUserDeviceCurrentDevice ? .encrypted : .shouldBeEncryptedByDevice
               
-              self.encryptAndSaveTresorDocumentItem(tempManagedContext: moc,
-                                                    key: key,
-                                                    tresorDocumentItem: it,
-                                                    payload: payload,
-                                                    status: status)
+              tresorDocumentItem.encryptPayload(context: moc, key: key, payload: payload, status: status)
             }
           }
+        }
+        
+        if let title = model["title"] as? String {
+          tresorDocument.setMetaInfo(title: title, description: model["description"] as? String)
         }
         
         self.saveChanges()
@@ -416,61 +251,62 @@ public class TresorModel {
     }
   }
   
-  fileprivate func encryptAndSaveTresorDocumentItem(tempManagedContext: NSManagedObjectContext,
-                                                    key:Data,
-                                                    tresorDocumentItem:TresorDocumentItem,
-                                                    payload: Data,
-                                                    status: TresorDocumentItemStatus) {
+  
+  public func fetchChanges(in databaseScope: CKDatabaseScope, completion: @escaping () -> Void) {
+    self.tresorCoreDataManager?.cloudKitManager?.fetchChanges(in: databaseScope, completion: completion)
+  }
+  
+  
+  public func createScratchpadTresorObject(tresor: Tresor?) -> TempTresorObject? {
+    return TempTresorObject(tresorModel: self, tresor: tresor)
+  }
+  
+  
+  public func encryptAllDocumentItemsThatShouldBeEncryptedByDevice(tresor: Tresor, masterKey: TresorKey) {
+    guard let documents = tresor.documents else { return }
     
-    do {
-      let tdi = tempManagedContext.object(with: tresorDocumentItem.objectID) as! TresorDocumentItem
-      
-      tdi.status = TresorDocumentItemStatus.pending.rawValue
-      try tempManagedContext.save()
-      
-      let operation = AES256EncryptionOperation(key:key, inputData: payload, iv:nil)
-      try operation.createRandomIV()
-      
-      operation.start()
-      
-      if operation.isFinished {
-        celeturKitLogger.debug("encryptAndSaveTresorDocumentItem() item:\(tresorDocumentItem.id ?? "-") status:\(status)")
-        
-        tdi.status = status.rawValue
-        tdi.type = "main"
-        tdi.mimetype = "application/json"
-        tdi.payload = operation.outputData
-        tdi.nonce = operation.iv
-      } else {
-        tdi.status = TresorDocumentItemStatus.failed.rawValue
+    celeturKitLogger.debug("encryptAllDocumentItemsThatShouldBeEncryptedByDevice()")
+    
+    for case let tresorDocument as TresorDocument in documents {
+      if let items = tresorDocument.documentitems {
+        for case let item as TresorDocumentItem in items where item.itemStatus == .shouldBeEncryptedByDevice {
+          item.encryptMessagePayload(tresorModel: self, masterKey: masterKey)
+        }
       }
-      tdi.changets = Date()
-      
-      try tempManagedContext.save()
-    } catch {
-      celeturKitLogger.error("Error while encryption payload from edit dialogue",error:error)
     }
   }
   
-  public func decryptTresorDocumentItemPayload(tresorDocumentItem:TresorDocumentItem,
-                                               masterKey:TresorKey,
-                                               completion: ((SymmetricCipherOperation?)->Void)?) {
-    if let payload = tresorDocumentItem.payload, let nonce = tresorDocumentItem.nonce {
-      let operation = AES256DecryptionOperation(key:masterKey.accessToken!,inputData: payload, iv:nonce)
+  // MARK: - Delete Entities
+  
+  public func deleteTresor(tresor: Tresor) {
+    if let context = tresor.managedObjectContext {
+      tresor.deleteTresor()
       
-      if let c = completion {
-        operation.completionBlock = {
-          c(operation)
-        }
-      }
-      
-      self.cipherQueue.addOperation(operation)
-    } else {
-      if let c = completion {
-        c(nil)
+      do {
+        try context.save()
+        
+        self.saveChanges()
+      } catch {
+        celeturKitLogger.error("Error while deleting tresor object",error:error)
       }
     }
   }
+  
+  public func deleteTresorUserDevice(userDevice:TresorUserDevice) {
+    if let moc = userDevice.managedObjectContext {
+      moc.delete(userDevice)
+      
+      do {
+        try moc.save()
+        
+        self.saveChanges()
+      } catch {
+        celeturKitLogger.error("Error while deleting TresorUserDevice", error: error)
+      }
+    }
+  }
+  
+  // MARK: - create FetchedResultsController
   
   public func createAndFetchTresorFetchedResultsController() throws -> NSFetchedResultsController<Tresor>? {
     var result : NSFetchedResultsController<Tresor>?
@@ -503,9 +339,7 @@ public class TresorModel {
     return result
   }
   
-  public func fetchChanges(in databaseScope: CKDatabaseScope, completion: @escaping () -> Void) {
-    self.tresorCoreDataManager?.cloudKitManager?.fetchChanges(in: databaseScope, completion: completion)
-  }
+  // MARK: - Reset Data
   
   public func resetChangeTokens() {
     self.tresorCoreDataManager?.cloudKitManager?.ckPersistenceState.flushChangedIds()
@@ -541,106 +375,4 @@ public class TresorModel {
     self.removeAllCoreData()
   }
   
-  
-  public struct TempTresorObject {
-    public var tempManagedObjectContext : NSManagedObjectContext
-    public var tempTresor : Tresor
-    
-    init(context:NSManagedObjectContext, tresor:Tresor) {
-      self.tempManagedObjectContext = context
-      self.tempTresor = tresor
-    }
-  }
-  
-  public func createScratchpadTresorObject(tresor: Tresor?) -> TempTresorObject? {
-    var result : TempTresorObject?
-    
-    if let cdm = self.tresorCoreDataManager {
-      do {
-        let scratchpadContext = cdm.privateChildManagedObjectContext()
-        var tempTresor : Tresor?
-        
-        if let t = tresor {
-          tempTresor = scratchpadContext.object(with: t.objectID) as? Tresor
-        } else {
-          tempTresor = try Tresor.createTempTresor(context: scratchpadContext)
-        }
-        
-        result = TempTresorObject(context:scratchpadContext, tresor:tempTresor!)
-      } catch {
-        celeturKitLogger.error("Error creating temp tresor object",error:error)
-      }
-    }
-    
-    return result
-  }
-  
-  
-  
-  public func deleteTresorUserDevice(userDevice:TresorUserDevice) {
-    if let moc = userDevice.managedObjectContext {
-      moc.delete(userDevice)
-      
-      do {
-        try moc.save()
-        
-        self.saveChanges()
-      } catch {
-        celeturKitLogger.error("Error while deleting TresorUserDevice", error: error)
-      }
-    }
-  }
-  
-  public func encryptAllDocumentItemsThatShouldBeEncryptedByDevice(tresor: Tresor, masterKey: TresorKey) {
-    guard let documents = tresor.documents else { return }
-    
-    celeturKitLogger.debug("encryptAllDocumentItemsThatShouldBeEncryptedByDevice()")
-    
-    for case let tresorDocument as TresorDocument in documents {
-      if let items = tresorDocument.documentitems {
-        for case let item as TresorDocumentItem in items {
-          if item.itemStatus == .shouldBeEncryptedByDevice,
-            let ud = item.userdevice,
-            let payload = item.payload,
-            let nonce = item.nonce,
-            let messageKey = ud.messagekey {
-            if self.isCurrentDevice(tresorUserDevice: ud) {
-              celeturKitLogger.debug("item \(item.id ?? "-") should be encrypted by device...")
-              
-              let operation = AES256DecryptionOperation(key: messageKey,inputData: payload, iv:nonce)
-              
-              operation.completionBlock = {
-                do {
-                  if let d = try operation.jsonOutputObject() {
-                    celeturKitLogger.debug("payload:\(d)")
-                    
-                    let encryptOperation = AES256EncryptionOperation(key:masterKey.accessToken! ,inputData: operation.outputData!, iv:nil)
-                    try encryptOperation.createRandomIV()
-                    
-                    encryptOperation.completionBlock = {
-                      item.managedObjectContext?.perform {
-                        item.type = "main"
-                        item.mimetype = "application/json"
-                        item.status = TresorDocumentItemStatus.encrypted.rawValue
-                        item.payload = encryptOperation.outputData
-                        item.nonce = encryptOperation.iv
-                        
-                        self.saveChanges()
-                      }
-                    }
-                    
-                    self.cipherQueue.addOperation(encryptOperation)
-                  }
-                } catch {
-                  celeturKitLogger.error("error decoding payload", error: error)
-                }
-              }
-              
-              self.cipherQueue.addOperation(operation)
-            }
-          }
-        }
-      }
-    }
-  }
 }

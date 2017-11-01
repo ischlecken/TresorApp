@@ -24,7 +24,7 @@ class TresorDocumentItemViewController: UITableViewController {
   @IBOutlet weak var createtsLabel: UILabel!
   
   let dateFormatter = DateFormatter()
-  var model = [String:Any]()
+  var model = PayloadModelType()
   var modelIndex = [String]()
   
   override func viewDidLoad() {
@@ -52,6 +52,11 @@ class TresorDocumentItemViewController: UITableViewController {
   
   func configureView() {
     if let item = tresorDocumentItem {
+      
+      if let metaInfo = item.document?.getMetaInfo() {
+        self.navigationItem.title = metaInfo["title"]
+      }
+      
       if let label = createtsLabel {
         
         label.text = self.dateFormatter.string(from: item.createts!)
@@ -72,7 +77,7 @@ class TresorDocumentItemViewController: UITableViewController {
           
           self.activityView.startAnimating()
         
-          self.tresorAppState!.tresorModel.decryptTresorDocumentItemPayload(tresorDocumentItem: item, masterKey:key!) {
+          item.decryptPayload(masterKey:key!) {
             (decryptOperation:SymmetricCipherOperation?) in
             
             guard let deop=decryptOperation else {
@@ -85,17 +90,13 @@ class TresorDocumentItemViewController: UITableViewController {
               return
             }
             
-            do {
-              if let d = try deop.jsonOutputObject() {
-                self.model = d
-                self.modelIndex = Array(self.model.keys)
-                
-                self.setDataLabel(data: deop.outputData!, error: nil)
-              } else {
-                self.setDataLabel(data: nil, error: nil)
-              }
-            } catch {
-              self.setDataLabel(data: nil, error: error)
+            if let d = PayloadModel.model(jsonData: deop.outputData!) {
+              self.model = d
+              self.modelIndex = Array(self.model.keys)
+              
+              self.setDataLabel(data: deop.outputData!, error: nil)
+            } else {
+              self.setDataLabel(data: nil, error: nil)
             }
           }
         }
@@ -127,6 +128,8 @@ class TresorDocumentItemViewController: UITableViewController {
         controller.tresorAppState = self.tresorAppState
         controller.model = self.model
         controller.modelIndex = self.modelIndex
+        
+        controller.navigationItem.title = self.model["title"] as? String
         
       default:
         break

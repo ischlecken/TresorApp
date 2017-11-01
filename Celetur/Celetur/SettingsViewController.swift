@@ -20,7 +20,7 @@ class SettingsViewController: UITableViewController {
   }
   
   override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return section==0 ? 1 : 5
+    return section==0 ? 1 : 4
   }
   
   
@@ -42,11 +42,6 @@ class SettingsViewController: UITableViewController {
   @IBAction
   func resetAllAction(_ sender: Any) {
     self.tresorAppState?.tresorModel.resetAll()
-  }
-  
-  @IBAction
-  func createUserDevicesAction(_ sender: Any) {
-    self.tresorAppState?.tresorModel.createDummyUserDevices()
   }
   
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -103,12 +98,6 @@ class SettingsViewController: UITableViewController {
           b.addTarget(self, action:#selector(self.resetAllAction(_:)), for: .touchUpInside)
         }
         
-      case 4:
-        
-        if let b = cell.contentView.viewWithTag(42) as? UIButton {
-          b.setTitle("Create Dummy User Devices", for: .normal)
-          b.addTarget(self, action:#selector(self.createUserDevicesAction(_:)), for: .touchUpInside)
-        }
         
       default:
         break

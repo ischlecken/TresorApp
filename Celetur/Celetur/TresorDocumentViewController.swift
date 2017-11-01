@@ -147,23 +147,30 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   
   override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
     if editingStyle == .delete {
-      if let context = self.tresorAppState?.tresorModel.tresorCoreDataManager?.mainManagedObjectContext {
-        
-        if indexPath.row == 0 {
-          if let tresorDocument = fetchedResultsController.object(at: indexPath).document {
-            self.tresorAppState?.tresorModel.deleteTresorDocument(context: context, tresorDocument: tresorDocument)
-          }
-        } else {
-          let newIndexPath = IndexPath(row: indexPath.row-1, section: indexPath.section)
-          let tresorDocumentItem = fetchedResultsController.object(at: newIndexPath)
+      var context : NSManagedObjectContext?
+      
+      if indexPath.row == 0 {
+        if let tresorDocument = fetchedResultsController.object(at: indexPath).document {
+          context = tresorDocument.managedObjectContext
           
-          if tresorDocumentItem.document?.documentitems?.count == 1 {
-            self.tresorAppState?.tresorModel.deleteTresorDocument(context: context, tresorDocument: tresorDocumentItem.document!)
+          tresorDocument.deleteTresorDocument()
+        }
+      } else {
+        let newIndexPath = IndexPath(row: indexPath.row-1, section: indexPath.section)
+        let tresorDocumentItem = fetchedResultsController.object(at: newIndexPath)
+        
+        if let tresorDoc = tresorDocumentItem.document {
+          context = tresorDoc.managedObjectContext
+          
+          if tresorDoc.documentitems?.count == 1 {
+            tresorDoc.deleteTresorDocument()
           } else {
-            context.delete(tresorDocumentItem)
+            context?.delete(tresorDocumentItem)
           }
         }
-        
+      }
+      
+      if let context = context {
         do {
           try context.save()
           
@@ -172,6 +179,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
           celeturLogger.error("Error while deleting tresor object",error:error)
         }
       }
+      
     }
   }
   
@@ -204,7 +212,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
       cell.detailTextLabel!.text = "Device:"+(tdiUserDevice.devicename ?? "-") + " " + (tdiUserDevice.id ?? "-")
       cell.detailTextLabel!.textColor = tresorDocumentItem.itemStatusColor
       
-      if self.tresorAppState?.tresorModel.isCurrentDevice(tresorUserDevice: tdiUserDevice) ?? false {
+      if currentDeviceInfo?.isCurrentDevice(tresorUserDevice: tdiUserDevice) ?? false {
         cell.textLabel?.font = UIFont.boldSystemFont(ofSize: UIFont.systemFontSize)
       }
     }

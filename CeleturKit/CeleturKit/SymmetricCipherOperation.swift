@@ -6,7 +6,10 @@
 import Foundation
 import CKCommonCrypto
 
+
 public class SymmetricCipherOperation : Operation {
+  
+  public static let cipherQueue = OperationQueue()
   
   public let key: Data
   public let inputData: Data
@@ -86,21 +89,6 @@ public class SymmetricCipherOperation : Operation {
     }
   }
   
-  public func jsonOutputObject() throws -> [String:Any]? {
-    var result : [String:Any]?
-    
-    if let d = self.outputData {
-      do {
-        result = try JSONSerialization.jsonObject(with: d, options: []) as? [String:Any]
-      } catch {
-        celeturKitLogger.error("Error while decoding json",error:error)
-        
-        throw error
-      }
-    }
-    
-    return result
-  }
 }
 
 public class AES256EncryptionOperation : SymmetricCipherOperation {

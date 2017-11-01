@@ -157,7 +157,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     
     let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { action, index in
       if let tresor = self.fetchedResultsController?.object(at: index) {
-        self.tresorAppState?.tresorModel.deleteTresorAndSave(tresor: tresor)
+        self.tresorAppState?.tresorModel.deleteTresor(tresor: tresor)
       }
     }
     

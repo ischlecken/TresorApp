@@ -432,20 +432,32 @@
                             <rect key="frame" x="0.0" y="0.0" width="414" height="65"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YQa-zI-kqj">
-                                    <rect key="frame" x="54" y="9" width="352" height="46"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YQa-zI-kqj">
+                                    <rect key="frame" x="56" y="9" width="350" height="46"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="46" id="rED-jS-V4I"/>
+                                    </constraints>
                                     <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                     <nil key="textColor"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="9LQ-1B-Zsw">
-                                    <rect key="frame" x="26" y="22" width="20" height="20"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="9LQ-1B-Zsw">
+                                    <rect key="frame" x="8" y="12" width="40" height="40"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="40" id="SgH-df-nMb"/>
+                                        <constraint firstAttribute="width" constant="40" id="gwg-nX-zLA"/>
+                                    </constraints>
                                     <color key="color" red="1" green="0.5" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 </activityIndicatorView>
                             </subviews>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <constraints>
+                                <constraint firstItem="YQa-zI-kqj" firstAttribute="centerY" secondItem="9LQ-1B-Zsw" secondAttribute="centerY" id="dRQ-dG-RU3"/>
+                                <constraint firstItem="YQa-zI-kqj" firstAttribute="leading" secondItem="9LQ-1B-Zsw" secondAttribute="trailing" constant="8" id="uA7-V4-o0F"/>
+                                <constraint firstAttribute="trailing" secondItem="YQa-zI-kqj" secondAttribute="trailing" constant="8" id="xei-bJ-qBb"/>
+                                <constraint firstItem="9LQ-1B-Zsw" firstAttribute="centerY" secondItem="Ykv-hj-bxA" secondAttribute="centerY" id="y8Y-ch-cxO"/>
+                                <constraint firstItem="9LQ-1B-Zsw" firstAttribute="leading" secondItem="Ykv-hj-bxA" secondAttribute="leading" constant="8" id="yHM-yS-Ryg"/>
+                            </constraints>
                         </view>
                         <view key="tableFooterView" contentMode="scaleToFill" id="MXT-jn-zTj">
                             <rect key="frame" x="0.0" y="182.33333333333334" width="414" height="39"/>

@@ -66,7 +66,7 @@ class UserDeviceViewController: UITableViewController, NSFetchedResultsControlle
     cell.textLabel?.textColor = UIColor.darkText
     cell.detailTextLabel!.text = userdevice.id
     
-    if self.tresorAppState?.tresorModel.isCurrentDevice(tresorUserDevice:userdevice) ?? false {
+    if currentDeviceInfo?.isCurrentDevice(tresorUserDevice:userdevice) ?? false {
       cell.textLabel?.font = UIFont.boldSystemFont(ofSize: UIFont.systemFontSize)
       cell.textLabel?.textColor = UIColor.blue
       cell.detailTextLabel?.font = UIFont.boldSystemFont(ofSize: UIFont.systemFontSize)

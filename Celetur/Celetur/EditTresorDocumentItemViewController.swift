@@ -12,7 +12,7 @@ class EditTresorDocumentItemViewController: UITableViewController {
   var tresorAppState: TresorAppModel?
   
   let dateFormatter = DateFormatter()
-  var model = [String:Any]()
+  var model = PayloadModelType()
   var modelIndex = [String]()
   
   override func viewDidLoad() {
@@ -35,7 +35,7 @@ class EditTresorDocumentItemViewController: UITableViewController {
   }
   
   @IBAction func deleteFieldsAction(_ sender: Any) {
-    self.model = [String:Any]()
+    self.model = PayloadModelType()
     
     self.modelIndex = Array(self.model.keys)
     

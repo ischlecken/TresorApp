@@ -13,9 +13,10 @@ public enum TresorDocumentItemStatus : String {
 
 extension TresorDocumentItem {
 
-  class func createPendingTresorDocumentItem(context:NSManagedObjectContext,
+  class func createPendingTresorDocumentItem(context: NSManagedObjectContext,
                                              tresorDocument:TresorDocument,
                                              userDevice:TresorUserDevice) -> TresorDocumentItem {
+    
     let result = TresorDocumentItem(context: context)
     
     result.createts = Date()
@@ -24,6 +25,9 @@ extension TresorDocumentItem {
     result.status = TresorDocumentItemStatus.pending.rawValue
     result.document = tresorDocument
     result.userdevice = userDevice
+    
+    tresorDocument.addToDocumentitems(result)
+    userDevice.addToDocumentitems(result)
     
     return result
   }
@@ -89,7 +93,136 @@ extension TresorDocumentItem {
     }
   }
   
+  // MARK: - Crypto Operations
   
+  class func createTresorDocumentItem(context: NSManagedObjectContext,
+                                      tresorDocument:TresorDocument,
+                                      userDevice: TresorUserDevice,
+                                      key: Data,
+                                      payload: Data,
+                                      status: TresorDocumentItemStatus) throws -> TresorDocumentItem? {
+    
+    var result : TresorDocumentItem?
+    
+    if let tempTresorDocument = context.object(with: tresorDocument.objectID) as? TresorDocument,
+      let tempUserDevice = context.object(with: userDevice.objectID) as? TresorUserDevice {
+    
+      let tempTDI = TresorDocumentItem.createPendingTresorDocumentItem(context: context,
+                                                                       tresorDocument: tempTresorDocument,
+                                                                       userDevice: tempUserDevice)
+      
+      tempTDI.encryptPayload(context: context, key: key, payload: payload, status: status)
+      
+      result = tempTDI
+    }
+    
+    return result
+  }
+  
+  func encryptPayload(context: NSManagedObjectContext,
+                      key: Data,
+                      payload: Data,
+                      status: TresorDocumentItemStatus) {
+    
+    do {
+      let tdi = context.object(with: self.objectID) as! TresorDocumentItem
+      
+      tdi.status = TresorDocumentItemStatus.pending.rawValue
+      
+      context.perform {
+        do {
+          try context.save()
+        } catch {
+          celeturKitLogger.error("Error while saving pending tresor documentitem...",error:error)
+        }
+      }
+      
+      let operation = AES256EncryptionOperation(key:key, inputData: payload, iv:nil)
+      try operation.createRandomIV()
+      
+      operation.completionBlock = {
+        tdi.changets = Date()
+        tdi.type = "main"
+        tdi.mimetype = "application/json"
+        tdi.status = status.rawValue
+        tdi.payload = operation.outputData
+        tdi.nonce = operation.iv
+        
+        context.perform {
+          do {
+            try context.save()
+            
+            celeturKitLogger.debug("key:\(key) encryptedText:\(String(describing: operation.outputData?.hexEncodedString()))")
+          } catch {
+            celeturKitLogger.error("Error while saving tresor documentitem...",error:error)
+          }
+        }
+      }
+      
+      SymmetricCipherOperation.cipherQueue.addOperation(operation)
+    } catch {
+      celeturKitLogger.error("Error while encryption payload from edit dialogue",error:error)
+    }
+  }
+  
+  func encryptMessagePayload(tresorModel: TresorModel, masterKey:TresorKey) {
+    if let ud = self.userdevice,
+      let payload = self.payload,
+      let nonce = self.nonce,
+      let messageKey = ud.messagekey,
+      currentDeviceInfo?.isCurrentDevice(tresorUserDevice: ud) ?? false {
+      
+      celeturKitLogger.debug("item \(self.id ?? "-") should be encrypted by device...")
+      
+      let operation = AES256DecryptionOperation(key: messageKey,inputData: payload, iv:nonce)
+      operation.completionBlock = {
+        do {
+          if let d = PayloadModel.model(jsonData: payload) {
+            celeturKitLogger.debug("payload:\(d)")
+            
+            let encryptOperation = AES256EncryptionOperation(key:masterKey.accessToken! ,inputData: operation.outputData!, iv:nil)
+            try encryptOperation.createRandomIV()
+            
+            encryptOperation.completionBlock = {
+              self.managedObjectContext?.perform {
+                self.type = "main"
+                self.mimetype = "application/json"
+                self.status = TresorDocumentItemStatus.encrypted.rawValue
+                self.payload = encryptOperation.outputData
+                self.nonce = encryptOperation.iv
+                
+                tresorModel.saveChanges()
+              }
+            }
+            
+            SymmetricCipherOperation.cipherQueue.addOperation(encryptOperation)
+          }
+        } catch {
+          celeturKitLogger.error("error decoding payload", error: error)
+        }
+      }
+      
+      SymmetricCipherOperation.cipherQueue.addOperation(operation)
+    }
+  }
+  
+  public func decryptPayload(masterKey:TresorKey, completion: ((SymmetricCipherOperation?)->Void)?) {
+    if let payload = self.payload, let nonce = self.nonce {
+      let operation = AES256DecryptionOperation(key:masterKey.accessToken!, inputData: payload, iv:nonce)
+      
+      if let c = completion {
+        operation.completionBlock = {
+          c(operation)
+        }
+      }
+      
+      SymmetricCipherOperation.cipherQueue.addOperation(operation)
+    } else {
+      if let c = completion {
+        c(nil)
+      }
+    }
+  }
 }
 
 

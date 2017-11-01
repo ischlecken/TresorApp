@@ -5,33 +5,12 @@
 
 extension TresorUserDevice {
   
-  class func createUserDevice(context:NSManagedObjectContext, userName:String, deviceName:String) {
-    let newUserDevice = TresorUserDevice(context:context)
-    
-    newUserDevice.createts = Date()
-    newUserDevice.devicename = deviceName
-    newUserDevice.devicesystemname = "iPhone X"
-    newUserDevice.devicesystemversion = "10.0"
-    newUserDevice.deviceuitype = Int16(UIUserInterfaceIdiom.phone.rawValue)
-    
-    newUserDevice.id = String.uuid()
-    newUserDevice.apndevicetoken = String.uuid()
-    newUserDevice.username = userName
-    
-    do {
-      newUserDevice.messagekey = try Data(withRandomData:SymmetricCipherAlgorithm.aes_256.requiredKeySize())
-      newUserDevice.messageencryption = "aes256"
-    } catch {
-      celeturKitLogger.error("error create messagekey", error: error)
-    }
-  }
   
   class func createCurrentUserDevice(context:NSManagedObjectContext, deviceInfo:DeviceInfo) -> TresorUserDevice {
     let newUserDevice = TresorUserDevice(context:context)
     
     newUserDevice.createts = Date()
     newUserDevice.id = deviceInfo.id
-    
     
     do {
       newUserDevice.messagekey = try Data(withRandomData:SymmetricCipherAlgorithm.aes_256.requiredKeySize())

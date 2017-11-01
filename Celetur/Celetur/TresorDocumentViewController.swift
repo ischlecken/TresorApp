@@ -116,9 +116,19 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
     if let sections = fetchedResultsController.sections {
       let currentSection = sections[section]
-      return currentSection.name
+      return "DocId:\(currentSection.name)"
     }
     
+    return nil
+  }
+  
+  override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+    let tresorDocumentItem = fetchedResultsController.object(at: IndexPath(row: 0, section: section) )
+    
+    if let tresorDocument = tresorDocumentItem.document {
+      return "changed at \(self.dateFormatter.string(from: tresorDocument.modifyts))"
+    }
+  
     return nil
   }
   
@@ -171,13 +181,9 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
       }
       
       if let context = context {
-        do {
-          try context.save()
-          
+        context.performSave(contextInfo: "deleting tresor object", completion: {
           self.tresorAppState?.tresorModel.saveChanges()
-        } catch {
-          celeturLogger.error("Error while deleting tresor object",error:error)
-        }
+        })
       }
       
     }
@@ -185,20 +191,18 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   
   func configureCellForTresorDocument(_ cell: UITableViewCell, withTresorDocument tresorDocument: TresorDocument?) {
     cell.textLabel!.text = "Document"
+    cell.detailTextLabel!.text = "-"
     cell.indentationLevel = 0
     cell.textLabel?.textColor = UIColor.black
     
     if let doc = tresorDocument {
       if let docMetaInfo = doc.getMetaInfo(), let title = docMetaInfo["title"] {
         cell.textLabel?.text = title
+        
+        if let description = docMetaInfo["description"] {
+          cell.detailTextLabel?.text = description
+        }
       }
-      
-      var formatedCreatets = "-"
-      if let createts = tresorDocument?.createts {
-        formatedCreatets = self.dateFormatter.string(from: createts)
-      }
-      
-      cell.detailTextLabel!.text = "created at " + formatedCreatets
     }
   }
   

@@ -5,6 +5,18 @@
 
 extension TresorDocument {
   
+  public var modifyts: Date {
+    get {
+      var result = self.createts!
+      
+      if let c = self.changets {
+        result = c
+      }
+      
+      return result
+    }
+  }
+  
   convenience init(context:NSManagedObjectContext, tresor:Tresor) throws {
     self.init(context: context)
     

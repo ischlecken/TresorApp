@@ -15,6 +15,7 @@
 		855587C51FA9363A003E43E6 /* PayloadModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 855587C41FA9363A003E43E6 /* PayloadModel.swift */; };
 		855587C71FA93E56003E43E6 /* TempTresorObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 855587C61FA93E56003E43E6 /* TempTresorObject.swift */; };
 		85797EB01FA4919800CB9D87 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85797EAF1FA4919800CB9D87 /* Reachability.swift */; };
+		8597390F1FAA2FDA003196B2 /* NSManagedObjectContext+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8597390E1FAA2FDA003196B2 /* NSManagedObjectContext+Extension.swift */; };
 		85A6A1051F934ABE00EBDD48 /* CeleturKitMetaInfo.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 85A6A1031F934ABE00EBDD48 /* CeleturKitMetaInfo.xcdatamodeld */; };
 		85A6A1071F936BBB00EBDD48 /* URL+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A6A1061F936BBB00EBDD48 /* URL+extension.swift */; };
 		85A6A1091F936D4D00EBDD48 /* Bundle+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A6A1081F936D4D00EBDD48 /* Bundle+extension.swift */; };
@@ -59,6 +60,7 @@
 		855587C41FA9363A003E43E6 /* PayloadModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayloadModel.swift; sourceTree = "<group>"; };
 		855587C61FA93E56003E43E6 /* TempTresorObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TempTresorObject.swift; sourceTree = "<group>"; };
 		85797EAF1FA4919800CB9D87 /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
+		8597390E1FAA2FDA003196B2 /* NSManagedObjectContext+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSManagedObjectContext+Extension.swift"; sourceTree = "<group>"; };
 		85A6A1041F934ABE00EBDD48 /* CeleturKitMetaInfo.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CeleturKitMetaInfo.xcdatamodel; sourceTree = "<group>"; };
 		85A6A1061F936BBB00EBDD48 /* URL+extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+extension.swift"; sourceTree = "<group>"; };
 		85A6A1081F936D4D00EBDD48 /* Bundle+extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+extension.swift"; sourceTree = "<group>"; };
@@ -131,6 +133,7 @@
 				85BADF941F6E616B00DAC130 /* TresorDocument+Extension.swift */,
 				85BF77021F6DD66700FA9460 /* TresorDocumentItem+Extension.swift */,
 				855587C61FA93E56003E43E6 /* TempTresorObject.swift */,
+				8597390E1FAA2FDA003196B2 /* NSManagedObjectContext+Extension.swift */,
 			);
 			name = DataManagement;
 			sourceTree = "<group>";
@@ -312,6 +315,7 @@
 				85C5C58C1F370E1F00DE7EBC /* Keychain.swift in Sources */,
 				855462FA1F3F449A00C001F6 /* String+Extension.swift in Sources */,
 				85F5AC4A1F7656A7003B14F9 /* NSManagedObject+Extension.swift in Sources */,
+				8597390F1FAA2FDA003196B2 /* NSManagedObjectContext+Extension.swift in Sources */,
 				85BF77071F6DD8F700FA9460 /* TresorUserDevice+Extension.swift in Sources */,
 				85E312741F6D408300EB8AD8 /* CoreDataManager.swift in Sources */,
 				85BADF931F6E5F3200DAC130 /* Tresor+Extension.swift in Sources */,

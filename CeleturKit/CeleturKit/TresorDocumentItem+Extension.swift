@@ -128,14 +128,7 @@ extension TresorDocumentItem {
       let tdi = context.object(with: self.objectID) as! TresorDocumentItem
       
       tdi.status = TresorDocumentItemStatus.pending.rawValue
-      
-      context.perform {
-        do {
-          try context.save()
-        } catch {
-          celeturKitLogger.error("Error while saving pending tresor documentitem...",error:error)
-        }
-      }
+      context.performSave(contextInfo: "pending tresor documentitem")
       
       let operation = AES256EncryptionOperation(key:key, inputData: payload, iv:nil)
       try operation.createRandomIV()
@@ -148,15 +141,7 @@ extension TresorDocumentItem {
         tdi.payload = operation.outputData
         tdi.nonce = operation.iv
         
-        context.perform {
-          do {
-            try context.save()
-            
-            celeturKitLogger.debug("key:\(key) encryptedText:\(String(describing: operation.outputData?.hexEncodedString()))")
-          } catch {
-            celeturKitLogger.error("Error while saving tresor documentitem...",error:error)
-          }
-        }
+        context.performSave(contextInfo: "tresor documentitem")
       }
       
       SymmetricCipherOperation.cipherQueue.addOperation(operation)

@@ -282,13 +282,9 @@ public class TresorModel {
     if let context = tresor.managedObjectContext {
       tresor.deleteTresor()
       
-      do {
-        try context.save()
-        
+      context.performSave(contextInfo: "deleting tresor object", completion: {
         self.saveChanges()
-      } catch {
-        celeturKitLogger.error("Error while deleting tresor object",error:error)
-      }
+      })
     }
   }
   
@@ -296,13 +292,9 @@ public class TresorModel {
     if let moc = userDevice.managedObjectContext {
       moc.delete(userDevice)
       
-      do {
-        try moc.save()
-        
+      moc.performSave(contextInfo: "deleting tresorUserDevice object", completion: {
         self.saveChanges()
-      } catch {
-        celeturKitLogger.error("Error while deleting TresorUserDevice", error: error)
-      }
+      })
     }
   }
   

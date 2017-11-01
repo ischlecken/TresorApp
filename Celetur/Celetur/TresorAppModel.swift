@@ -73,13 +73,13 @@ class TresorAppModel {
     switch reachability.connection {
     case .wifi:
       celeturLogger.debug("Reachable via WiFi")
-      self.appDelegate?.setTitle(title: "Celetur")
+      self.appDelegate?.onOnline()
     case .cellular:
       celeturLogger.debug("Reachable via Cellular")
-      self.appDelegate?.setTitle(title: "Celetur")
+      self.appDelegate?.onOnline()
     case .none:
       celeturLogger.debug("Network not reachable")
-      self.appDelegate?.setTitle(title: "Celetur (Offline)")
+      self.appDelegate?.onOffline()
     }
   }
   

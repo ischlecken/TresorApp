@@ -41,15 +41,9 @@ class EditTresorViewController: UITableViewController {
     }
     
     if let moc = self.tresor?.tempManagedObjectContext {
-      moc.perform {
-        do {
-          try moc.save()
-          
-          self.tresorAppState?.tresorModel.saveChanges()
-        } catch {
-          celeturLogger.error("Error while saving tresor object",error:error)
-        }
-      }
+      moc.performSave(contextInfo: "tresor object", completion: {
+        self.tresorAppState?.tresorModel.saveChanges()
+      })
     }
     
   }

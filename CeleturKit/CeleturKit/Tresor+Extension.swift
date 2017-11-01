@@ -5,6 +5,18 @@
 
 public extension Tresor {
   
+  public var modifyts: Date {
+    get {
+      var result = self.createts!
+      
+      if let c = self.changets {
+        result = c
+      }
+      
+      return result
+    }
+  }
+  
   public class func createTempTresor(context: NSManagedObjectContext) throws -> Tresor {
     let newTresor = Tresor(context: context)
     newTresor.createts = Date()

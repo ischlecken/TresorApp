@@ -171,17 +171,9 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   }
   
   func configureCell(_ cell: TresorTableViewCell, withTresor tresor: Tresor) {
-    
-    if let t = tresor.changets {
-      cell.createdLabel!.text = self.dateFormatter.string(from: t)
-      
-    } else {
-      cell.createdLabel!.text = self.dateFormatter.string(from: tresor.createts!)
-    }
-    
+    cell.createdLabel!.text = self.dateFormatter.string(from: tresor.modifyts)
     cell.nameLabel!.text = tresor.name
     cell.descriptionLabel!.text = tresor.tresordescription
-    
   }
   
   // MARK: - Fetched results controller

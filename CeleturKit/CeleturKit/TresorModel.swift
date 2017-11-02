@@ -203,50 +203,54 @@ public class TresorModel {
   }
   
   
-  public func createTresorDocument(tresor:Tresor, model: PayloadModelType, masterKey: TresorKey?) throws -> TresorDocument? {
-    var result  : TresorDocument?
+  public func createTresorDocument(context: NSManagedObjectContext,
+                                   tresor:Tresor,
+                                   model: PayloadModelType,
+                                   masterKey: TresorKey?,
+                                   completion: @escaping (TresorDocument?,Error?)->Void) throws {
     
-    if let moc = self.tresorCoreDataManager?.privateChildManagedObjectContext() {
-      let newTresorDocument = try TresorDocument(context: moc,
-                                                 masterKey: masterKey,
-                                                 tresor: tresor,
-                                                 model: model) {
-        self.saveChanges()
-      }
-      
-      result = newTresorDocument
+    let _ = try TresorDocument(context: context, masterKey: masterKey, tresor: tresor, model: model) { tresorDocument,error in
+      completion(tresorDocument,error)
     }
     
-    return result
   }
   
   
-  public func saveDocumentItemModelData(tresorDocumentItem: TresorDocumentItem, model : PayloadModelType, masterKey: TresorKey) {
+  public func saveDocumentItemModelData(context:NSManagedObjectContext,
+                                        tresorDocumentItem: TresorDocumentItem,
+                                        model : PayloadModelType,
+                                        masterKey: TresorKey,
+                                        completion: @escaping (TresorDocument?, Error?)->Void) {
+    
     if let payload = PayloadModel.jsonData(model: model),
       let tresorDocument = tresorDocumentItem.document,
-      let moc = self.tresorCoreDataManager?.privateChildManagedObjectContext() {
+      let tempTresorDocument = context.object(with: tresorDocument.objectID) as? TresorDocument,
+      let tempTresorDocumentItem = context.object(with: tresorDocumentItem.objectID) as? TresorDocumentItem {
       
-      moc.perform {
-        for case let it as TresorDocumentItem in (tresorDocumentItem.document?.documentitems)! {
-          celeturKitLogger.debug("saveDocumentItemModelData(): docItem:\(it.id ?? "-")")
-          if let ud = it.userdevice {
-            let isUserDeviceCurrentDevice = currentDeviceInfo?.isCurrentDevice(tresorUserDevice: ud) ?? false
+      tempTresorDocument.setMetaInfo(model:model)
+      
+      let encryptionDispatchGroup  = DispatchGroup()
+      for case let it as TresorDocumentItem in (tempTresorDocument.documentitems)! {
+        if let ud = it.userdevice {
+          let isUserDeviceCurrentDevice = currentDeviceInfo?.isCurrentDevice(tresorUserDevice: ud) ?? false
+          
+          celeturKitLogger.debug("  docItem:\(it.id ?? "-") userdevice:\(ud.id ?? "-") isUserDeviceCurrentDevice:\(isUserDeviceCurrentDevice)")
+          
+          if let key = isUserDeviceCurrentDevice ? masterKey.accessToken : ud.messagekey {
+            let status : TresorDocumentItemStatus = isUserDeviceCurrentDevice ? .encrypted : .shouldBeEncryptedByDevice
             
-            celeturKitLogger.debug("  saveDocumentItemModelData(): userdevice:\(ud.id ?? "-") isUserDeviceCurrentDevice:\(isUserDeviceCurrentDevice)")
-            
-            if let key = isUserDeviceCurrentDevice ? masterKey.accessToken : ud.messagekey {
-              let status : TresorDocumentItemStatus = isUserDeviceCurrentDevice ? .encrypted : .shouldBeEncryptedByDevice
-              
-              tresorDocumentItem.encryptPayload(key: key, payload: payload, status: status) {
-                self.saveChanges()
-              }
+            encryptionDispatchGroup.enter()
+            tempTresorDocumentItem.encryptPayload(key: key, payload: payload, status: status) {_,_ in
+              encryptionDispatchGroup.leave()
             }
           }
         }
+      }
+      
+      encryptionDispatchGroup.notify(queue: DispatchQueue.main) {
+        celeturKitLogger.debug("saveDocumentItemModelData(): encryption completed")
         
-        if let title = model["title"] as? String {
-          tresorDocument.setMetaInfo(title: title, description: model["description"] as? String)
-        }
+        completion(tempTresorDocument, nil)
       }
     }
   }
@@ -263,17 +267,33 @@ public class TresorModel {
   
   
   public func encryptAllDocumentItemsThatShouldBeEncryptedByDevice(tresor: Tresor, masterKey: TresorKey) {
-    guard let documents = tresor.documents else { return }
+    guard let documents = tresor.documents,
+      let context = self.tresorCoreDataManager?.privateChildManagedObjectContext()
+      else { return }
     
     celeturKitLogger.debug("encryptAllDocumentItemsThatShouldBeEncryptedByDevice()")
+    
+    let encryptionDispatchGroup = DispatchGroup()
     
     for case let tresorDocument as TresorDocument in documents {
       if let items = tresorDocument.documentitems {
         for case let item as TresorDocumentItem in items where item.itemStatus == .shouldBeEncryptedByDevice {
-          item.encryptMessagePayload(masterKey: masterKey) {
-            self.saveChanges()
+          
+          if let tempItem = context.object(with: item.objectID) as? TresorDocumentItem {
+    
+            encryptionDispatchGroup.enter()
+            tempItem.encryptMessagePayload(masterKey: masterKey) {_,_ in
+              encryptionDispatchGroup.leave()
+            }
           }
         }
+      }
+    }
+    
+    encryptionDispatchGroup.notify(queue: DispatchQueue.main) {
+      context.performSave(contextInfo: "save encryptAllDocumentItemsThatShouldBeEncryptedByDevice") {
+        celeturKitLogger.debug("encryptAllDocumentItemsThatShouldBeEncryptedByDevice() finished.")
+        self.saveChanges()
       }
     }
   }

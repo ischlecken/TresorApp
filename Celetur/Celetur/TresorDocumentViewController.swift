@@ -58,15 +58,36 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   
   @IBAction
   func insertNewObject(_ sender: Any) {
-    do {
-      let model = [ "title": "gmx.de", "description": "Mail Konto", "user": "bla@fasel.de", "password":"hugo"]
-      
-      let _ = try self.tresorAppState?.tresorModel.createTresorDocument(tresor: self.tresor!,
-                                                                        model: model,
-                                                                        masterKey:self.tresorAppState?.masterKey)
-      
-    } catch {
-      celeturLogger.error("Error while creating tresor  document",error:error)
+    if let t = self.tresor,
+      let context = self.tresorAppState?.tresorModel.tresorCoreDataManager?.privateChildManagedObjectContext() {
+      do {
+        self.navigationItem.rightBarButtonItem?.isEnabled = false
+        self.refreshControl?.beginRefreshingManually()
+        
+        let model = [ "title": "gmx.de", "description": "Mail Konto", "user": "bla@fasel.de", "password":"hugo"]
+        let tresorModel = self.tresorAppState?.tresorModel
+        
+        let _ = try tresorModel?.createTresorDocument(context:context,
+                                                      tresor: t,
+                                                      model: model,
+                                                      masterKey:self.tresorAppState?.masterKey) { tresorDocument, error in
+                                                        self.refreshControl?.endRefreshing()
+                                                        self.navigationItem.rightBarButtonItem?.isEnabled = true
+                                                        
+                                                        if tresorDocument != nil {
+                                                          context.performSave(contextInfo: "new tresor document") {
+                                                            DispatchQueue.main.async {
+                                                              tresorModel?.saveChanges()
+                                                            }
+                                                          }
+                                                        }
+        }
+      } catch {
+        celeturLogger.error("Error while creating tresor  document",error:error)
+        
+        self.navigationItem.rightBarButtonItem?.isEnabled = true
+        self.refreshControl?.endRefreshing()
+      }
     }
   }
   

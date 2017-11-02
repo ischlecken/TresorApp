@@ -33,6 +33,8 @@ class TresorDocumentItemViewController: UITableViewController {
     self.dateFormatter.dateStyle = DateFormatter.Style.short
     self.dateFormatter.timeStyle = DateFormatter.Style.short
     
+    self.navigationItem.rightBarButtonItem?.isEnabled = false
+    
     configureView()
     
     /*
@@ -94,7 +96,11 @@ class TresorDocumentItemViewController: UITableViewController {
               self.model = d
               self.modelIndex = Array(self.model.keys)
               
-              self.setDataLabel(data: deop.outputData!, error: nil)
+              self.setDataLabel(data: nil, error: nil)
+              
+              DispatchQueue.main.async {
+                self.navigationItem.rightBarButtonItem?.isEnabled = true
+              }
             } else {
               self.setDataLabel(data: nil, error: nil)
             }
@@ -110,6 +116,8 @@ class TresorDocumentItemViewController: UITableViewController {
         self.dataLabel!.text = e.localizedDescription
       } else if let d=data {
         self.dataLabel!.text = String(data: d, encoding: String.Encoding.utf8)
+      } else {
+        self.dataLabel!.text = ""
       }
       
       self.tableView.reloadData()
@@ -142,9 +150,28 @@ class TresorDocumentItemViewController: UITableViewController {
     if "saveEditTresorDocumentItem" == segue.identifier {
       if let m = (segue.source as? EditTresorDocumentItemViewController)?.model,
         let tdi = self.tresorDocumentItem,
-        let k = self.tresorAppState?.masterKey {
+        let k = self.tresorAppState?.masterKey,
+        let context = self.tresorAppState?.tresorModel.tresorCoreDataManager?.privateChildManagedObjectContext() {
       
-        self.tresorAppState?.tresorModel.saveDocumentItemModelData(tresorDocumentItem: tdi, model : m, masterKey: k)
+        self.activityView.startAnimating()
+        self.navigationItem.rightBarButtonItem?.isEnabled = false
+        
+        self.tresorAppState?.tresorModel.saveDocumentItemModelData(context: context, tresorDocumentItem: tdi, model : m, masterKey: k) { tresorDocument, error in
+          DispatchQueue.main.async {
+            self.activityView.stopAnimating()
+            self.navigationItem.rightBarButtonItem?.isEnabled = true
+            
+            self.model = m
+            self.modelIndex = Array(self.model.keys)
+            self.tableView.reloadData()
+          }
+          
+          context.performSave(contextInfo: "tresor document changes") {
+            DispatchQueue.main.async {
+              self.tresorAppState?.tresorModel.saveChanges()
+            }
+          }
+        }
       }
     }
   }

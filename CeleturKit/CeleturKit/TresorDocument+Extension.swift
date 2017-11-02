@@ -31,7 +31,7 @@ extension TresorDocument {
                    masterKey: TresorKey?,
                    tresor: Tresor,
                    model: PayloadModelType,
-                   completion: @escaping ()->Void ) throws {
+                   completion: @escaping (TresorDocument?,Error?)->Void ) throws {
     try self.init(context: context, tresor: tresor)
     
     if let payload = PayloadModel.jsonData(model: model),
@@ -39,27 +39,27 @@ extension TresorDocument {
       
       self.setMetaInfo(model: model)
       
-      context.perform {
-        do {
-          try context.save()
+      let encryptionDispatchGroup  = DispatchGroup()
+      
+      for ud in tresor.userdevices! {
+        let userDevice = ud as! TresorUserDevice
+        let isUserDeviceCurrentDevice = currentDeviceInfo?.isCurrentDevice(tresorUserDevice: userDevice) ?? false
+        
+        if let key = isUserDeviceCurrentDevice ? currentDeviceKey : userDevice.messagekey {
+          let tdi = TresorDocumentItem(context: context, tresorDocument: self, userDevice: userDevice)
           
-          for ud in tresor.userdevices! {
-            let userDevice = ud as! TresorUserDevice
-            let isUserDeviceCurrentDevice = currentDeviceInfo?.isCurrentDevice(tresorUserDevice: userDevice) ?? false
-            
-            if let key = isUserDeviceCurrentDevice ? currentDeviceKey : userDevice.messagekey {
-              let tdi = TresorDocumentItem(context: context, tresorDocument: self, userDevice: userDevice)
-              
-              tdi.encryptPayload(key: key, payload: payload, status: isUserDeviceCurrentDevice ? .encrypted : .shouldBeEncryptedByDevice) {
-                DispatchQueue.main.async {
-                  completion()
-                }
-              }
-            }
+          encryptionDispatchGroup.enter()
+          tdi.encryptPayload(key: key, payload: payload, status: isUserDeviceCurrentDevice ? .encrypted : .shouldBeEncryptedByDevice) {_,_ in 
+            celeturKitLogger.debug("encryption of payload finished")
+            encryptionDispatchGroup.leave()
           }
-        } catch {
-          celeturKitLogger.error("Error while saving new tresor document...",error:error)
         }
+      }
+      
+      encryptionDispatchGroup.notify(queue: DispatchQueue.main) {
+        celeturKitLogger.debug("create of complete tresordocument finished")
+        
+        completion(self,nil)
       }
     }
   }

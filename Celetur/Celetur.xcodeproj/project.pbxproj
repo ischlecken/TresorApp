@@ -12,6 +12,7 @@
 		852C26641F37CD850041273F /* TresorConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 852C26631F37CD850041273F /* TresorConstants.swift */; };
 		855587BF1FA8E713003E43E6 /* CeleturKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 855587B71FA8E682003E43E6 /* CeleturKit.framework */; };
 		855587C01FA8E713003E43E6 /* CeleturKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 855587B71FA8E682003E43E6 /* CeleturKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		859739111FAA88E8003196B2 /* UIRefreshControl+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 859739101FAA88E8003196B2 /* UIRefreshControl+Extension.swift */; };
 		85C8AE4C1FA8CFF3002B7613 /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85C8AE4B1FA8CFF3002B7613 /* UIColor+Extension.swift */; };
 		85D95E411F5305720044DFA0 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85D95E401F5305720044DFA0 /* SettingsViewController.swift */; };
 		85D95E461F530A740044DFA0 /* UserDeviceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85D95E451F530A740044DFA0 /* UserDeviceViewController.swift */; };
@@ -81,6 +82,7 @@
 		852C26601F37CCDB0041273F /* TresorAppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TresorAppModel.swift; sourceTree = "<group>"; };
 		852C26631F37CD850041273F /* TresorConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TresorConstants.swift; sourceTree = "<group>"; };
 		855587B11FA8E682003E43E6 /* CeleturKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CeleturKit.xcodeproj; path = ../CeleturKit/CeleturKit.xcodeproj; sourceTree = "<group>"; };
+		859739101FAA88E8003196B2 /* UIRefreshControl+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIRefreshControl+Extension.swift"; sourceTree = "<group>"; };
 		85C8AE4B1FA8CFF3002B7613 /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
 		85D95E401F5305720044DFA0 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		85D95E451F530A740044DFA0 /* UserDeviceViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserDeviceViewController.swift; sourceTree = "<group>"; };
@@ -134,6 +136,7 @@
 				85F908161F12D9E30062BD63 /* Main.storyboard */,
 				85F908191F12D9E30062BD63 /* Assets.xcassets */,
 				85F9081B1F12D9E30062BD63 /* LaunchScreen.storyboard */,
+				859739101FAA88E8003196B2 /* UIRefreshControl+Extension.swift */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -379,6 +382,7 @@
 				85F9080E1F12D9E30062BD63 /* AppDelegate.swift in Sources */,
 				852C26641F37CD850041273F /* TresorConstants.swift in Sources */,
 				85F908131F12D9E30062BD63 /* TresorViewController.swift in Sources */,
+				859739111FAA88E8003196B2 /* UIRefreshControl+Extension.swift in Sources */,
 				85C8AE4C1FA8CFF3002B7613 /* UIColor+Extension.swift in Sources */,
 				85D95E461F530A740044DFA0 /* UserDeviceViewController.swift in Sources */,
 				85D95E411F5305720044DFA0 /* SettingsViewController.swift in Sources */,

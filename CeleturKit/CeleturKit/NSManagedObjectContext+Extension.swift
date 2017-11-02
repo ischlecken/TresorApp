@@ -11,6 +11,7 @@ public extension NSManagedObjectContext {
   public func performSave(contextInfo: String, completion: (()->Void)? = nil) {
     self.perform {
       do {
+        celeturKitLogger.debug("save for \(contextInfo)...")
         try self.save()
         
         if let c = completion {

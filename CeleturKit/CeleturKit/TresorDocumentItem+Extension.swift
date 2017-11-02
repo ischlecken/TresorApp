@@ -100,36 +100,34 @@ extension TresorDocumentItem {
   func encryptPayload(key: Data,
                       payload: Data,
                       status: TresorDocumentItemStatus,
-                      completion: @escaping ()->Void ) {
-    if let context = self.managedObjectContext {
-      do {
-        self.status = TresorDocumentItemStatus.pending.rawValue
-        context.performSave(contextInfo: "pending tresor documentitem")
+                      completion: @escaping (TresorDocumentItem?,Error?)->Void ) {
+    do {
+      self.status = TresorDocumentItemStatus.pending.rawValue
+      self.type = "main"
+      self.mimetype = "application/json"
+      self.status = status.rawValue
+      
+      let s = String(data: payload, encoding: String.Encoding.utf8)
+      celeturKitLogger.debug("encryptPayload(\(s ?? "-")): status=\(status)")
+      
+      let operation = AES256EncryptionOperation(key:key, inputData:payload, iv:nil)
+      try operation.createRandomIV()
+      
+      operation.completionBlock = {
+        self.changets = Date()
+        self.payload = operation.outputData
+        self.nonce = operation.iv
         
-        let operation = AES256EncryptionOperation(key:key, inputData: payload, iv:nil)
-        try operation.createRandomIV()
-        
-        operation.completionBlock = {
-          self.changets = Date()
-          self.type = "main"
-          self.mimetype = "application/json"
-          self.status = status.rawValue
-          self.payload = operation.outputData
-          self.nonce = operation.iv
-          
-          context.performSave(contextInfo: "tresor documentitem") {
-            completion()
-          }
-        }
-        
-        SymmetricCipherOperation.cipherQueue.addOperation(operation)
-      } catch {
-        celeturKitLogger.error("error while encryption payload",error:error)
+        completion(self,nil)
       }
+      
+      SymmetricCipherOperation.cipherQueue.addOperation(operation)
+    } catch {
+      celeturKitLogger.error("error while encryption payload",error:error)
     }
   }
   
-  func encryptMessagePayload(masterKey:TresorKey, completion: @escaping ()->Void) {
+  func encryptMessagePayload(masterKey:TresorKey, completion: @escaping (TresorDocumentItem?,Error?)->Void) {
     if let ud = self.userdevice,
       let payload = self.payload,
       let nonce = self.nonce,
@@ -143,8 +141,11 @@ extension TresorDocumentItem {
         if let d = PayloadModel.model(jsonData: operation.outputData!) {
           celeturKitLogger.debug("payload:\(d)")
           
-          self.encryptPayload(key: masterKey.accessToken!, payload: operation.outputData!, status: TresorDocumentItemStatus.encrypted) {
-            completion()
+          self.encryptPayload(key: masterKey.accessToken!,
+                              payload: operation.outputData!,
+                              status: TresorDocumentItemStatus.encrypted) { tresorDocumentItem,error in
+            celeturKitLogger.debug("encryption of payload finished")
+            completion(tresorDocumentItem,error)
           }
         }
       }

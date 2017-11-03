@@ -5,8 +5,7 @@
 
 import Foundation
 
-private let kCipherRandomUtilStringGeneratorCharset: [Character] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".characters.map {$0}
-
+private let kCipherRandomUtilStringGeneratorCharset: [Character] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".map {$0}
 
 public extension String {
   

@@ -67,6 +67,10 @@ class EditTresorViewController: UITableViewController {
     return cell
   }
   
+  override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    return "User Devices"
+  }
+  
   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     guard let userDevice = self.getUserDevice(forPath: indexPath) else { return }
     

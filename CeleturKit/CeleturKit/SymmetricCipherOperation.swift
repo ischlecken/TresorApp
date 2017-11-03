@@ -6,10 +6,7 @@
 import Foundation
 import CKCommonCrypto
 
-
-public class SymmetricCipherOperation : Operation {
-  
-  public static let cipherQueue = OperationQueue()
+public class SymmetricCipher {
   
   public let key: Data
   public let inputData: Data
@@ -37,8 +34,6 @@ public class SymmetricCipherOperation : Operation {
       self.error = CeleturKitError.cipherMissingIV
       return
     }
-    
-    celeturKitLogger.debug("SymmetricCipherOperation.cryptoOperation(operation:\(operation)) key:\(self.key.hexEncodedString())")
     
     // Prepare data parameters
     let keyData: Data! = self.key
@@ -91,7 +86,7 @@ public class SymmetricCipherOperation : Operation {
   
 }
 
-public class AES256EncryptionOperation : SymmetricCipherOperation {
+public class AES256Encryption : SymmetricCipher {
   
   let algorithm = SymmetricCipherAlgorithm.aes_256
   let options:SymmetricCipherOptions =  [.PKCS7Padding]
@@ -100,21 +95,21 @@ public class AES256EncryptionOperation : SymmetricCipherOperation {
     self.iv = try Data(withRandomData:self.algorithm.requiredBlockSize())
   }
   
-  public override func main() {
-    guard !self.isCancelled else { return }
+  public func execute() {
+    celeturKitLogger.debug("AES256Encryption(key:\(self.key.hexEncodedString())")
     
     self.cryptoOperation(algorithm: algorithm, options: options, operation: CCOperation(kCCEncrypt))
   }
 }
 
-public class AES256DecryptionOperation : SymmetricCipherOperation {
+public class AES256Decryption : SymmetricCipher {
   
   let algorithm = SymmetricCipherAlgorithm.aes_256
   let options:SymmetricCipherOptions =  [.PKCS7Padding]
   
-  public override func main() {
-    guard !self.isCancelled else { return }
-    
+  public func execute() {
+    celeturKitLogger.debug("AES256Decryption(key:\(self.key.hexEncodedString())")
+  
     self.cryptoOperation(algorithm:algorithm, options:options, operation: CCOperation(kCCDecrypt))
   }
 }

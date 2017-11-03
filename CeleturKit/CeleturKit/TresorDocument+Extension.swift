@@ -27,40 +27,31 @@ extension TresorDocument {
     self.nonce = try Data(withRandomData:SymmetricCipherAlgorithm.aes_256.requiredBlockSize())
   }
   
-  convenience init(context: NSManagedObjectContext,
-                   masterKey: TresorKey?,
-                   tresor: Tresor,
-                   model: PayloadModelType,
-                   completion: @escaping (TresorDocument?,Error?)->Void ) throws {
+  public convenience init(context: NSManagedObjectContext,
+                          masterKey: TresorKey,
+                          tresor: Tresor,
+                          model: PayloadModelType
+    ) throws {
     try self.init(context: context, tresor: tresor)
     
     if let payload = PayloadModel.jsonData(model: model),
-      let currentDeviceKey = masterKey?.accessToken {
+      let currentDeviceKey = masterKey.accessToken {
       
       self.setMetaInfo(model: model)
       
-      let encryptionDispatchGroup  = DispatchGroup()
-      
-      for ud in tresor.userdevices! {
-        let userDevice = ud as! TresorUserDevice
+      for case let userDevice as TresorUserDevice in tresor.userdevices! {
         let isUserDeviceCurrentDevice = currentDeviceInfo?.isCurrentDevice(tresorUserDevice: userDevice) ?? false
         
         if let key = isUserDeviceCurrentDevice ? currentDeviceKey : userDevice.messagekey {
           let tdi = TresorDocumentItem(context: context, tresorDocument: self, userDevice: userDevice)
           
-          encryptionDispatchGroup.enter()
-          tdi.encryptPayload(key: key, payload: payload, status: isUserDeviceCurrentDevice ? .encrypted : .shouldBeEncryptedByDevice) {_,_ in 
-            celeturKitLogger.debug("encryption of payload finished")
-            encryptionDispatchGroup.leave()
-          }
+          let _ = tdi.encryptPayload(key: key, payload: payload, status: isUserDeviceCurrentDevice ? .encrypted : .shouldBeEncryptedByDevice)
+          
+          celeturKitLogger.debug(" tdi:\(tdi)")
         }
       }
       
-      encryptionDispatchGroup.notify(queue: DispatchQueue.main) {
-        celeturKitLogger.debug("create of complete tresordocument finished")
-        
-        completion(self,nil)
-      }
+      celeturKitLogger.debug("create of complete tresordocument finished")
     }
   }
   

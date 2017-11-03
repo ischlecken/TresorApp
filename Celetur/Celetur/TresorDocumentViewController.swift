@@ -59,36 +59,42 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   @IBAction
   func insertNewObject(_ sender: Any) {
     if let t = self.tresor,
+      let masterKey = self.tresorAppState?.masterKey,
       let context = self.tresorAppState?.tresorModel.tresorCoreDataManager?.privateChildManagedObjectContext() {
-      do {
-        self.navigationItem.rightBarButtonItem?.isEnabled = false
-        self.refreshControl?.beginRefreshingManually()
+      
+      self.beginInsertNewObject()
+      context.perform {
+        do {
+          let model = [ "title": "gmx.de", "description": "Mail Konto", "user": "bla@fasel.de", "password":"hugo"]
+          
+          let _ = try TresorDocument(context: context, masterKey: masterKey, tresor: t, model: model)
+          
+          let _ = try context.save()
+          
+          DispatchQueue.main.async {
+            self.tresorAppState?.tresorModel.saveChanges()
+            self.endInsertNewObject()
+          }
+          
+        } catch {
+          celeturLogger.error("Error while creating new tresor document...",error:error)
         
-        let model = [ "title": "gmx.de", "description": "Mail Konto", "user": "bla@fasel.de", "password":"hugo"]
-        let tresorModel = self.tresorAppState?.tresorModel
-        
-        let _ = try tresorModel?.createTresorDocument(context:context,
-                                                      tresor: t,
-                                                      model: model,
-                                                      masterKey:self.tresorAppState?.masterKey) { tresorDocument, error in
-                                                        self.refreshControl?.endRefreshing()
-                                                        self.navigationItem.rightBarButtonItem?.isEnabled = true
-                                                        
-                                                        if tresorDocument != nil {
-                                                          context.performSave(contextInfo: "new tresor document") {
-                                                            DispatchQueue.main.async {
-                                                              tresorModel?.saveChanges()
-                                                            }
-                                                          }
-                                                        }
+          DispatchQueue.main.async {
+            self.endInsertNewObject()
+          }
         }
-      } catch {
-        celeturLogger.error("Error while creating tresor  document",error:error)
-        
-        self.navigationItem.rightBarButtonItem?.isEnabled = true
-        self.refreshControl?.endRefreshing()
       }
     }
+  }
+  
+  fileprivate func beginInsertNewObject() {
+    self.navigationItem.rightBarButtonItem?.isEnabled = false
+    self.refreshControl?.beginRefreshingManually()
+  }
+  
+  fileprivate func endInsertNewObject() {
+    self.refreshControl?.endRefreshing()
+    self.navigationItem.rightBarButtonItem?.isEnabled = true
   }
   
   // MARK: - Segues
@@ -215,6 +221,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     cell.detailTextLabel!.text = "-"
     cell.indentationLevel = 0
     cell.textLabel?.textColor = UIColor.black
+    cell.detailTextLabel?.textColor = UIColor.black
     
     if let doc = tresorDocument {
       if let docMetaInfo = doc.getMetaInfo(), let title = docMetaInfo["title"] {

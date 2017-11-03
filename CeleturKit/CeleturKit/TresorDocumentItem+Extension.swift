@@ -13,6 +13,19 @@ public enum TresorDocumentItemStatus : String {
 
 extension TresorDocumentItem {
 
+  public var modifyts: Date {
+    get {
+      var result = self.createts!
+      
+      if let c = self.changets {
+        result = c
+      }
+      
+      return result
+    }
+  }
+  
+  
   convenience init(context: NSManagedObjectContext,
                    tresorDocument:TresorDocument,
                    userDevice:TresorUserDevice) {
@@ -99,10 +112,10 @@ extension TresorDocumentItem {
   
   func encryptPayload(key: Data,
                       payload: Data,
-                      status: TresorDocumentItemStatus,
-                      completion: @escaping (TresorDocumentItem?,Error?)->Void ) {
+                      status: TresorDocumentItemStatus) -> Data? {
+    var result : Data?
+    
     do {
-      self.status = TresorDocumentItemStatus.pending.rawValue
       self.type = "main"
       self.mimetype = "application/json"
       self.status = status.rawValue
@@ -110,24 +123,27 @@ extension TresorDocumentItem {
       let s = String(data: payload, encoding: String.Encoding.utf8)
       celeturKitLogger.debug("encryptPayload(\(s ?? "-")): status=\(status)")
       
-      let operation = AES256EncryptionOperation(key:key, inputData:payload, iv:nil)
+      let operation = AES256Encryption(key:key, inputData:payload, iv:nil)
       try operation.createRandomIV()
       
-      operation.completionBlock = {
+      operation.execute()
+      if let _ = operation.outputData {
         self.changets = Date()
         self.payload = operation.outputData
         self.nonce = operation.iv
-        
-        completion(self,nil)
       }
       
-      SymmetricCipherOperation.cipherQueue.addOperation(operation)
+      result = operation.outputData
     } catch {
       celeturKitLogger.error("error while encryption payload",error:error)
     }
+    
+    return result
   }
   
-  func encryptMessagePayload(masterKey:TresorKey, completion: @escaping (TresorDocumentItem?,Error?)->Void) {
+  func encryptMessagePayload(masterKey:TresorKey) -> Data? {
+    var result : Data?
+    
     if let ud = self.userdevice,
       let payload = self.payload,
       let nonce = self.nonce,
@@ -136,40 +152,28 @@ extension TresorDocumentItem {
       
       celeturKitLogger.debug("item \(self.id ?? "-") should be encrypted by device...")
       
-      let operation = AES256DecryptionOperation(key: messageKey, inputData: payload, iv:nonce)
-      operation.completionBlock = {
-        if let d = PayloadModel.model(jsonData: operation.outputData!) {
-          celeturKitLogger.debug("payload:\(d)")
-          
-          self.encryptPayload(key: masterKey.accessToken!,
-                              payload: operation.outputData!,
-                              status: TresorDocumentItemStatus.encrypted) { tresorDocumentItem,error in
-            celeturKitLogger.debug("encryption of payload finished")
-            completion(tresorDocumentItem,error)
-          }
-        }
+      let operation = AES256Decryption(key: messageKey, inputData: payload, iv:nonce)
+      operation.execute()
+      if let d = PayloadModel.model(jsonData: operation.outputData!) {
+        celeturKitLogger.debug("payload:\(d)")
+        
+        result = self.encryptPayload(key: masterKey.accessToken!, payload: operation.outputData!, status: TresorDocumentItemStatus.encrypted)
       }
-      
-      SymmetricCipherOperation.cipherQueue.addOperation(operation)
     }
+    
+    return result
   }
   
-  public func decryptPayload(masterKey:TresorKey, completion: ((SymmetricCipherOperation?)->Void)?) {
+  public func decryptPayload(masterKey:TresorKey) -> Data? {
     if let payload = self.payload, let nonce = self.nonce {
-      let operation = AES256DecryptionOperation(key:masterKey.accessToken!, inputData: payload, iv:nonce)
+      let operation = AES256Decryption(key:masterKey.accessToken!, inputData: payload, iv:nonce)
       
-      if let c = completion {
-        operation.completionBlock = {
-          c(operation)
-        }
-      }
+      operation.execute()
       
-      SymmetricCipherOperation.cipherQueue.addOperation(operation)
-    } else {
-      if let c = completion {
-        c(nil)
-      }
+      return operation.outputData
     }
+    
+    return nil
   }
 }
 

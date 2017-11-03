@@ -60,8 +60,7 @@ class TresorDocumentItemViewController: UITableViewController {
       }
       
       if let label = createtsLabel {
-        
-        label.text = self.dateFormatter.string(from: item.createts!)
+        label.text = self.dateFormatter.string(from: item.modifyts)
       }
       
       if let label = dataLabel {
@@ -78,31 +77,19 @@ class TresorDocumentItemViewController: UITableViewController {
           }
           
           self.activityView.startAnimating()
-        
-          item.decryptPayload(masterKey:key!) {
-            (decryptOperation:SymmetricCipherOperation?) in
-            
-            guard let deop=decryptOperation else {
-              self.setDataLabel(data: nil, error: nil)
-              return
-            }
-            
-            if let e=deop.error {
-              self.setDataLabel(data:nil, error: e)
-              return
-            }
-            
-            if let d = PayloadModel.model(jsonData: deop.outputData!) {
+          DispatchQueue.global().async {
+            if let decryptedPayload = item.decryptPayload(masterKey:key!), let d = PayloadModel.model(jsonData: decryptedPayload) {
               self.model = d
               self.modelIndex = Array(self.model.keys)
               
-              self.setDataLabel(data: nil, error: nil)
-              
               DispatchQueue.main.async {
+                self.setDataLabel(data: nil, error: nil)
                 self.navigationItem.rightBarButtonItem?.isEnabled = true
               }
             } else {
-              self.setDataLabel(data: nil, error: nil)
+              DispatchQueue.main.async {
+                self.setDataLabel(data: nil, error: nil)
+              }
             }
           }
         }
@@ -111,18 +98,16 @@ class TresorDocumentItemViewController: UITableViewController {
   }
   
   func setDataLabel(data:Data?, error:Error?) {
-    DispatchQueue.main.async {
-      if let e=error {
-        self.dataLabel!.text = e.localizedDescription
-      } else if let d=data {
-        self.dataLabel!.text = String(data: d, encoding: String.Encoding.utf8)
-      } else {
-        self.dataLabel!.text = ""
-      }
-      
-      self.tableView.reloadData()
-      self.activityView.stopAnimating()
+    if let e=error {
+      self.dataLabel!.text = e.localizedDescription
+    } else if let d=data {
+      self.dataLabel!.text = String(data: d, encoding: String.Encoding.utf8)
+    } else {
+      self.dataLabel!.text = ""
     }
+    
+    self.tableView.reloadData()
+    self.activityView.stopAnimating()
   }
   
   // MARK: - Segue
@@ -155,21 +140,31 @@ class TresorDocumentItemViewController: UITableViewController {
       
         self.activityView.startAnimating()
         self.navigationItem.rightBarButtonItem?.isEnabled = false
+        self.model = PayloadModelType()
+        self.modelIndex = [String]()
+        self.tableView.reloadData()
         
-        self.tresorAppState?.tresorModel.saveDocumentItemModelData(context: context, tresorDocumentItem: tdi, model : m, masterKey: k) { tresorDocument, error in
+        context.perform {
+          self.tresorAppState?.tresorModel.saveDocumentItemModelData(context: context, tresorDocumentItem: tdi, model : m, masterKey: k)
+          
+          do {
+            let _ = try context.save()
+            
+            DispatchQueue.main.async {
+              self.tresorAppState?.tresorModel.saveChanges()
+              
+              self.model = m
+              self.modelIndex = Array(self.model.keys)
+              self.tableView.reloadData()
+            }
+          } catch {
+            celeturLogger.error("Error while saving changed tresor document items...",error:error)
+          }
+          
           DispatchQueue.main.async {
             self.activityView.stopAnimating()
             self.navigationItem.rightBarButtonItem?.isEnabled = true
             
-            self.model = m
-            self.modelIndex = Array(self.model.keys)
-            self.tableView.reloadData()
-          }
-          
-          context.performSave(contextInfo: "tresor document changes") {
-            DispatchQueue.main.async {
-              self.tresorAppState?.tresorModel.saveChanges()
-            }
           }
         }
       }

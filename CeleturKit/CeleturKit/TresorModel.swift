@@ -203,33 +203,17 @@ public class TresorModel {
   }
   
   
-  public func createTresorDocument(context: NSManagedObjectContext,
-                                   tresor:Tresor,
-                                   model: PayloadModelType,
-                                   masterKey: TresorKey?,
-                                   completion: @escaping (TresorDocument?,Error?)->Void) throws {
-    
-    let _ = try TresorDocument(context: context, masterKey: masterKey, tresor: tresor, model: model) { tresorDocument,error in
-      completion(tresorDocument,error)
-    }
-    
-  }
-  
-  
   public func saveDocumentItemModelData(context:NSManagedObjectContext,
                                         tresorDocumentItem: TresorDocumentItem,
                                         model : PayloadModelType,
-                                        masterKey: TresorKey,
-                                        completion: @escaping (TresorDocument?, Error?)->Void) {
+                                        masterKey: TresorKey) {
     
     if let payload = PayloadModel.jsonData(model: model),
       let tresorDocument = tresorDocumentItem.document,
-      let tempTresorDocument = context.object(with: tresorDocument.objectID) as? TresorDocument,
-      let tempTresorDocumentItem = context.object(with: tresorDocumentItem.objectID) as? TresorDocumentItem {
+      let tempTresorDocument = context.object(with: tresorDocument.objectID) as? TresorDocument {
       
       tempTresorDocument.setMetaInfo(model:model)
       
-      let encryptionDispatchGroup  = DispatchGroup()
       for case let it as TresorDocumentItem in (tempTresorDocument.documentitems)! {
         if let ud = it.userdevice {
           let isUserDeviceCurrentDevice = currentDeviceInfo?.isCurrentDevice(tresorUserDevice: ud) ?? false
@@ -239,19 +223,16 @@ public class TresorModel {
           if let key = isUserDeviceCurrentDevice ? masterKey.accessToken : ud.messagekey {
             let status : TresorDocumentItemStatus = isUserDeviceCurrentDevice ? .encrypted : .shouldBeEncryptedByDevice
             
-            encryptionDispatchGroup.enter()
-            tempTresorDocumentItem.encryptPayload(key: key, payload: payload, status: status) {_,_ in
-              encryptionDispatchGroup.leave()
-            }
+            let _ = it.encryptPayload(key: key, payload: payload, status: status)
+            
+            celeturKitLogger.debug("item after encryption:\(it)")
           }
         }
       }
       
-      encryptionDispatchGroup.notify(queue: DispatchQueue.main) {
-        celeturKitLogger.debug("saveDocumentItemModelData(): encryption completed")
-        
-        completion(tempTresorDocument, nil)
-      }
+      tempTresorDocument.changets = Date()
+      
+      celeturKitLogger.debug("saveDocumentItemModelData(): encryption completed")
     }
   }
   
@@ -273,28 +254,20 @@ public class TresorModel {
     
     celeturKitLogger.debug("encryptAllDocumentItemsThatShouldBeEncryptedByDevice()")
     
-    let encryptionDispatchGroup = DispatchGroup()
-    
     for case let tresorDocument as TresorDocument in documents {
       if let items = tresorDocument.documentitems {
         for case let item as TresorDocumentItem in items where item.itemStatus == .shouldBeEncryptedByDevice {
           
           if let tempItem = context.object(with: item.objectID) as? TresorDocumentItem {
-    
-            encryptionDispatchGroup.enter()
-            tempItem.encryptMessagePayload(masterKey: masterKey) {_,_ in
-              encryptionDispatchGroup.leave()
-            }
+            let _ = tempItem.encryptMessagePayload(masterKey: masterKey)
           }
         }
       }
     }
     
-    encryptionDispatchGroup.notify(queue: DispatchQueue.main) {
-      context.performSave(contextInfo: "save encryptAllDocumentItemsThatShouldBeEncryptedByDevice") {
-        celeturKitLogger.debug("encryptAllDocumentItemsThatShouldBeEncryptedByDevice() finished.")
-        self.saveChanges()
-      }
+    context.performSave(contextInfo: "save encryptAllDocumentItemsThatShouldBeEncryptedByDevice") {
+      celeturKitLogger.debug("encryptAllDocumentItemsThatShouldBeEncryptedByDevice() finished.")
+      self.saveChanges()
     }
   }
   

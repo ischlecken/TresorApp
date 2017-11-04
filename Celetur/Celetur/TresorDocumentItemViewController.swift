@@ -26,6 +26,8 @@ class TresorDocumentItemViewController: UITableViewController {
   let dateFormatter = DateFormatter()
   var model = PayloadModelType()
   var modelIndex = [String]()
+  var revealable = [Bool]()
+  var revealed = [Bool]()
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -52,6 +54,25 @@ class TresorDocumentItemViewController: UITableViewController {
   
   @objc
   func contextDidSave(_ notification: Notification) {
+  }
+  
+  fileprivate func setModel(payloadModel:PayloadModelType?) {
+    if let p = payloadModel {
+      self.model = p
+      self.modelIndex = Array(self.model.keys)
+      
+      self.revealable = Array(repeating:false, count: self.modelIndex.count)
+      self.revealed = Array(repeating:false, count: self.modelIndex.count)
+      for (i,v) in self.modelIndex.enumerated() {
+        self.revealable[i] = v == "password"
+      }
+    } else {
+      self.model = PayloadModelType()
+      self.modelIndex = [String]()
+      self.revealable = [Bool]()
+      self.revealed = [Bool]()
+    }
+    
   }
   
   func configureView() {
@@ -81,8 +102,7 @@ class TresorDocumentItemViewController: UITableViewController {
           self.activityView.startAnimating()
           DispatchQueue.global().async {
             if let decryptedPayload = item.decryptPayload(masterKey:key!), let d = PayloadModel.model(jsonData: decryptedPayload) {
-              self.model = d
-              self.modelIndex = Array(self.model.keys)
+              self.setModel(payloadModel: d)
               
               DispatchQueue.main.async {
                 self.setDataLabel(data: nil, error: nil)
@@ -121,8 +141,7 @@ class TresorDocumentItemViewController: UITableViewController {
         let controller = (segue.destination as! UINavigationController).topViewController as! EditTresorDocumentItemViewController
         
         controller.tresorAppState = self.tresorAppState
-        controller.model = self.model
-        controller.modelIndex = self.modelIndex
+        controller.setModel(payloadModel: self.model)
         
         controller.navigationItem.title = self.model["title"] as? String
         
@@ -142,8 +161,7 @@ class TresorDocumentItemViewController: UITableViewController {
       
         self.activityView.startAnimating()
         self.navigationItem.rightBarButtonItem?.isEnabled = false
-        self.model = PayloadModelType()
-        self.modelIndex = [String]()
+        self.setModel(payloadModel: nil)
         self.tableView.reloadData()
         
         context.perform {
@@ -154,9 +172,7 @@ class TresorDocumentItemViewController: UITableViewController {
             
             DispatchQueue.main.async {
               self.tresorAppState?.tresorModel.saveChanges()
-              
-              self.model = m
-              self.modelIndex = Array(self.model.keys)
+              self.setModel(payloadModel: m)
               self.tableView.reloadData()
             }
           } catch {
@@ -186,7 +202,7 @@ class TresorDocumentItemViewController: UITableViewController {
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "tresorDocumentItemCell", for: indexPath) as! TresorDocumentItemCell
     
-    configureCell(cell, forKey: self.modelIndex[indexPath.row])
+    configureCell(cell, forKey: self.modelIndex[indexPath.row],andIndex: indexPath.row)
     
     return cell
   }
@@ -200,17 +216,29 @@ class TresorDocumentItemViewController: UITableViewController {
   }
   
   override func tableView(_ tableView: UITableView, editActionsForRowAt: IndexPath) -> [UITableViewRowAction]? {
+    var result = [UITableViewRowAction]()
     
-    let editAction = UITableViewRowAction(style: .normal, title: "Edit") { action, index in
-      
+    let editAction = UITableViewRowAction(style: .normal, title: "Copy") { action, index in
+      UIPasteboard.general.string = self.model[self.modelIndex[editActionsForRowAt.row]] as? String
     }
     editAction.backgroundColor = .orange
     
-    let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { action, index in
+    result.append(editAction)
+    
+    if self.revealable[editActionsForRowAt.row] && !self.revealed[editActionsForRowAt.row] {
+      let revealAction = UITableViewRowAction(style: .normal, title: "Reveal") { action, index in
+        self.revealed[editActionsForRowAt.row] = true
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+          self.tableView.reloadRows(at: [editActionsForRowAt], with: .fade)
+        }
+      }
+      revealAction.backgroundColor = .blue
       
+      result.append(revealAction)
     }
     
-    return [editAction, deleteAction]
+    return result
   }
   
   override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
@@ -219,9 +247,19 @@ class TresorDocumentItemViewController: UITableViewController {
     }
   }
   
-  func configureCell(_ cell: TresorDocumentItemCell, forKey key: String) {
+  func configureCell(_ cell: TresorDocumentItemCell, forKey key: String, andIndex index: Int) {
     cell.itemKeyLabel?.text = key
-    cell.itemValueLabel?.text = self.model[key] as? String
+    
+    
+    if let value = self.model[key] as? String {
+      if self.revealable[index] && !self.revealed[index] {
+        cell.itemValueLabel?.text =  String(repeating:"*", count:value.count)
+      } else {
+        cell.itemValueLabel?.text = value
+      }
+    } else {
+      cell.itemValueLabel?.text = "-"
+    }
   }
   
 }

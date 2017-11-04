@@ -15,6 +15,17 @@ class EditTresorDocumentItemViewController: UITableViewController {
   var model = PayloadModelType()
   var modelIndex = [String]()
   
+  
+  func setModel(payloadModel:PayloadModelType?) {
+    if let p = payloadModel {
+      self.model = p
+      self.modelIndex = Array(self.model.keys)
+    } else {
+      self.model = PayloadModelType()
+      self.modelIndex = [String]()
+    }
+  }
+  
   override func viewDidLoad() {
     super.viewDidLoad()
   

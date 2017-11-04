@@ -143,7 +143,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
     if let sections = fetchedResultsController.sections {
       let currentSection = sections[section]
-      return "DocId:\(currentSection.name)"
+      return "\(currentSection.name)"
     }
     
     return nil

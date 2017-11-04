@@ -15,6 +15,7 @@ class EditTresorDocumentItemViewController: UITableViewController {
   var model = PayloadModelType()
   var modelIndex = [String]()
   
+  var actualEditingItemValueIndexPath : IndexPath?
   
   func setModel(payloadModel:PayloadModelType?) {
     if let p = payloadModel {
@@ -26,16 +27,43 @@ class EditTresorDocumentItemViewController: UITableViewController {
     }
   }
   
+  func getModel() -> PayloadModelType {
+    if let indexPath = self.actualEditingItemValueIndexPath,let c = self.tableView.cellForRow(at: indexPath) as? EditTresorDocumentItemCell {
+      celeturLogger.debug("getModel():\(c.itemValueTextfield?.text ?? "-")")
+      
+      self.model[self.modelIndex[indexPath.row]] = c.itemValueTextfield?.text
+    }
+  
+    return self.model
+  }
+  
   override func viewDidLoad() {
     super.viewDidLoad()
   
+    self.tableView.register(UINib(nibName:"EditTresorDocumentItemCell",bundle:nil),forCellReuseIdentifier:"editTresorDocumentItemCell")
+    
   }
   
   
   // MARK: - Actions
   
+  @IBAction
+  func itemValueBeginEditingAction(_ sender: Any) {
+    if let t = sender as? UITextField, let c = t.superview?.superview as? UITableViewCell {
+      self.actualEditingItemValueIndexPath = self.tableView.indexPath(for: c)
+    }
+  }
   
-  @IBAction func addFieldAction(_ sender: Any) {
+  @IBAction
+  func itemValueEndEditingAction(_ sender: Any) {
+    if let t = sender as? UITextField, let indexPath = self.actualEditingItemValueIndexPath {
+      self.model[self.modelIndex[indexPath.row]] = t.text
+    }
+  }
+  
+  
+  @IBAction
+  func addFieldAction(_ sender: Any) {
     let key = "key"+String(Int(arc4random())%100)
     
     self.model[key] = "value"+String(Int(arc4random())%1000)
@@ -84,9 +112,11 @@ class EditTresorDocumentItemViewController: UITableViewController {
     
     switch indexPath.section {
     case 0:
-      cell = tableView.dequeueReusableCell(withIdentifier: "editCell", for: indexPath)
+      let editCell = tableView.dequeueReusableCell(withIdentifier: "editTresorDocumentItemCell", for: indexPath) as! EditTresorDocumentItemCell
       
-      configureCell(cell, forKey: self.modelIndex[indexPath.row])
+      configureCell(editCell, forKey: self.modelIndex[indexPath.row])
+      cell = editCell
+      
     default:
       let cellIdentifier = indexPath.row == 0 ? "addFieldCell" : "deleteFieldsCell"
       
@@ -111,9 +141,9 @@ class EditTresorDocumentItemViewController: UITableViewController {
     }
   }
   
-  fileprivate func configureCell(_ cell: UITableViewCell, forKey key: String) {
-    cell.textLabel?.text = key
-    cell.detailTextLabel?.text = self.model[key] as? String
+  fileprivate func configureCell(_ cell: EditTresorDocumentItemCell, forKey key: String) {
+    cell.itemNameLabel?.text = key
+    cell.itemValueTextfield?.text = self.model[key] as? String
   }
   
 }

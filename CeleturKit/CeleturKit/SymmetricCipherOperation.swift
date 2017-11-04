@@ -59,7 +59,7 @@ public class SymmetricCipher {
     
     var bytesProcessed   = Int(0)
     
-    sleep(5)
+    sleep(2)
     
     let cryptStatus = CCCrypt(
       operation,                  // Operation

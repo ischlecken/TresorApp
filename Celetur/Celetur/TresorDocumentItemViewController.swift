@@ -154,7 +154,7 @@ class TresorDocumentItemViewController: UITableViewController {
   @IBAction
   func unwindToTresorDocumentItem(segue: UIStoryboardSegue) {
     if "saveEditTresorDocumentItem" == segue.identifier {
-      if let m = (segue.source as? EditTresorDocumentItemViewController)?.model,
+      if let m = (segue.source as? EditTresorDocumentItemViewController)?.getModel(),
         let tdi = self.tresorDocumentItem,
         let k = self.tresorAppState?.masterKey,
         let context = self.tresorAppState?.tresorModel.tresorCoreDataManager?.privateChildManagedObjectContext() {

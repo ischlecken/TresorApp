@@ -7,13 +7,12 @@ import UIKit
 
 class EditTresorDocumentItemCell: UITableViewCell {
   
-  
-  @IBOutlet weak var itemNameLabel: UILabel!
+  @IBOutlet weak var itemNameButton: UIButton!
   @IBOutlet weak var itemValueTextfield: UITextField!
   
   override func awakeFromNib() {
     super.awakeFromNib()
-   
+    
   }
   
 }

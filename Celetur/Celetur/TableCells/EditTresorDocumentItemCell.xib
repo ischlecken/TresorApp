@@ -6,6 +6,7 @@
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -19,7 +20,7 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="itemValue" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="aWC-jJ-8ed">
-                        <rect key="frame" x="104" y="20" width="255" height="30"/>
+                        <rect key="frame" x="149" y="20" width="210" height="30"/>
                         <nil key="textColor"/>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <textInputTraits key="textInputTraits"/>
@@ -28,26 +29,31 @@
                             <action selector="itemValueEndEditingAction:" destination="-1" eventType="editingDidEnd" id="xgQ-52-70Z"/>
                         </connections>
                     </textField>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="itemName" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GiS-Uk-agV">
-                        <rect key="frame" x="16" y="28.5" width="80" height="14.5"/>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="trailing" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9Iu-sJ-HFA">
+                        <rect key="frame" x="16" y="-1" width="125" height="72"/>
                         <constraints>
-                            <constraint firstAttribute="width" constant="80" id="Zm8-cW-K7a"/>
+                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="60" id="atI-co-0al"/>
                         </constraints>
-                        <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
-                        <color key="textColor" red="0.20637743689999999" green="0.50372339050000003" blue="0.84013075780000002" alpha="1" colorSpace="calibratedRGB"/>
-                        <nil key="highlightedColor"/>
-                    </label>
+                        <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
+                        <state key="normal" title="Button"/>
+                        <connections>
+                            <action selector="itemNameAction:" destination="-1" eventType="touchUpInside" id="i3Y-Pj-SHD"/>
+                        </connections>
+                    </button>
                 </subviews>
+                <gestureRecognizers/>
                 <constraints>
                     <constraint firstItem="aWC-jJ-8ed" firstAttribute="centerY" secondItem="wUN-ob-i5U" secondAttribute="centerY" id="5HG-bG-Ewa"/>
                     <constraint firstAttribute="trailingMargin" secondItem="aWC-jJ-8ed" secondAttribute="trailing" id="94q-IQ-xeH"/>
-                    <constraint firstItem="GiS-Uk-agV" firstAttribute="leading" secondItem="wUN-ob-i5U" secondAttribute="leadingMargin" id="P09-W1-AQ4"/>
-                    <constraint firstItem="aWC-jJ-8ed" firstAttribute="leading" secondItem="GiS-Uk-agV" secondAttribute="trailing" constant="8" id="Uxr-lP-YxE"/>
-                    <constraint firstItem="GiS-Uk-agV" firstAttribute="centerY" secondItem="wUN-ob-i5U" secondAttribute="centerY" id="ntd-FF-zZZ"/>
+                    <constraint firstItem="9Iu-sJ-HFA" firstAttribute="leading" secondItem="wUN-ob-i5U" secondAttribute="leadingMargin" id="UlT-3v-pe8"/>
+                    <constraint firstItem="9Iu-sJ-HFA" firstAttribute="height" secondItem="wUN-ob-i5U" secondAttribute="height" id="aN8-Pi-sbv"/>
+                    <constraint firstItem="aWC-jJ-8ed" firstAttribute="leading" secondItem="9Iu-sJ-HFA" secondAttribute="trailing" constant="8" id="jWm-sA-cV1"/>
+                    <constraint firstItem="9Iu-sJ-HFA" firstAttribute="width" secondItem="wUN-ob-i5U" secondAttribute="width" multiplier="1:3" id="tui-Y6-FJp"/>
+                    <constraint firstItem="9Iu-sJ-HFA" firstAttribute="centerY" secondItem="wUN-ob-i5U" secondAttribute="centerY" id="ww4-Em-wHj"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
-                <outlet property="itemNameLabel" destination="GiS-Uk-agV" id="TAe-8S-c3h"/>
+                <outlet property="itemNameButton" destination="9Iu-sJ-HFA" id="fwo-qg-jef"/>
                 <outlet property="itemValueTextfield" destination="aWC-jJ-8ed" id="D8U-eQ-N3W"/>
             </connections>
             <point key="canvasLocation" x="-109.5" y="-215"/>

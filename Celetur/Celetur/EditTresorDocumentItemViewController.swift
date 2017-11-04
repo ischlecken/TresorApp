@@ -44,8 +44,17 @@ class EditTresorDocumentItemViewController: UITableViewController {
     
   }
   
-  
   // MARK: - Actions
+  
+  @IBAction
+  func itemNameAction(_ sender: Any) {
+    if let b = sender as? UIButton, let c = b.superview?.superview as? UITableViewCell {
+      let clickedItemNameIndexPath = self.tableView.indexPath(for: c)
+      
+      celeturLogger.debug("item name clicked:\(String(describing: clickedItemNameIndexPath))")
+    }
+    
+  }
   
   @IBAction
   func itemValueBeginEditingAction(_ sender: Any) {
@@ -142,7 +151,7 @@ class EditTresorDocumentItemViewController: UITableViewController {
   }
   
   fileprivate func configureCell(_ cell: EditTresorDocumentItemCell, forKey key: String) {
-    cell.itemNameLabel?.text = key
+    cell.itemNameButton?.setTitle(key, for: .normal)
     cell.itemValueTextfield?.text = self.model[key] as? String
   }
   

@@ -35,6 +35,8 @@ class TresorDocumentItemViewController: UITableViewController {
     
     self.navigationItem.rightBarButtonItem?.isEnabled = false
     
+    self.tableView.register(UINib(nibName:"TresorDocumentItemCell",bundle:nil),forCellReuseIdentifier:"tresorDocumentItemCell")
+    
     configureView()
     
     /*
@@ -182,7 +184,7 @@ class TresorDocumentItemViewController: UITableViewController {
   }
   
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCell(withIdentifier: "detailCell", for: indexPath)
+    let cell = tableView.dequeueReusableCell(withIdentifier: "tresorDocumentItemCell", for: indexPath) as! TresorDocumentItemCell
     
     configureCell(cell, forKey: self.modelIndex[indexPath.row])
     
@@ -217,9 +219,9 @@ class TresorDocumentItemViewController: UITableViewController {
     }
   }
   
-  func configureCell(_ cell: UITableViewCell, forKey key: String) {
-    cell.textLabel?.text = key
-    cell.detailTextLabel?.text = self.model[key] as? String
+  func configureCell(_ cell: TresorDocumentItemCell, forKey key: String) {
+    cell.itemKeyLabel?.text = key
+    cell.itemValueLabel?.text = self.model[key] as? String
   }
   
 }

@@ -128,7 +128,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   }
   
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCell(withIdentifier: "tresorCell", for: indexPath) as? TresorTableViewCell
+    let cell = tableView.dequeueReusableCell(withIdentifier: "tresorCell", for: indexPath) as? TresorCell
     
     if let tresor = fetchedResultsController?.object(at: indexPath) {
       configureCell(cell!, withTresor: tresor)
@@ -170,7 +170,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     }
   }
   
-  func configureCell(_ cell: TresorTableViewCell, withTresor tresor: Tresor) {
+  func configureCell(_ cell: TresorCell, withTresor tresor: Tresor) {
     cell.createdLabel!.text = self.dateFormatter.string(from: tresor.modifyts)
     cell.nameLabel!.text = tresor.name
     cell.descriptionLabel!.text = tresor.tresordescription
@@ -217,11 +217,11 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     case .delete:
       tableView.deleteRows(at: [indexPath!], with: .fade)
     case .update:
-      let cell = tableView.cellForRow(at: indexPath!) as? TresorTableViewCell
+      let cell = tableView.cellForRow(at: indexPath!) as? TresorCell
       
       configureCell(cell!, withTresor: anObject as! Tresor)
     case .move:
-      let cell = tableView.cellForRow(at: indexPath!) as? TresorTableViewCell
+      let cell = tableView.cellForRow(at: indexPath!) as? TresorCell
       
       configureCell(cell!, withTresor: anObject as! Tresor)
       tableView.moveRow(at: indexPath!, to: newIndexPath!)

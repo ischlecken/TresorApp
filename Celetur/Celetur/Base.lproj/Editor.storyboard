@@ -5,6 +5,7 @@
     </device>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
@@ -219,6 +220,9 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <segue destination="m1K-fC-GCw" kind="presentation" identifier="showItemNameSelectionSegue" modalPresentationStyle="formSheet" modalTransitionStyle="coverVertical" id="n3S-bf-ox0"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tkg-yl-I3h" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="TM2-bW-HDr" userLabel="Exit" sceneMemberID="exit"/>
@@ -240,6 +244,120 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Xff-Pj-cq6" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2194" y="152"/>
+        </scene>
+        <!--Select Item Key-->
+        <scene sceneID="Kqm-cs-tBz">
+            <objects>
+                <tableViewController id="kxM-cU-xKX" customClass="SelectItemNameTableViewController" customModule="Celetur" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" estimatedRowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="Tcw-ti-b1T">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="basicCell" textLabel="hiT-Qq-Lf4" style="IBUITableViewCellStyleDefault" id="aeL-u6-Nza">
+                                <rect key="frame" x="0.0" y="55.5" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="aeL-u6-Nza" id="k9t-1F-Mrb">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="hiT-Qq-Lf4">
+                                            <rect key="frame" x="16" y="0.0" width="343" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="addCustomItemNameCell" rowHeight="44" id="wOT-uw-qoL">
+                                <rect key="frame" x="0.0" y="99.5" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="wOT-uw-qoL" id="w1N-43-spa">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sEx-U5-HXG">
+                                            <rect key="frame" x="16" y="11" width="343" height="22"/>
+                                            <state key="normal" title="Add Custom Item Name"/>
+                                            <connections>
+                                                <action selector="addCustomItemNameAction:" destination="kxM-cU-xKX" eventType="touchUpInside" id="wzY-0s-VqZ"/>
+                                            </connections>
+                                        </button>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="sEx-U5-HXG" firstAttribute="top" secondItem="w1N-43-spa" secondAttribute="topMargin" id="HJU-HB-Bny"/>
+                                        <constraint firstAttribute="bottomMargin" secondItem="sEx-U5-HXG" secondAttribute="bottom" id="P42-n8-PqZ"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="sEx-U5-HXG" secondAttribute="trailing" id="TPX-VM-4kF"/>
+                                        <constraint firstItem="sEx-U5-HXG" firstAttribute="leading" secondItem="w1N-43-spa" secondAttribute="leadingMargin" id="soJ-3E-YMp"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="editCustomItemNameCell" rowHeight="44" id="ZAL-6V-PaL">
+                                <rect key="frame" x="0.0" y="143.5" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="ZAL-6V-PaL" id="ieB-n4-GuP">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <textField opaque="NO" tag="42" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Add Custom Item Name" textAlignment="natural" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="hFT-CZ-9hQ">
+                                            <rect key="frame" x="16" y="11" width="343" height="22"/>
+                                            <nil key="textColor"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <textInputTraits key="textInputTraits"/>
+                                            <connections>
+                                                <action selector="editCustomItemNameAction:" destination="kxM-cU-xKX" eventType="editingChanged" id="ctb-lH-lys"/>
+                                            </connections>
+                                        </textField>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstAttribute="trailingMargin" secondItem="hFT-CZ-9hQ" secondAttribute="trailing" id="9mS-YN-XcZ"/>
+                                        <constraint firstAttribute="bottomMargin" secondItem="hFT-CZ-9hQ" secondAttribute="bottom" id="EZg-XJ-aug"/>
+                                        <constraint firstItem="hFT-CZ-9hQ" firstAttribute="top" secondItem="ieB-n4-GuP" secondAttribute="topMargin" id="QNw-Ym-Rkm"/>
+                                        <constraint firstItem="hFT-CZ-9hQ" firstAttribute="leading" secondItem="ieB-n4-GuP" secondAttribute="leadingMargin" id="jyX-oO-iie"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="kxM-cU-xKX" id="J06-Fi-Kxr"/>
+                            <outlet property="delegate" destination="kxM-cU-xKX" id="Y4f-3C-img"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Select Item Key" id="cTs-Ur-BqS">
+                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="e3A-Nt-0Vf">
+                            <connections>
+                                <segue destination="4Ng-ak-jqY" kind="unwind" identifier="cancelItemNameSegue" unwindAction="unwindToEditTresorDocumentItemViewWithSegue:" id="n6O-Z6-5DQ"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="F9q-hD-JTC">
+                            <connections>
+                                <segue destination="4Ng-ak-jqY" kind="unwind" identifier="saveItemNameSegue" unwindAction="unwindToEditTresorDocumentItemViewWithSegue:" id="n8O-55-fJQ"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="z7j-Ko-FbI" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="4Ng-ak-jqY" userLabel="Exit" sceneMemberID="exit"/>
+            </objects>
+            <point key="canvasLocation" x="4640.8000000000002" y="151.57421289355324"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="mLI-Aq-Y9S">
+            <objects>
+                <navigationController id="m1K-fC-GCw" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Eet-ow-htE">
+                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="kxM-cU-xKX" kind="relationship" relationship="rootViewController" id="Fom-id-SYl"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="VLv-H4-McA" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3924" y="152"/>
         </scene>
     </scenes>
 </document>

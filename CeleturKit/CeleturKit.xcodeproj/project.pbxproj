@@ -120,6 +120,7 @@
 		85E312791F6D491800EB8AD8 /* DataManagement */ = {
 			isa = PBXGroup;
 			children = (
+				855587C41FA9363A003E43E6 /* PayloadModel.swift */,
 				85E312751F6D453500EB8AD8 /* CloudKitManager.swift */,
 				85F5AC4B1F767E12003B14F9 /* CloudKitPersistenceState.swift */,
 				85E312731F6D408300EB8AD8 /* CoreDataManager.swift */,
@@ -151,7 +152,6 @@
 				85A6A1061F936BBB00EBDD48 /* URL+extension.swift */,
 				85A6A1081F936D4D00EBDD48 /* Bundle+extension.swift */,
 				85797EAF1FA4919800CB9D87 /* Reachability.swift */,
-				855587C41FA9363A003E43E6 /* PayloadModel.swift */,
 			);
 			name = Util;
 			sourceTree = "<group>";

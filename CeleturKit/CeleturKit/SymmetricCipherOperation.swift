@@ -89,7 +89,7 @@ public class SymmetricCipher {
 public class AES256Encryption : SymmetricCipher {
   
   let algorithm = SymmetricCipherAlgorithm.aes_256
-  let options:SymmetricCipherOptions =  [.PKCS7Padding]
+  var options:SymmetricCipherOptions =  [.PKCS7Padding]
   
   public override func createRandomIV() throws {
     self.iv = try Data(withRandomData:self.algorithm.requiredBlockSize())
@@ -105,7 +105,7 @@ public class AES256Encryption : SymmetricCipher {
 public class AES256Decryption : SymmetricCipher {
   
   let algorithm = SymmetricCipherAlgorithm.aes_256
-  let options:SymmetricCipherOptions =  [.PKCS7Padding]
+  var options:SymmetricCipherOptions =  [.PKCS7Padding]
   
   public func execute() {
     celeturKitLogger.debug("AES256Decryption(key:\(self.key.hexEncodedString())")

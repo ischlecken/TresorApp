@@ -15,7 +15,34 @@ Hugo Schlecken
 ## License
 
 <!-- 
-otool -L CeleturKit
+/Users/fe/Library/Developer//Xcode/DerivedData/Celetur-glzfvbvldczqhmbskfacpmjdgcfd/Build/Products/Debug-iphoneos/Celetur.app/Frameworks/CeleturKit.framework/CeleturKit:
+@rpath/CeleturKit.framework/CeleturKit (compatibility version 1.0.0, current version 1.0.0)
+/System/Library/Frameworks/Foundation.framework/Foundation (compatibility version 300.0.0, current version 1445.30.0)
+/usr/lib/libobjc.A.dylib (compatibility version 1.0.0, current version 228.0.0)
+/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1252.0.0)
+/System/Library/Frameworks/CloudKit.framework/CloudKit (compatibility version 1.0.0, current version 719.0.0)
+/System/Library/Frameworks/CoreData.framework/CoreData (compatibility version 1.0.0, current version 847.1.0)
+/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation (compatibility version 150.0.0, current version 1445.32.0)
+/System/Library/Frameworks/Security.framework/Security (compatibility version 1.0.0, current version 0.0.0)
+/System/Library/Frameworks/SystemConfiguration.framework/SystemConfiguration (compatibility version 1.0.0, current version 963.0.0)
+/System/Library/Frameworks/UIKit.framework/UIKit (compatibility version 1.0.0, current version 3698.21.8)
+@rpath/libswiftCloudKit.dylib (compatibility version 1.0.0, current version 900.0.69)
+@rpath/libswiftContacts.dylib (compatibility version 1.0.0, current version 900.0.69)
+@rpath/libswiftCore.dylib (compatibility version 1.0.0, current version 900.0.69)
+@rpath/libswiftCoreData.dylib (compatibility version 1.0.0, current version 900.0.69)
+@rpath/libswiftCoreFoundation.dylib (compatibility version 1.0.0, current version 900.0.69)
+@rpath/libswiftCoreGraphics.dylib (compatibility version 1.0.0, current version 900.0.69)
+@rpath/libswiftCoreImage.dylib (compatibility version 1.0.0, current version 900.0.69)
+@rpath/libswiftCoreLocation.dylib (compatibility version 1.0.0, current version 900.0.69)
+@rpath/libswiftDarwin.dylib (compatibility version 1.0.0, current version 900.0.69)
+@rpath/libswiftDispatch.dylib (compatibility version 1.0.0, current version 900.0.69)
+@rpath/libswiftFoundation.dylib (compatibility version 1.0.0, current version 900.0.69)
+@rpath/libswiftMetal.dylib (compatibility version 1.0.0, current version 900.0.69)
+@rpath/libswiftObjectiveC.dylib (compatibility version 1.0.0, current version 900.0.69)
+@rpath/libswiftQuartzCore.dylib (compatibility version 1.0.0, current version 900.0.69)
+@rpath/libswiftSwiftOnoneSupport.dylib (compatibility version 1.0.0, current version 900.0.69)
+@rpath/libswiftUIKit.dylib (compatibility version 1.0.0, current version 900.0.69)
+
 
 plain:Test, the quick brown fox jumps over the lazy dog, 123,123,123
 key:m5khv18JXKFVIET8pHa0AB4HSaTesxEQ

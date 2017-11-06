@@ -154,7 +154,7 @@ extension TresorDocumentItem {
       
       let operation = AES256Decryption(key: messageKey, inputData: payload, iv:nonce)
       operation.execute()
-      if let d = PayloadModel.model(jsonData: operation.outputData!) {
+      if let d = PayloadSerializer.payload(jsonData: operation.outputData!) {
         celeturKitLogger.debug("payload:\(d)")
         
         result = self.encryptPayload(key: masterKey.accessToken!, payload: operation.outputData!, status: TresorDocumentItemStatus.encrypted)

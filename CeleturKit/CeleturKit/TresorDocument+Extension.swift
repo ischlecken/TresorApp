@@ -30,11 +30,11 @@ extension TresorDocument {
   public convenience init(context: NSManagedObjectContext,
                           masterKey: TresorKey,
                           tresor: Tresor,
-                          model: PayloadModelType
+                          model: Payload
     ) throws {
     try self.init(context: context, tresor: tresor)
     
-    if let payload = PayloadModel.jsonData(model: model),
+    if let payload = PayloadSerializer.jsonData(model: model),
       let currentDeviceKey = masterKey.accessToken {
       
       self.setMetaInfo(model: model)
@@ -55,10 +55,10 @@ extension TresorDocument {
     }
   }
   
-  public func setMetaInfo(title:String, description: String?) {
-    var metaInfo = [ "title":title ]
+  public func setMetaInfo(model: Payload) {
+    var metaInfo = [ "title":model.title ]
   
-    if let d = description {
+    if let d = model.description {
       metaInfo["description"] = d
     }
     
@@ -66,12 +66,6 @@ extension TresorDocument {
       self.metainfo = try JSONSerialization.data(withJSONObject: metaInfo, options: [])
     } catch {
       celeturKitLogger.error("Error serializing metainfo json",error:error)
-    }
-  }
-  
-  public func setMetaInfo(model: PayloadModelType) {
-    if let title = model["title"] as? String {
-      self.setMetaInfo(title: title, description: model["description"] as? String)
     }
   }
   

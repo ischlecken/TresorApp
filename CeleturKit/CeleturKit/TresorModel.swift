@@ -205,10 +205,10 @@ public class TresorModel {
   
   public func saveDocumentItemModelData(context:NSManagedObjectContext,
                                         tresorDocumentItem: TresorDocumentItem,
-                                        model : PayloadModelType,
+                                        model : Payload,
                                         masterKey: TresorKey) {
     
-    if let payload = PayloadModel.jsonData(model: model),
+    if let payload = PayloadSerializer.jsonData(model: model),
       let tresorDocument = tresorDocumentItem.document,
       let tempTresorDocument = context.object(with: tresorDocument.objectID) as? TresorDocument {
       

@@ -12,27 +12,24 @@ class EditTresorDocumentItemViewController: UITableViewController {
   var tresorAppState: TresorAppModel?
   
   let dateFormatter = DateFormatter()
-  var model = PayloadModelType()
-  var modelIndex = [String]()
+  var model : Payload?
   
   var actualEditingItemValueIndexPath : IndexPath?
   var clickedItemNameIndexPath : IndexPath?
   
-  func setModel(payloadModel:PayloadModelType?) {
-    if let p = payloadModel {
-      self.model = p
-      self.modelIndex = Array(self.model.keys)
-    } else {
-      self.model = PayloadModelType()
-      self.modelIndex = [String]()
-    }
+  func setModel(payload:Payload?) {
+    self.model = payload
   }
   
-  func getModel() -> PayloadModelType {
+  func getModel() -> Payload? {
     if let indexPath = self.actualEditingItemValueIndexPath,let c = self.tableView.cellForRow(at: indexPath) as? EditTresorDocumentItemCell {
       celeturLogger.debug("getModel():\(c.itemValueTextfield?.text ?? "-")")
       
-      self.model[self.modelIndex[indexPath.row]] = c.itemValueTextfield?.text
+      if var item = self.model?.getActualItem(forPath: indexPath) {
+        item.value = .s(c.itemValueTextfield!.text!)
+        
+        self.model?.setActualItem(forPath: indexPath, payloadItem:item)
+      }
     }
   
     return self.model
@@ -42,7 +39,6 @@ class EditTresorDocumentItemViewController: UITableViewController {
     super.viewDidLoad()
   
     self.tableView.register(UINib(nibName:"EditTresorDocumentItemCell",bundle:nil),forCellReuseIdentifier:"editTresorDocumentItemCell")
-    
   }
   
   // MARK: - Actions
@@ -70,29 +66,35 @@ class EditTresorDocumentItemViewController: UITableViewController {
   
   @IBAction
   func itemValueEndEditingAction(_ sender: Any) {
-    if let t = sender as? UITextField, let indexPath = self.actualEditingItemValueIndexPath {
-      self.model[self.modelIndex[indexPath.row]] = t.text
+    if let t = (sender as? UITextField)?.text,
+      let indexPath = self.actualEditingItemValueIndexPath,
+      var item = self.model?.getActualItem(forPath: indexPath) {
+      
+      item.value = .s(t)
+      
+      self.model?.setActualItem(forPath: indexPath, payloadItem:item)
     }
   }
   
   
   @IBAction
   func addFieldAction(_ sender: Any) {
-    let key = "New Item "+String(Int(arc4random())%100)
-    
-    self.model[key] = "---"
-    
-    self.modelIndex = Array(self.model.keys)
-    
-    self.tableView.reloadData()
+    if let maxSection = self.model?.getActualSectionCount() {
+      let payloadItem = PayloadItem(name: "New Item "+String(Int(arc4random())%100),
+                                    value: .s(""),
+                                    attributes: [:])
+      
+      self.model?.appendToActualSection(forSection: maxSection - 1, payloadItem: payloadItem)
+      self.tableView.reloadData()
+    }
   }
   
   @IBAction func deleteFieldsAction(_ sender: Any) {
-    self.model = PayloadModelType()
+    if let maxSection = self.model?.getActualSectionCount() {
+      self.model?.removeAllItemsFromActualSection(forSection: maxSection - 1)
     
-    self.modelIndex = Array(self.model.keys)
-    
-    self.tableView.reloadData()
+      self.tableView.reloadData()
+    }
   }
   
   // MARK: - Segue
@@ -102,7 +104,9 @@ class EditTresorDocumentItemViewController: UITableViewController {
     if "showItemNameSelectionSegue" == segue.identifier {
       if let s = (segue.destination as? UINavigationController)?.topViewController as? SelectItemNameTableViewController,
         let selectedItem = self.clickedItemNameIndexPath?.row {
-        s.itemNames = self.modelIndex
+        s.itemNames = (self.model?.getActualSectionItems(forSection: 0).map() { payloadItem in
+          return payloadItem.name
+          })!
         s.selectedItem = selectedItem
       }
     }
@@ -122,13 +126,11 @@ class EditTresorDocumentItemViewController: UITableViewController {
         
         celeturLogger.debug("selected new itemname:\(newItemName ?? "-")")
         
-        if let newValue = newItemName,
-          self.modelIndex[selectedItem] != newValue,
-          let oldValue = self.model.removeValue(forKey: self.modelIndex[selectedItem]) {
-        
-          self.model[newValue] = oldValue
-          self.modelIndex[selectedItem] = newValue
+        if let newItemName = newItemName, var item = self.model?.getActualItem(forPath: self.clickedItemNameIndexPath!) {
+          item.name = newItemName
           
+          self.model?.setActualItem(forPath: self.clickedItemNameIndexPath!, payloadItem: item)
+        
           DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
             self.tableView.reloadRows(at: [IndexPath(row:selectedItem,section:0)], with: .fade)
           }
@@ -150,7 +152,7 @@ class EditTresorDocumentItemViewController: UITableViewController {
     
     switch section {
     case 0:
-      result = self.modelIndex.count
+      result = self.model?.getActualRowCount(forSection: 0) ?? 0
     case 1:
       result = 2
     default: break
@@ -167,7 +169,7 @@ class EditTresorDocumentItemViewController: UITableViewController {
     case 0:
       let editCell = tableView.dequeueReusableCell(withIdentifier: "editTresorDocumentItemCell", for: indexPath) as! EditTresorDocumentItemCell
       
-      configureCell(editCell, forKey: self.modelIndex[indexPath.row])
+      configureCell(editCell, forPath: indexPath)
       cell = editCell
       
     default:
@@ -185,18 +187,22 @@ class EditTresorDocumentItemViewController: UITableViewController {
   
   override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
     if editingStyle == .delete {
-      self.model.removeValue(forKey: self.modelIndex[indexPath.row])
-      self.modelIndex = Array(self.model.keys)
+      if var items = self.model?.getActualSectionItems(forSection: indexPath.section) {
+        items.remove(at: indexPath.row)
+        
+        tableView.deleteRows(at: [indexPath], with: .fade)
+      }
       
-      tableView.deleteRows(at: [indexPath], with: .fade)
     } else if editingStyle == .insert {
       // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
     }
   }
   
-  fileprivate func configureCell(_ cell: EditTresorDocumentItemCell, forKey key: String) {
-    cell.itemNameButton?.setTitle(key, for: .normal)
-    cell.itemValueTextfield?.text = self.model[key] as? String
+  fileprivate func configureCell(_ cell: EditTresorDocumentItemCell, forPath indexPath: IndexPath) {
+    if let payloadItem = self.model?.getActualItem(forPath: indexPath) {
+      cell.itemNameButton?.setTitle(payloadItem.name, for: .normal)
+      cell.itemValueTextfield?.text = payloadItem.value.toString()
+    }
   }
   
 }

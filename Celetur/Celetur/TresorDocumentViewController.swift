@@ -65,7 +65,18 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
       self.beginInsertNewObject()
       context.perform {
         do {
-          let model = [ "title": "gmx.de", "description": "Mail Konto", "user": "bla@fasel.de", "password":"hugo"]
+          let json = """
+{"list": [{"created":"2017-11-05T22:26:57Z",
+           "sections": [ { "items": [{"name":"user","value":"hugo"},
+                                     {"name":"password","value":"secret123","attributes":{"revealable":1}}
+                                    ],
+                           "name" : "main" }
+                       ]
+         }],
+ "title":"test"
+}
+"""
+          let model = PayloadSerializer.payload(jsonData: json.data(using: .utf8)!)!
           
           let _ = try TresorDocument(context: context, masterKey: masterKey, tresor: t, model: model)
           

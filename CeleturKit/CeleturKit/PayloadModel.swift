@@ -1,5 +1,5 @@
 //
-//  PayloadModel.swift
+//  PayloadSerializer.swift
 //  CeleturKit
 //
 //  Created by Feldmaus on 31.10.17.
@@ -8,36 +8,9 @@
 
 fileprivate let jsonDateFormatter = ISO8601DateFormatter()
 
-public typealias PayloadModelType = [String:Any]
+public class PayloadSerializer {
 
-public class PayloadModel {
-
-  public class func jsonData(model:PayloadModelType) -> Data? {
-    var result : Data?
-    
-    do {
-      result = try JSONSerialization.data(withJSONObject: model, options: [])
-    } catch {
-      celeturKitLogger.error("Error while serializing to json", error: error)
-    }
-    
-    return result
-  }
-  
-  public class func model(jsonData:Data) -> PayloadModelType? {
-    var result : [String:Any]?
-    
-    do {
-      result = try JSONSerialization.jsonObject(with: jsonData, options: []) as? PayloadModelType
-    } catch {
-      celeturKitLogger.error("Error while deserializing json to model",error:error)
-    }
-  
-    return result
-    
-  }
-  
-  public class func toJSON(model:JSONSerializable) -> Data? {
+  public class func jsonData(model:JSONSerializable) -> Data? {
     var result : Data?
     do {
       result = try JSONSerialization.data(withJSONObject: model.toJSOnSerializableObject(), options: [])
@@ -48,7 +21,7 @@ public class PayloadModel {
     return result
   }
   
-  public class func toPayloadItem(jsonData:Data) -> PayloadItem? {
+  public class func payloadItem(jsonData:Data) -> PayloadItem? {
     var result : PayloadItem?
     
     do {
@@ -65,7 +38,7 @@ public class PayloadModel {
     return result
   }
   
-  public class func toPayloadSection(jsonData:Data) -> PayloadSection? {
+  public class func payloadSection(jsonData:Data) -> PayloadSection? {
     var result : PayloadSection?
     
     do {
@@ -82,7 +55,7 @@ public class PayloadModel {
     return result
   }
   
-  public class func toPayloadSection(jsonData:Data) -> PayloadSections? {
+  public class func tpayloadSection(jsonData:Data) -> PayloadSections? {
     var result : PayloadSections?
     
     do {
@@ -99,7 +72,7 @@ public class PayloadModel {
     return result
   }
   
-  public class func toPayload(jsonData:Data) -> Payload? {
+  public class func payload(jsonData:Data) -> Payload? {
     var result : Payload?
     
     do {
@@ -156,6 +129,10 @@ public struct PayloadItem : JSONSerializable {
           self.attributes[.minlength] = ValueType.toValueType(any: av)
         case "maxlength":
           self.attributes[.maxlength] = ValueType.toValueType(any: av)
+        case "revealable":
+          self.attributes[.revealable] = ValueType.toValueType(any: av)
+        case "revealed":
+          self.attributes[.revealed] = ValueType.toValueType(any: av)
         default:
           break
         }
@@ -177,6 +154,10 @@ public struct PayloadItem : JSONSerializable {
         attributes["minlength"] = av.toAny()
       case .maxlength:
         attributes["maxlength"] = av.toAny()
+      case .revealable:
+        attributes["revealable"] = av.toAny()
+      case .revealed:
+        attributes["revealed"] = av.toAny()
       }
     }
     
@@ -203,6 +184,19 @@ public struct PayloadItem : JSONSerializable {
         return v
       case .d(let v):
         return v
+      }
+    }
+    
+    public func toString() -> String {
+      switch self {
+      case .s(let v):
+        return v
+      case .i(let v):
+        return String(v)
+      case .f(let v):
+        return String(v)
+      case .d(let v):
+        return jsonDateFormatter.string(from: v)
       }
     }
     
@@ -244,12 +238,33 @@ public struct PayloadItem : JSONSerializable {
   public enum AttributeName {
     case minlength
     case maxlength
+    case revealable
+    case revealed
   }
   
   public var name      : String
   public var value     : ValueType
   public var attributes: [AttributeName:ValueType]
   
+  public func isRevealable() -> Bool {
+    guard let a = self.attributes[.revealable] else { return false }
+    
+    return a == .i(1)
+  }
+  
+  public func isRevealed() -> Bool {
+    guard let a = self.attributes[.revealed] else { return false }
+    
+    return a == .i(1)
+  }
+  
+  public mutating func reveal() {
+    self.attributes[.revealed] = .i(1)
+  }
+  
+  public mutating func unreveal() {
+    self.attributes[.revealed] = .i(0)
+  }
 }
 
 public struct PayloadSection : JSONSerializable {
@@ -383,6 +398,38 @@ public struct Payload : JSONSerializable {
   public var description: String?
   
   public var list       : [PayloadSections]
+  
+  public func getActualPayloadSections() -> [PayloadSection] {
+    return self.list[0].sections
+  }
+  
+  public func getActualSectionCount() -> Int {
+    return self.getActualPayloadSections().count
+  }
+  
+  public func getActualSectionItems(forSection section:Int) -> [PayloadItem] {
+    return self.getActualPayloadSections()[section].items
+  }
+  
+  public mutating func appendToActualSection(forSection section:Int, payloadItem: PayloadItem){
+    return self.list[0].sections[section].items.append(payloadItem)
+  }
+  
+  public mutating func removeAllItemsFromActualSection(forSection section:Int){
+    return self.list[0].sections[section].items.removeAll()
+  }
+  
+  public mutating func setActualItem(forPath indexPath:IndexPath, payloadItem:PayloadItem) {
+    return self.list[0].sections[indexPath.section].items[indexPath.row] = payloadItem
+  }
+  
+  public func getActualItem(forPath indexPath:IndexPath) -> PayloadItem {
+    return self.getActualPayloadSections()[indexPath.section].items[indexPath.row]
+  }
+  
+  public func getActualRowCount(forSection section:Int) -> Int {
+    return self.getActualSectionItems(forSection: section).count
+  }
 }
 
 

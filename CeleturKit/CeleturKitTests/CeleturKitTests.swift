@@ -77,7 +77,7 @@ class CeleturKitTests: XCTestCase {
     let payloadItem = PayloadItem(name: "test", value: .i(10), attributes: [:])
     let expectedJSON = "{\"name\":\"test\",\"value\":10}"
     
-    if let jsonPayloadItem = PayloadModel.toJSON(model:payloadItem),
+    if let jsonPayloadItem = PayloadSerializer.jsonData(model:payloadItem),
       let resultJSON = String(data:jsonPayloadItem,encoding:.utf8) {
       
       XCTAssert(expectedJSON == resultJSON, "expected json differs from resulting json")
@@ -90,7 +90,7 @@ class CeleturKitTests: XCTestCase {
   
   func testPayloadModel2() {
     let json = "{\"name\":\"test\",\"value\":1}"
-    let payloadItem = PayloadModel.toPayloadItem(jsonData:json.data(using:.utf8)!)
+    let payloadItem = PayloadSerializer.payloadItem(jsonData:json.data(using:.utf8)!)
     
     XCTAssertNotNil(payloadItem)
     
@@ -98,7 +98,7 @@ class CeleturKitTests: XCTestCase {
     XCTAssert(payloadItem!.value == PayloadItem.ValueType.i(1))
     XCTAssert(payloadItem!.attributes.count == 0)
     
-    let json1 = PayloadModel.toJSON(model: payloadItem!)
+    let json1 = PayloadSerializer.jsonData(model: payloadItem!)
     
     XCTAssertNotNil(json1)
     
@@ -108,7 +108,7 @@ class CeleturKitTests: XCTestCase {
   func testPayloadModel3() {
     let json = "{\"name\":\"model3test\",\"value\":\"bla fasel\",\"attributes\":{\"type\":\"String\",\"maxlength\":1}}"
     let json2 = "{\"name\":\"model3test\",\"value\":\"bla fasel\",\"attributes\":{\"maxlength\":1}}"
-    let payloadItem = PayloadModel.toPayloadItem(jsonData:json.data(using:.utf8)!)
+    let payloadItem = PayloadSerializer.payloadItem(jsonData:json.data(using:.utf8)!)
     
     XCTAssertNotNil(payloadItem)
     
@@ -116,14 +116,14 @@ class CeleturKitTests: XCTestCase {
     XCTAssert(payloadItem!.value == PayloadItem.ValueType.s("bla fasel"))
     XCTAssert(payloadItem!.attributes.count == 1)
     
-    let json1 = PayloadModel.toJSON(model: payloadItem!)
+    let json1 = PayloadSerializer.jsonData(model: payloadItem!)
     
     XCTAssertNotNil(json1)
     
     XCTAssert(String(data:json1!,encoding:.utf8) == json2)
   }
   
-  func testPayload() {
+  func testPayload0() {
     let payloadItem1 = PayloadItem(name: "user", value: .s("hugo"), attributes: [:])
     let payloadItem2 = PayloadItem(name: "password", value: .s("secret123"), attributes: [:])
     
@@ -132,8 +132,37 @@ class CeleturKitTests: XCTestCase {
     
     let payload = Payload(title: "test", description: nil, list: [payloadSections])
     
-    if let json = PayloadModel.toJSON(model: payload) {
+    if let json = PayloadSerializer.jsonData(model: payload) {
       celeturKitLogger.debug("json:\(String(data:json,encoding:.utf8) ?? "-")")
+    }
+  }
+  
+  func testPayload1() {
+    let json = """
+{"list": [{"created":"2017-11-05T22:26:57Z",
+           "sections": [ { "items": [{"name":"user","value":"hugo"}, {"name":"password","value":"secret123"} ], "name" : "main" }
+                       ]
+         }],
+ "title":"test"
+}
+"""
+    
+    let payload = PayloadSerializer.payload(jsonData: json.data(using: .utf8)! )
+    
+    XCTAssertNotNil(payload)
+    
+    if let p = payload {
+      XCTAssert(p.title == "test" )
+      XCTAssert(p.list.count == 1)
+      
+      XCTAssert(p.list[0].sections.count == 1 )
+      
+      XCTAssert(p.list[0].sections[0].items.count == 2 )
+      
+      XCTAssert(p.list[0].sections[0].items[1].value == .s("secret123") )
+      
+      XCTAssert(p.list[0].sections[0].name == "main" )
+      
     }
   }
 }

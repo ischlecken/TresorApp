@@ -24,12 +24,11 @@ class TresorAppModel {
     self.tresorModel = TresorModel()
     self.tresorKeys = TresorKeys(appGroup: appGroup)
     
-    self.timer.schedule(deadline: .now(), repeating: .seconds(60))
+    self.timer.schedule(deadline: .now(), repeating:.seconds(60))
     self.timer.setEventHandler {
       self.masterKey = nil
       self.appDelegate?.noMasterKeyUIAppearance(refreshViews: true)
     }
-    
     self.timer.resume()
   }
   
@@ -44,29 +43,33 @@ class TresorAppModel {
   }
   
   func getMasterKey(completion: @escaping (TresorKey?,Error?) -> Void) {
-    self.tresorKeys.getMasterKey() { (masterKey:TresorKey?, error:Error?) -> Void in
-      var returnedError: Error?
-      var switchUI = false
-      
-      if self.masterKey == nil {
-        if let e = error {
-          celeturLogger.debug("error:\(e)")
-          returnedError = error
-        } else if let mk = masterKey {
-          celeturLogger.info("masterKey:\(mk.accountName),\(mk.accessToken?.hexEncodedString() ?? "---")")
-          
-          self.masterKey = mk
-          switchUI = true
-        }
-      }
-      
-      DispatchQueue.main.async {
-        if switchUI {
-          self.appDelegate?.hasMasterKeyUIAppearance(refreshViews: true)
+    if self.masterKey == nil {
+      self.tresorKeys.getMasterKey() { (masterKey:TresorKey?, error:Error?) -> Void in
+        var returnedError: Error?
+        var switchUI = false
+        
+        if self.masterKey == nil {
+          if let e = error {
+            celeturLogger.debug("error:\(e)")
+            returnedError = error
+          } else if let mk = masterKey {
+            celeturLogger.info("masterKey:\(mk.accountName),\(mk.accessToken?.hexEncodedString() ?? "---")")
+            
+            self.masterKey = mk
+            switchUI = true
+          }
         }
         
-        completion(self.masterKey,returnedError)
+        DispatchQueue.main.async {
+          if switchUI {
+            self.appDelegate?.hasMasterKeyUIAppearance(refreshViews: true)
+          }
+          
+          completion(self.masterKey,returnedError)
+        }
       }
+    } else {
+      completion(self.masterKey,nil)
     }
   }
   

@@ -74,26 +74,25 @@ class TresorDocumentItemViewController: UITableViewController {
         if let payload = item.payload {
           label.text = payload.hexEncodedString()
           
-          let key = self.tresorAppState?.masterKey
-          if key == nil {
-            label.text = "Masterkey not set, could not decrypt payload..."
-            
-            return
-          }
-          
-          self.activityView.startAnimating()
-          DispatchQueue.global().async {
-            if let decryptedPayload = item.decryptPayload(masterKey:key!), let d = PayloadSerializer.payload(jsonData: decryptedPayload) {
-              self.setModel(payload: d)
-              
-              DispatchQueue.main.async {
-                self.setDataLabel(data: nil, error: nil)
-                self.navigationItem.rightBarButtonItem?.isEnabled = true
+          self.tresorAppState?.getMasterKey(){ (tresorKey, error) in
+            if let key = tresorKey {
+              self.activityView.startAnimating()
+              DispatchQueue.global().async {
+                if let decryptedPayload = item.decryptPayload(masterKey:key), let d = PayloadSerializer.payload(jsonData: decryptedPayload) {
+                  self.setModel(payload: d)
+                  
+                  DispatchQueue.main.async {
+                    self.setDataLabel(data: nil, error: nil)
+                    self.navigationItem.rightBarButtonItem?.isEnabled = true
+                  }
+                } else {
+                  DispatchQueue.main.async {
+                    self.setDataLabel(data: nil, error: nil)
+                  }
+                }
               }
             } else {
-              DispatchQueue.main.async {
-                self.setDataLabel(data: nil, error: nil)
-              }
+              label.text = "Masterkey not set, could not decrypt payload..."
             }
           }
         }
@@ -135,37 +134,43 @@ class TresorDocumentItemViewController: UITableViewController {
   
   @IBAction
   func unwindToTresorDocumentItem(segue: UIStoryboardSegue) {
-    if "saveEditTresorDocumentItem" == segue.identifier {
-      if let m = (segue.source as? EditTresorDocumentItemViewController)?.getModel(),
-        let tdi = self.tresorDocumentItem,
-        let k = self.tresorAppState?.masterKey,
-        let context = self.tresorAppState?.tresorModel.tresorCoreDataManager?.privateChildManagedObjectContext() {
+    if "saveEditTresorDocumentItem" == segue.identifier,
+      let m = (segue.source as? EditTresorDocumentItemViewController)?.getModel(),
+      let tdi = self.tresorDocumentItem {
       
-        self.activityView.startAnimating()
-        self.navigationItem.rightBarButtonItem?.isEnabled = false
-        self.setModel(payload: nil)
-        self.tableView.reloadData()
+      self.tresorAppState?.getMasterKey() { (tresorKey, error) in
+        if let key = tresorKey {
+          self.saveChangedItem(tdi: tdi, k: key, m: m)
+        }
+      }
+    }
+  }
+  
+  fileprivate func saveChangedItem(tdi: TresorDocumentItem,k: TresorKey, m:Payload) {
+    if let context = self.tresorAppState?.tresorModel.tresorCoreDataManager?.privateChildManagedObjectContext() {
+      self.activityView.startAnimating()
+      self.navigationItem.rightBarButtonItem?.isEnabled = false
+      self.setModel(payload: nil)
+      self.tableView.reloadData()
+      
+      context.perform {
+        self.tresorAppState?.tresorModel.saveDocumentItemModelData(context: context, tresorDocumentItem: tdi, model : m, masterKey: k)
         
-        context.perform {
-          self.tresorAppState?.tresorModel.saveDocumentItemModelData(context: context, tresorDocumentItem: tdi, model : m, masterKey: k)
-          
-          do {
-            let _ = try context.save()
-            
-            DispatchQueue.main.async {
-              self.tresorAppState?.tresorModel.saveChanges()
-              self.setModel(payload: m)
-              self.tableView.reloadData()
-            }
-          } catch {
-            celeturLogger.error("Error while saving changed tresor document items...",error:error)
-          }
+        do {
+          let _ = try context.save()
           
           DispatchQueue.main.async {
-            self.activityView.stopAnimating()
-            self.navigationItem.rightBarButtonItem?.isEnabled = true
-            
+            self.tresorAppState?.tresorModel.saveChanges()
+            self.setModel(payload: m)
+            self.tableView.reloadData()
           }
+        } catch {
+          celeturLogger.error("Error while saving changed tresor document items...",error:error)
+        }
+        
+        DispatchQueue.main.async {
+          self.activityView.stopAnimating()
+          self.navigationItem.rightBarButtonItem?.isEnabled = true
         }
       }
     }

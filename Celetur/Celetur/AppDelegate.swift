@@ -27,6 +27,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     navigationController.topViewController!.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem
     splitViewController.delegate = self
 
+    self.noMasterKeyUIAppearance(refreshViews:false)
+    
     let masterNavigationController = splitViewController.viewControllers[0] as! UINavigationController
     let controller = masterNavigationController.topViewController as! TresorViewController
     controller.tresorAppState = self.tresorAppModel
@@ -44,7 +46,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     
     self.tresorAppModel.completeSetup(appDelegate:self)
     
-    //self.setDefaultUIAppearance(refreshViews:false)
     
     return true
   }
@@ -138,16 +139,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
   func onOffline() {
     self.setTitle(title: "Celetur (Offline)")
     
-    self.setOfflineUIAppearance(refreshViews:true)
   }
   
   func onOnline() {
     self.setTitle(title: "Celetur")
     
-    self.setDefaultUIAppearance(refreshViews:true)
   }
   
-  func setDefaultUIAppearance(refreshViews:Bool) {
+  func hasMasterKeyUIAppearance(refreshViews:Bool) {
     UINavigationBar.appearance().barTintColor = .celeturBarTintColor
     UINavigationBar.appearance().tintColor = .celeturTintColor
     UINavigationBar.appearance().titleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.celeturTintColor]
@@ -159,7 +158,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     }
   }
   
-  func setOfflineUIAppearance(refreshViews:Bool) {
+  func noMasterKeyUIAppearance(refreshViews:Bool) {
     UINavigationBar.appearance().barTintColor = .lightGray
     UINavigationBar.appearance().tintColor = .celeturTintColor
     UINavigationBar.appearance().titleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.celeturTintColor]

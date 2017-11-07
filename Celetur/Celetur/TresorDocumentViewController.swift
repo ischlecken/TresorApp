@@ -58,14 +58,18 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   
   @IBAction
   func insertNewObject(_ sender: Any) {
-    if let t = self.tresor,
-      let masterKey = self.tresorAppState?.masterKey,
-      let context = self.tresorAppState?.tresorModel.tresorCoreDataManager?.privateChildManagedObjectContext() {
-      
-      self.beginInsertNewObject()
-      context.perform {
-        do {
-          let json = """
+    self.tresorAppState?.getMasterKey() { (tresorKey, error) in
+      if let key = tresorKey,
+        let t = self.tresor {
+        let model = self.getDummyPayload()
+        
+        self.insertNewTresorDocument(t: t, model: model, key: key)
+      }
+    }
+  }
+  
+  fileprivate func getDummyPayload() -> Payload {
+    let json = """
 {"list": [{"created":"2017-11-05T22:26:57Z",
            "sections": [ { "items": [{"name":"user","value":"hugo"},
                                      {"name":"password","value":"secret123","attributes":{"revealable":1}}
@@ -76,9 +80,15 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
  "title":"test"
 }
 """
-          let model = PayloadSerializer.payload(jsonData: json.data(using: .utf8)!)!
-          
-          let _ = try TresorDocument(context: context, masterKey: masterKey, tresor: t, model: model)
+    return PayloadSerializer.payload(jsonData: json.data(using: .utf8)!)!
+  }
+  
+  fileprivate func insertNewTresorDocument(t: Tresor, model: Payload, key: TresorKey) {
+    if let context = self.tresorAppState?.tresorModel.tresorCoreDataManager?.privateChildManagedObjectContext() {
+      self.beginInsertNewObject()
+      context.perform {
+        do {
+          let _ = try TresorDocument(context: context, masterKey: key, tresor: t, model: model)
           
           let _ = try context.save()
           
@@ -89,7 +99,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
           
         } catch {
           celeturLogger.error("Error while creating new tresor document...",error:error)
-        
+          
           DispatchQueue.main.async {
             self.endInsertNewObject()
           }

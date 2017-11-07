@@ -60,7 +60,7 @@ public class TresorKeys {
     return masterKey
   }
   
-  public func getMasterKey(masterKeyCompletion: @escaping (TresorKey?,Error?) -> Void) -> Void {
+  public func getMasterKey(completion: @escaping (TresorKey?,Error?) -> Void) {
     var key = TresorKey(name: masterKeyName,appGroup: self.appGroup)
     
     key.fetchFromKeychain() { (masterKey:TresorKey?,error:Error?) -> Void in
@@ -70,12 +70,12 @@ public class TresorKeys {
         do {
           let newKey = try self.createNewMasterKey()
           
-          masterKeyCompletion(newKey,nil)
+          completion(newKey,nil)
         } catch {
-          masterKeyCompletion(nil,error)
+          completion(nil,error)
         }
       } else {
-        masterKeyCompletion(masterKey,error)
+        completion(masterKey,error)
       }
     }
   }

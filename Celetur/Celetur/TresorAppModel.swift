@@ -15,30 +15,59 @@ class TresorAppModel {
   let tresorModel: TresorModel
   var appDelegate : AppDelegate?
   let reachability = Reachability()!
-  var masterKey: TresorKey?
+  
+  fileprivate var masterKey: TresorKey?
+  fileprivate let timer : DispatchSourceTimer
   
   init() {
+    self.timer = DispatchSource.makeTimerSource(flags: [], queue: DispatchQueue.main)
     self.tresorModel = TresorModel()
     self.tresorKeys = TresorKeys(appGroup: appGroup)
     
-    /*
+    self.timer.schedule(deadline: .now(), repeating: .seconds(60))
+    self.timer.setEventHandler {
+      self.masterKey = nil
+      self.appDelegate?.noMasterKeyUIAppearance(refreshViews: true)
+    }
+    
+    self.timer.resume()
+  }
+  
+  func removeMasterKey() {
     do {
-      try tresorKeys.removeMasterKey()
+      try self.tresorKeys.removeMasterKey()
     } catch CeleturKitError.keychainError(let keychainError){
       celeturLogger.debug("error fetching tresor masterkey: \(keychainError)")
     } catch {
       celeturLogger.error("error fetching tresor masterkey",error:error)
-    }*/
-    
-    self.tresorKeys.getMasterKey(masterKeyCompletion:{ (masterKey:TresorKey?, error:Error?) -> Void in
-      if let e = error {
-        celeturLogger.debug("error:\(e)")
-      } else if let mk = masterKey {
-        celeturLogger.info("masterKey:\(mk.accountName),\(mk.accessToken?.hexEncodedString() ?? "not set")")
-        
-        self.masterKey = mk
+    }
+  }
+  
+  func getMasterKey(completion: @escaping (TresorKey?,Error?) -> Void) {
+    self.tresorKeys.getMasterKey() { (masterKey:TresorKey?, error:Error?) -> Void in
+      var returnedError: Error?
+      var switchUI = false
+      
+      if self.masterKey == nil {
+        if let e = error {
+          celeturLogger.debug("error:\(e)")
+          returnedError = error
+        } else if let mk = masterKey {
+          celeturLogger.info("masterKey:\(mk.accountName),\(mk.accessToken?.hexEncodedString() ?? "---")")
+          
+          self.masterKey = mk
+          switchUI = true
+        }
       }
-    })
+      
+      DispatchQueue.main.async {
+        if switchUI {
+          self.appDelegate?.hasMasterKeyUIAppearance(refreshViews: true)
+        }
+        
+        completion(self.masterKey,returnedError)
+      }
+    }
   }
   
   func completeSetup(appDelegate : AppDelegate?) {

@@ -247,27 +247,48 @@ public class TresorModel {
   }
   
   
-  public func encryptAllDocumentItemsThatShouldBeEncryptedByDevice(tresor: Tresor, masterKey: TresorKey) {
-    guard let documents = tresor.documents,
-      let context = self.tresorCoreDataManager?.privateChildManagedObjectContext()
-      else { return }
+  public func shouldEncryptAllDocumentItemsThatShouldBeEncryptedByDevice(tresor:Tresor) -> Bool {
+    guard let documents = tresor.documents else { return false }
     
-    celeturKitLogger.debug("encryptAllDocumentItemsThatShouldBeEncryptedByDevice()")
+    var result = false
     
     for case let tresorDocument as TresorDocument in documents {
       if let items = tresorDocument.documentitems {
         for case let item as TresorDocumentItem in items where item.itemStatus == .shouldBeEncryptedByDevice {
-          
-          if let tempItem = context.object(with: item.objectID) as? TresorDocumentItem {
-            let _ = tempItem.encryptMessagePayload(masterKey: masterKey)
-          }
+          result = true
+          break
         }
       }
     }
     
-    context.performSave(contextInfo: "save encryptAllDocumentItemsThatShouldBeEncryptedByDevice") {
-      celeturKitLogger.debug("encryptAllDocumentItemsThatShouldBeEncryptedByDevice() finished.")
-      self.saveChanges()
+    return result
+  }
+  
+  public func encryptAllDocumentItemsThatShouldBeEncryptedByDevice(tresor: Tresor, masterKey: TresorKey) {
+    guard let context = self.tresorCoreDataManager?.privateChildManagedObjectContext(),
+      let tempTresor = context.object(with: tresor.objectID) as? Tresor,
+      let documents = tempTresor.documents
+      else { return }
+    
+    celeturKitLogger.debug("encryptAllDocumentItemsThatShouldBeEncryptedByDevice()")
+    
+    context.perform {
+      do {
+        for case let tresorDocument as TresorDocument in documents {
+          if let items = tresorDocument.documentitems {
+            for case let item as TresorDocumentItem in items where item.itemStatus == .shouldBeEncryptedByDevice {
+              let _ = item.encryptMessagePayload(masterKey: masterKey)
+            }
+          }
+        }
+      
+        celeturKitLogger.debug("save for encryptAllDocumentItemsThatShouldBeEncryptedByDevice...")
+        try context.save()
+        
+        self.saveChanges()
+      } catch {
+        celeturKitLogger.error("Error while saving encryptAllDocumentItemsThatShouldBeEncryptedByDevice...",error:error)
+      }
     }
   }
   

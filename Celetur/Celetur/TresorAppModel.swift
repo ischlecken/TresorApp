@@ -126,8 +126,12 @@ class TresorAppModel {
   }
   
   public func encryptAllDocumentItemsThatShouldBeEncryptedByDevice(tresor: Tresor) {
-    guard let mk = self.masterKey else { return }
+    guard self.tresorModel.shouldEncryptAllDocumentItemsThatShouldBeEncryptedByDevice(tresor:tresor)  else { return }
     
-    self.tresorModel.encryptAllDocumentItemsThatShouldBeEncryptedByDevice(tresor: tresor, masterKey: mk)
+    self.getMasterKey { (tresorKey, error) in
+      if let mk = tresorKey {
+        self.tresorModel.encryptAllDocumentItemsThatShouldBeEncryptedByDevice(tresor: tresor, masterKey: mk)
+      }
+    }
   }
 }

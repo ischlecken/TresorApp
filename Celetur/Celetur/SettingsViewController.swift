@@ -11,6 +11,28 @@ class SettingsViewController: UITableViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
+    
+  }
+  
+  override func viewWillAppear(_ animated: Bool) {
+    
+    if let parent = self.view.superview {
+      let backgroundView = GradientView()
+      backgroundView.translatesAutoresizingMaskIntoConstraints = false
+      
+      parent.insertSubview(backgroundView, at: 0)
+      
+      let left = NSLayoutConstraint(item: backgroundView, attribute: .left, relatedBy: .equal, toItem: parent, attribute: .left, multiplier: 1.0, constant: 0.0)
+      let top = NSLayoutConstraint(item: backgroundView, attribute: .top, relatedBy: .equal, toItem: parent, attribute: .top, multiplier: 1.0, constant: 0.0)
+      let width = NSLayoutConstraint(item: backgroundView, attribute: .width, relatedBy: .equal, toItem: parent, attribute: .width, multiplier: 1.0, constant: 0.0)
+      let height = NSLayoutConstraint(item: backgroundView, attribute: .height, relatedBy: .equal, toItem: parent, attribute: .height, multiplier: 1.0, constant: 0.0)
+      
+      parent.addConstraints([left,top,width,height])
+      
+      DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+        backgroundView.dimGradient()
+      }
+    }
   }
   
   // MARK: - Table view data source

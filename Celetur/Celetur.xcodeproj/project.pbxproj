@@ -28,6 +28,7 @@
 		85EEE1FF1F1A68A9002CE85E /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85EEE1FE1F1A68A9002CE85E /* CloudKit.framework */; };
 		85EEE2011F1A68E1002CE85E /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85EEE2001F1A68E1002CE85E /* StoreKit.framework */; };
 		85EEE2031F1A68EF002CE85E /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85EEE2021F1A68EF002CE85E /* MapKit.framework */; };
+		85F1DD601FBCCCC900CB1418 /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F1DD5F1FBCCCC900CB1418 /* GradientView.swift */; };
 		85F35D3C1FAF01D800349BF0 /* SelectItemNameTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F35D3B1FAF01D800349BF0 /* SelectItemNameTableViewController.swift */; };
 		85F9080E1F12D9E30062BD63 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F9080D1F12D9E30062BD63 /* AppDelegate.swift */; };
 		85F908131F12D9E30062BD63 /* TresorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85F908121F12D9E30062BD63 /* TresorViewController.swift */; };
@@ -106,6 +107,7 @@
 		85EEE1FE1F1A68A9002CE85E /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		85EEE2001F1A68E1002CE85E /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		85EEE2021F1A68EF002CE85E /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		85F1DD5F1FBCCCC900CB1418 /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
 		85F35D3B1FAF01D800349BF0 /* SelectItemNameTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectItemNameTableViewController.swift; sourceTree = "<group>"; };
 		85F9080A1F12D9E30062BD63 /* Celetur.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Celetur.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		85F9080D1F12D9E30062BD63 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -153,6 +155,7 @@
 				85DC68D11F40FA34004AFAAC /* TableCells */,
 				85F908191F12D9E30062BD63 /* Assets.xcassets */,
 				859739101FAA88E8003196B2 /* UIRefreshControl+Extension.swift */,
+				85F1DD5F1FBCCCC900CB1418 /* GradientView.swift */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -409,6 +412,7 @@
 				85F908131F12D9E30062BD63 /* TresorViewController.swift in Sources */,
 				859739111FAA88E8003196B2 /* UIRefreshControl+Extension.swift in Sources */,
 				85C8AE4C1FA8CFF3002B7613 /* UIColor+Extension.swift in Sources */,
+				85F1DD601FBCCCC900CB1418 /* GradientView.swift in Sources */,
 				85D95E461F530A740044DFA0 /* UserDeviceViewController.swift in Sources */,
 				85D95E411F5305720044DFA0 /* SettingsViewController.swift in Sources */,
 				85C867E81FAE1E2400CAAEFD /* EditTresorDocumentItemCell.swift in Sources */,

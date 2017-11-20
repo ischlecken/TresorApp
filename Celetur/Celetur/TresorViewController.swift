@@ -12,6 +12,8 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   var tresorAppState: TresorAppModel?
   let dateFormatter = DateFormatter()
   
+  var infoViewController : InfoViewController?
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     
@@ -110,7 +112,20 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     }
   }
   
-  @IBAction func unwindToTresor(segue: UIStoryboardSegue) {
+  @IBAction
+  func onTestInfoController(_ sender: Any) {
+    if let ivc = self.infoViewController {
+      ivc.dismissInfo()
+      self.infoViewController = nil
+    } else {
+      self.infoViewController = InfoViewController(info: "test info")
+      
+      self.infoViewController?.showInfo()
+    }
+  }
+  
+  @IBAction
+  func unwindToTresor(segue: UIStoryboardSegue) {
     if segue.identifier == "saveUnwindToTresor" {
       if let controller = segue.source as? EditTresorViewController {
         controller.saveTempTresor()
@@ -165,7 +180,11 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
       }
     }
     
-    return [editAction, deleteAction]
+    let testAction = UITableViewRowAction(style: .normal, title: "Test") { action, index in
+      self.onTestInfoController(self)
+    }
+    
+    return [editAction, deleteAction, testAction]
   }
   
   override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {

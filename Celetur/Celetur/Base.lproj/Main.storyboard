@@ -5,6 +5,7 @@
     </device>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
+        <capability name="Navigation items with more than one left or right bar item" minToolsVersion="7.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -73,13 +74,20 @@
                                 <segue destination="8jM-Fz-dz8" kind="presentation" identifier="showSettings" modalPresentationStyle="pageSheet" modalTransitionStyle="flipHorizontal" id="58A-Nb-Rnc"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="jey-Ak-XPv">
-                            <connections>
-                                <segue destination="bU5-Rq-6eJ" kind="popoverPresentation" identifier="showEditTresor" popoverAnchorBarButtonItem="jey-Ak-XPv" id="9Ai-yq-0cb">
-                                    <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
-                                </segue>
-                            </connections>
-                        </barButtonItem>
+                        <rightBarButtonItems>
+                            <barButtonItem systemItem="add" id="jey-Ak-XPv">
+                                <connections>
+                                    <segue destination="bU5-Rq-6eJ" kind="popoverPresentation" identifier="showEditTresor" popoverAnchorBarButtonItem="jey-Ak-XPv" id="9Ai-yq-0cb">
+                                        <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                                    </segue>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem systemItem="trash" id="kLW-yM-HMU">
+                                <connections>
+                                    <action selector="onTestInfoController:" destination="7bK-jq-Zjz" id="Gim-oe-meV"/>
+                                </connections>
+                            </barButtonItem>
+                        </rightBarButtonItems>
                     </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rux-fX-hf1" sceneMemberID="firstResponder"/>

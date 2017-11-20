@@ -46,7 +46,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     if let parentView = self.navigationController?.navigationBar {
       let progressView = UIProgressView(progressViewStyle: .bar)
       
-      progressView.progress = 0.5
+      progressView.progress = 0.05
       progressView.translatesAutoresizingMaskIntoConstraints = false
       
       parentView.addSubview(progressView)

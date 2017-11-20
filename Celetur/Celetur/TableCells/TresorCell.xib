@@ -20,6 +20,7 @@
                 <subviews>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="badge-award" translatesAutoresizingMaskIntoConstraints="NO" id="ffe-dF-Aof">
                         <rect key="frame" x="8" y="8" width="64" height="64"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="64" id="601-gM-GLF"/>
                             <constraint firstAttribute="width" constant="64" id="uXc-s4-0t2"/>
@@ -27,23 +28,27 @@
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3KO-dw-axS">
                         <rect key="frame" x="72" y="8" width="287" height="21"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Created" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wJL-5U-5R5">
                         <rect key="frame" x="72" y="57.5" width="287" height="14.5"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                         <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Description" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zuH-N0-M2W">
                         <rect key="frame" x="72" y="29" width="287" height="18"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
                         <color key="textColor" red="0.20637743689999999" green="0.50372339050000003" blue="0.84013075780000002" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                 </subviews>
+                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 <constraints>
                     <constraint firstItem="zuH-N0-M2W" firstAttribute="leading" secondItem="ffe-dF-Aof" secondAttribute="trailing" id="2Wl-io-Wqq"/>
                     <constraint firstItem="wJL-5U-5R5" firstAttribute="leading" secondItem="ffe-dF-Aof" secondAttribute="trailing" id="8aq-8X-qcE"/>
@@ -58,6 +63,7 @@
                     <constraint firstItem="3KO-dw-axS" firstAttribute="leading" secondItem="ffe-dF-Aof" secondAttribute="trailing" id="pof-VZ-Zil"/>
                 </constraints>
             </tableViewCellContentView>
+            <color key="backgroundColor" red="0.99999600649999998" green="1" blue="1" alpha="0.6042131696428571" colorSpace="custom" customColorSpace="sRGB"/>
             <connections>
                 <outlet property="createdLabel" destination="wJL-5U-5R5" id="N3l-RP-4Js"/>
                 <outlet property="descriptionLabel" destination="zuH-N0-M2W" id="wBC-Py-1OZ"/>

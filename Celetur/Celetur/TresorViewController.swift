@@ -23,6 +23,8 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     
     self.tableView.register(UINib(nibName:"TresorCell",bundle:nil),forCellReuseIdentifier:"tresorCell")
     
+    self.tableView.backgroundView = GradientView()
+    
     NotificationCenter.default.addObserver(self,
                                            selector: #selector(onTresorModelReady(_:)),
                                            name: Notification.Name.onTresorModelReady,
@@ -37,9 +39,15 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     titleView.adjustsFontSizeToFitWidth = true
     
     self.navigationItem.titleView = titleView
-    
   }
   
+  override func viewWillAppear(_ animated: Bool) {
+    clearsSelectionOnViewWillAppear = splitViewController!.isCollapsed
+    
+    super.viewWillAppear(animated)
+    
+  }
+
   func setTitleInfo(titleinfo:String) {
     let titleLabel = self.navigationItem.titleView as? UILabel
     
@@ -61,10 +69,6 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     self.tableView.reloadData()
   }
   
-  override func viewWillAppear(_ animated: Bool) {
-    clearsSelectionOnViewWillAppear = splitViewController!.isCollapsed
-    super.viewWillAppear(animated)
-  }
   
   @objc
   private func refreshTable(_ sender: Any) {

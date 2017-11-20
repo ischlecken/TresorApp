@@ -20,17 +20,20 @@
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ItemKey" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SJV-Ye-H9I">
                         <rect key="frame" x="16" y="11" width="343" height="18"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
                         <color key="textColor" red="0.20637743689999999" green="0.50372339050000003" blue="0.84013075780000002" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ItemValue" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k9E-eh-eHU">
                         <rect key="frame" x="16" y="34" width="343" height="21"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                 </subviews>
+                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 <constraints>
                     <constraint firstItem="k9E-eh-eHU" firstAttribute="bottom" secondItem="WAT-Zh-QuD" secondAttribute="bottomMargin" id="8O0-Sf-ezX"/>
                     <constraint firstItem="k9E-eh-eHU" firstAttribute="leading" secondItem="SJV-Ye-H9I" secondAttribute="leading" id="8y2-Zb-GEC"/>
@@ -40,6 +43,7 @@
                     <constraint firstItem="SJV-Ye-H9I" firstAttribute="leading" secondItem="WAT-Zh-QuD" secondAttribute="leadingMargin" id="zwo-76-tqG"/>
                 </constraints>
             </tableViewCellContentView>
+            <color key="backgroundColor" red="0.99999600649999998" green="1" blue="1" alpha="0.60368303571428572" colorSpace="custom" customColorSpace="sRGB"/>
             <connections>
                 <outlet property="itemKeyLabel" destination="SJV-Ye-H9I" id="UNz-VP-T4V"/>
                 <outlet property="itemValueLabel" destination="k9E-eh-eHU" id="Gxo-zr-WNi"/>

@@ -36,6 +36,8 @@ class TresorDocumentItemViewController: UITableViewController {
     
     self.tableView.register(UINib(nibName:"TresorDocumentItemCell",bundle:nil),forCellReuseIdentifier:"tresorDocumentItemCell")
     
+    self.tableView.backgroundView = GradientView()
+    
     configureView()
     
     /*

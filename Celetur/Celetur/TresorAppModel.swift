@@ -27,7 +27,7 @@ class TresorAppModel {
     self.timer.schedule(deadline: .now(), repeating:.seconds(60))
     self.timer.setEventHandler {
       self.masterKey = nil
-      self.appDelegate?.noMasterKeyUIAppearance(refreshViews: true)
+      self.appDelegate?.noMasterKeyUIAppearance()
     }
     self.timer.resume()
   }
@@ -62,7 +62,7 @@ class TresorAppModel {
         
         DispatchQueue.main.async {
           if switchUI {
-            self.appDelegate?.hasMasterKeyUIAppearance(refreshViews: true)
+            self.appDelegate?.hasMasterKeyUIAppearance()
           }
           
           completion(self.masterKey,returnedError)

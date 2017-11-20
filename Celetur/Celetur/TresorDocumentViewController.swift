@@ -34,6 +34,8 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     self.title = tresor?.tresordescription
     self.dateFormatter.dateStyle = DateFormatter.Style.short
     self.dateFormatter.timeStyle = DateFormatter.Style.short
+    
+    self.tableView.backgroundView = GradientView()
   }
   
   @objc

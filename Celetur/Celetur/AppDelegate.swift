@@ -21,13 +21,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
   var tresorAppModel = TresorAppModel()
   
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-    // Override point for customization after application launch.
+    self.celeturUIAppearance()
+    
     let splitViewController = self.window!.rootViewController as! UISplitViewController
     let navigationController = splitViewController.viewControllers[splitViewController.viewControllers.count-1] as! UINavigationController
     navigationController.topViewController!.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem
     splitViewController.delegate = self
-
-    self.noMasterKeyUIAppearance(refreshViews:false)
     
     let masterNavigationController = splitViewController.viewControllers[0] as! UINavigationController
     let controller = masterNavigationController.topViewController as! TresorViewController
@@ -146,27 +145,34 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     
   }
   
-  func hasMasterKeyUIAppearance(refreshViews:Bool) {
+  fileprivate func celeturUIAppearance() {
     UINavigationBar.appearance().barTintColor = .celeturBarTintColor
     UINavigationBar.appearance().tintColor = .celeturTintColor
     UINavigationBar.appearance().titleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.celeturTintColor]
     UINavigationBar.appearance().isTranslucent = false
-  
-    
-    if refreshViews {
-      self.refreshViewsAfterChangeOfAppearance()
-    }
   }
   
-  func noMasterKeyUIAppearance(refreshViews:Bool) {
+  func hasMasterKeyUIAppearance() {
+  /*
+    UINavigationBar.appearance().barTintColor = .celeturBarTintColor
+    UINavigationBar.appearance().tintColor = .celeturTintColor
+    UINavigationBar.appearance().titleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.celeturTintColor]
+    UINavigationBar.appearance().isTranslucent = false
+    
+    self.refreshViewsAfterChangeOfAppearance()
+   
+ */
+  }
+  
+  func noMasterKeyUIAppearance() {
+    /*
     UINavigationBar.appearance().barTintColor = .lightGray
     UINavigationBar.appearance().tintColor = .celeturTintColor
     UINavigationBar.appearance().titleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.celeturTintColor]
     UINavigationBar.appearance().isTranslucent = true
     
-    if refreshViews {
-      self.refreshViewsAfterChangeOfAppearance()
-    }
+    self.refreshViewsAfterChangeOfAppearance()
+    */
   }
   
   func refreshViewsAfterChangeOfAppearance() {

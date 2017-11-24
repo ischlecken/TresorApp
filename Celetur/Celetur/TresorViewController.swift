@@ -11,9 +11,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   
   var tresorAppState: TresorAppModel?
   let dateFormatter = DateFormatter()
-  
   var infoViewController : InfoViewController?
-  var progressView : UIProgressView?
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -42,27 +40,6 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     titleView.adjustsFontSizeToFitWidth = true
     
     self.navigationItem.titleView = titleView
-    
-    if let parentView = self.navigationController?.navigationBar {
-      let progressView = UIProgressView(progressViewStyle: .bar)
-      
-      progressView.progress = 0.05
-      progressView.translatesAutoresizingMaskIntoConstraints = false
-      
-      parentView.addSubview(progressView)
-      
-      let left = NSLayoutConstraint(item: progressView, attribute: .left, relatedBy: .equal, toItem: parentView, attribute: .left, multiplier: 1.0, constant: 0.0)
-      let bottom = NSLayoutConstraint(item: progressView, attribute: .top, relatedBy: .equal, toItem: parentView, attribute: .bottom, multiplier: 1.0, constant: 0.0)
-      let width = NSLayoutConstraint(item: progressView, attribute: .width, relatedBy: .equal, toItem: parentView, attribute: .width, multiplier: 1.0, constant: 0.0)
-      
-      parentView.addConstraints([left,bottom,width])
-      
-      self.progressView = progressView
-      
-      DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-        self.progressView?.setProgress(1.0, animated: true)
-      }
-    }
   }
   
   override func viewWillAppear(_ animated: Bool) {

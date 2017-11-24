@@ -16,6 +16,9 @@ class TresorAppModel {
   var appDelegate : AppDelegate?
   let reachability = Reachability()!
   
+  let maxMasterKeyAvailable = 10
+  var actMasterKeyAvailable = 0
+  
   fileprivate var masterKey: TresorKey?
   fileprivate let timer : DispatchSourceTimer
   
@@ -24,10 +27,21 @@ class TresorAppModel {
     self.tresorModel = TresorModel()
     self.tresorKeys = TresorKeys(appGroup: appGroup)
     
-    self.timer.schedule(deadline: .now(), repeating:.seconds(60))
+    self.timer.schedule(deadline: .now(), repeating:.seconds(5))
     self.timer.setEventHandler {
-      self.masterKey = nil
-      self.appDelegate?.noMasterKeyUIAppearance()
+      if self.actMasterKeyAvailable>0 {
+        self.actMasterKeyAvailable = self.actMasterKeyAvailable - 1
+        
+        DispatchQueue.main.async {
+          self.appDelegate?.updateMasterKeyAvailablity(self.actMasterKeyAvailable,maxAvailablityInTimeron: self.maxMasterKeyAvailable)
+        }
+      } else if self.actMasterKeyAvailable == 0 && self.masterKey != nil {
+        self.masterKey = nil
+        
+        DispatchQueue.main.async {
+          self.appDelegate?.updateMasterKeyAvailablity(self.actMasterKeyAvailable,maxAvailablityInTimeron: self.maxMasterKeyAvailable)
+        }
+      }
     }
     self.timer.resume()
   }
@@ -57,18 +71,21 @@ class TresorAppModel {
             
             self.masterKey = mk
             switchUI = true
+            self.actMasterKeyAvailable = self.maxMasterKeyAvailable
           }
         }
         
         DispatchQueue.main.async {
           if switchUI {
-            self.appDelegate?.hasMasterKeyUIAppearance()
+            self.appDelegate?.updateMasterKeyAvailablity(self.actMasterKeyAvailable,maxAvailablityInTimeron: self.maxMasterKeyAvailable)
           }
           
           completion(self.masterKey,returnedError)
         }
       }
     } else {
+      self.actMasterKeyAvailable = self.maxMasterKeyAvailable
+      self.appDelegate?.updateMasterKeyAvailablity(self.actMasterKeyAvailable,maxAvailablityInTimeron: self.maxMasterKeyAvailable)
       completion(self.masterKey,nil)
     }
   }

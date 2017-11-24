@@ -19,6 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
 
   var window: UIWindow?
   var tresorAppModel = TresorAppModel()
+  var progressView : UIProgressView?
   
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
     self.celeturUIAppearance()
@@ -32,6 +33,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     let controller = masterNavigationController.topViewController as! TresorViewController
     controller.tresorAppState = self.tresorAppModel
     
+    if let navigationBar = controller.navigationController?.navigationBar {
+      navigationBar.prefersLargeTitles = true
+      
+      let progressView = UIProgressView(progressViewStyle: .bar)
+      
+      progressView.progress = 1.0
+      progressView.translatesAutoresizingMaskIntoConstraints = false
+      
+      navigationBar.addSubview(progressView)
+      
+      let left = NSLayoutConstraint(item: progressView, attribute: .left, relatedBy: .equal, toItem: navigationBar, attribute: .left, multiplier: 1.0, constant: 0.0)
+      let bottom = NSLayoutConstraint(item: progressView, attribute: .top, relatedBy: .equal, toItem: navigationBar, attribute: .bottom, multiplier: 1.0, constant: 0.0)
+      let width = NSLayoutConstraint(item: progressView, attribute: .width, relatedBy: .equal, toItem: navigationBar, attribute: .width, multiplier: 1.0, constant: 0.0)
+      
+      navigationBar.addConstraints([left,bottom,width])
+      
+      self.progressView = progressView
+      self.progressView?.setProgress(0.0, animated: true)
+      }
+  
     UNUserNotificationCenter.current().delegate = self
     UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
       if granted && error == nil {
@@ -45,10 +66,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     
     self.tresorAppModel.completeSetup(appDelegate:self)
     
-    
     return true
   }
   
+  func backgroundTableView() -> GradientView? {
+    let splitViewController = self.window!.rootViewController as! UISplitViewController
+    let navigationController = splitViewController.viewControllers[splitViewController.viewControllers.count-1] as! UINavigationController
+    navigationController.topViewController!.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem
+    
+    let masterNavigationController = splitViewController.viewControllers[0] as! UINavigationController
+    let controller = masterNavigationController.topViewController as? UITableViewController
+    let backgroundView = controller?.tableView.backgroundView as? GradientView
+    
+    return backgroundView
+  }
   
   func applicationWillResignActive(_ application: UIApplication) {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
@@ -152,28 +183,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     UINavigationBar.appearance().isTranslucent = false
   }
   
-  func hasMasterKeyUIAppearance() {
-  /*
-    UINavigationBar.appearance().barTintColor = .celeturBarTintColor
-    UINavigationBar.appearance().tintColor = .celeturTintColor
-    UINavigationBar.appearance().titleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.celeturTintColor]
-    UINavigationBar.appearance().isTranslucent = false
+  func updateMasterKeyAvailablity(_ actAvailablityInTimeron: Int,maxAvailablityInTimeron: Int) {
+    let progress = round(Float(actAvailablityInTimeron)/Float(maxAvailablityInTimeron) * 100.0) * 0.01
     
-    self.refreshViewsAfterChangeOfAppearance()
-   
- */
+    self.progressView?.setProgress(progress, animated: true)
+    
+    if let gradientView = self.backgroundTableView() {
+      if actAvailablityInTimeron == 0 {
+        gradientView.dimGradient()
+      } else {
+        //gradientView.resetGradient()
+      }
+    }
   }
   
-  func noMasterKeyUIAppearance() {
-    /*
-    UINavigationBar.appearance().barTintColor = .lightGray
-    UINavigationBar.appearance().tintColor = .celeturTintColor
-    UINavigationBar.appearance().titleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.celeturTintColor]
-    UINavigationBar.appearance().isTranslucent = true
-    
-    self.refreshViewsAfterChangeOfAppearance()
-    */
-  }
   
   func refreshViewsAfterChangeOfAppearance() {
     let windows = UIApplication.shared.windows

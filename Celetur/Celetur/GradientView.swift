@@ -87,6 +87,7 @@ class GradientView : UIView
     self.gradientLayer.removeAllAnimations()
     self.gradientLayer.add(self.dimGradientAnimation, forKey: runningAnimation)
     self.gradientLayer.colors = self.dimmedColors
+    
   }
   
   func resetGradient() {
@@ -94,20 +95,21 @@ class GradientView : UIView
     self.gradientLayer.removeAllAnimations()
     self.gradientLayer.add(self.resetGradientAnimation, forKey: runningAnimation)
     self.gradientLayer.colors = self.normalColors
+    
   }
- 
+  
   /*
-  override func layoutSubviews() {
-    celeturLogger.debug("GradientView.layoutSubviews() --begin--")
-    
-    super.layoutSubviews()
-    
-    self.shapeLayer?.frame = CGRect(origin: CGPoint.zero, size: self.layer.frame.size)
-    self.shapeLayer?.path  = self.updatePath(rect: self.layer.frame)
-    self.setNeedsDisplay()
-    
-    celeturLogger.debug("GradientView.layoutSubviews() ---end--")
-  }*/
+   override func layoutSubviews() {
+   celeturLogger.debug("GradientView.layoutSubviews() --begin--")
+   
+   super.layoutSubviews()
+   
+   self.shapeLayer?.frame = CGRect(origin: CGPoint.zero, size: self.layer.frame.size)
+   self.shapeLayer?.path  = self.updatePath(rect: self.layer.frame)
+   self.setNeedsDisplay()
+   
+   celeturLogger.debug("GradientView.layoutSubviews() ---end--")
+   }*/
   
   func updatePath(rect:CGRect) -> CGPath {
     let path         = CGMutablePath()
@@ -121,6 +123,10 @@ class GradientView : UIView
     path.addArc(center: CGPoint(x: circleX, y: circleY), radius: CGFloat(circleRadius),
                 startAngle: CGFloat(startAngle-Double.pi*0.5), endAngle: CGFloat(stopAngle-Double.pi*0.5),
                 clockwise: false)
+    
+    path.addArc(center: CGPoint(x: circleX, y: circleY), radius: CGFloat(circleRadius-30.0),
+                startAngle: CGFloat(stopAngle-Double.pi*0.5), endAngle: CGFloat(startAngle-Double.pi*0.5),
+                clockwise: true)
     
     return path
   }

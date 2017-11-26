@@ -20,11 +20,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
   var window: UIWindow?
   var tresorAppModel = TresorAppModel()
   var progressView : UIProgressView?
+  var infoViewController : InfoViewController?
+  var gradientView : GradientView?
   
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
     self.celeturUIAppearance()
     
     let splitViewController = self.window!.rootViewController as! UISplitViewController
+    
+    splitViewController.view.backgroundColor = UIColor.clear
+    
+    let gradientView = GradientView(frame:(self.window?.frame)!)
+    self.window?.addSubview(gradientView)
+    self.window?.sendSubview(toBack: gradientView)
+    self.gradientView = gradientView
+    
     let navigationController = splitViewController.viewControllers[splitViewController.viewControllers.count-1] as! UINavigationController
     navigationController.topViewController!.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem
     splitViewController.delegate = self
@@ -32,6 +42,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     let masterNavigationController = splitViewController.viewControllers[0] as! UINavigationController
     let controller = masterNavigationController.topViewController as! TresorViewController
     controller.tresorAppState = self.tresorAppModel
+    
+    self.gradientView?.dimGradient()
     
     if let navigationBar = controller.navigationController?.navigationBar {
       navigationBar.prefersLargeTitles = true
@@ -67,18 +79,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     self.tresorAppModel.completeSetup(appDelegate:self)
     
     return true
-  }
-  
-  func backgroundTableView() -> GradientView? {
-    let splitViewController = self.window!.rootViewController as! UISplitViewController
-    let navigationController = splitViewController.viewControllers[splitViewController.viewControllers.count-1] as! UINavigationController
-    navigationController.topViewController!.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem
-    
-    let masterNavigationController = splitViewController.viewControllers[0] as! UINavigationController
-    let controller = masterNavigationController.topViewController as? UITableViewController
-    let backgroundView = controller?.tableView.backgroundView as? GradientView
-    
-    return backgroundView
   }
   
   func applicationWillResignActive(_ application: UIApplication) {
@@ -167,12 +167,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
   }
   
   func onOffline() {
-    self.setTitle(title: "Celetur (Offline)")
+    if self.infoViewController != nil {
+      self.infoViewController?.dismissInfo()
+      self.infoViewController = nil
+    }
     
+    self.infoViewController = InfoViewController(info: "Device is offline")
+    self.infoViewController?.showInfo()
+    
+    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+      if let ivc = self.infoViewController {
+        ivc.dismissInfo()
+        self.infoViewController = nil
+      }
+    }
   }
   
   func onOnline() {
-    self.setTitle(title: "Celetur")
+    if self.infoViewController != nil {
+      self.infoViewController?.dismissInfo()
+      self.infoViewController = nil
+    }
+    
     
   }
   
@@ -187,14 +203,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     let progress = round(Float(actAvailablityInTimeron)/Float(maxAvailablityInTimeron) * 100.0) * 0.01
     
     self.progressView?.setProgress(progress, animated: true)
-    
-    if let gradientView = self.backgroundTableView() {
-      if actAvailablityInTimeron == 0 {
-        gradientView.dimGradient()
-      } else {
-        //gradientView.resetGradient()
-      }
-    }
+  }
+  
+  func masterKeyIsAvailable() {
+    self.gradientView?.dimGradient()
+  }
+  
+  func masterKeyIsNotAvailable() {
+    self.gradientView?.resetGradient()
   }
   
   

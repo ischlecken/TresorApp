@@ -11,14 +11,6 @@ class SettingsViewController: UITableViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    
-    let backgroundView = GradientView()
-    
-    self.tableView.backgroundView = backgroundView
-    
-    DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-      backgroundView.dimGradient()
-    }
   }
   
   // MARK: - Table view data source

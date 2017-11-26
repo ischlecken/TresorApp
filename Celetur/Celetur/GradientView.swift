@@ -27,7 +27,7 @@ class GradientView : UIView
   
   override var frame: CGRect {
     didSet {
-      //celeturLogger.debug("GradientView.frame didSet:\(self.frame)")
+      celeturLogger.debug("GradientView.frame didSet:\(self.frame)")
       
       let newShapeFrame = CGRect(origin: CGPoint.zero, size: self.frame.size)
       self.shapeLayer?.frame = newShapeFrame
@@ -59,13 +59,15 @@ class GradientView : UIView
     self.dimmedColors = [UIColor.gray.cgColor,UIColor.white.cgColor]
     self.normalColors = self.gradientLayer.colors
     
-    self.dimGradientAnimation.duration    = 20
+    self.dimGradientAnimation.duration    = 4
     self.dimGradientAnimation.fromValue   = self.normalColors
     self.dimGradientAnimation.toValue     = self.dimmedColors
+    self.dimGradientAnimation.delegate    = self
     
-    self.resetGradientAnimation.duration  = 8
+    self.resetGradientAnimation.duration  = 2
     self.resetGradientAnimation.fromValue = self.dimmedColors
     self.resetGradientAnimation.toValue   = self.normalColors
+    self.resetGradientAnimation.delegate  = self
     
     let shapeLayer = CAShapeLayer()
     shapeLayer.fillColor        = UIColor.celeturBarTintColor.withAlphaComponent(0.8).cgColor
@@ -87,29 +89,15 @@ class GradientView : UIView
     self.gradientLayer.removeAllAnimations()
     self.gradientLayer.add(self.dimGradientAnimation, forKey: runningAnimation)
     self.gradientLayer.colors = self.dimmedColors
-    
   }
   
   func resetGradient() {
     self.runningAnimation = "resetGradient"
     self.gradientLayer.removeAllAnimations()
-    self.gradientLayer.add(self.resetGradientAnimation, forKey: runningAnimation)
+    self.gradientLayer.add(self.resetGradientAnimation, forKey: self.runningAnimation)
     self.gradientLayer.colors = self.normalColors
-    
   }
   
-  /*
-   override func layoutSubviews() {
-   celeturLogger.debug("GradientView.layoutSubviews() --begin--")
-   
-   super.layoutSubviews()
-   
-   self.shapeLayer?.frame = CGRect(origin: CGPoint.zero, size: self.layer.frame.size)
-   self.shapeLayer?.path  = self.updatePath(rect: self.layer.frame)
-   self.setNeedsDisplay()
-   
-   celeturLogger.debug("GradientView.layoutSubviews() ---end--")
-   }*/
   
   func updatePath(rect:CGRect) -> CGPath {
     let path         = CGMutablePath()
@@ -142,5 +130,17 @@ class GradientView : UIView
     parentView.addConstraints([left,top,width,height])
     
   }
+  
+  
 }
 
+extension GradientView: CAAnimationDelegate {
+  func animationDidStart(_ anim: CAAnimation) {
+    celeturLogger.debug("animation did start")
+  }
+  
+  func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
+    celeturLogger.debug("animation did finish")
+    self.runningAnimation = nil
+  }
+}

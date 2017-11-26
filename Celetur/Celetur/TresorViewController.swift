@@ -24,8 +24,6 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     
     self.tableView.register(UINib(nibName:"TresorCell",bundle:nil),forCellReuseIdentifier:"tresorCell")
     
-    self.tableView.backgroundView = GradientView()
-    
     NotificationCenter.default.addObserver(self,
                                            selector: #selector(onTresorModelReady(_:)),
                                            name: Notification.Name.onTresorModelReady,
@@ -33,7 +31,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     
     let titleView = UILabel()
     
-    titleView.text = "Celetur\nsecond line"
+    titleView.text = "Celetur"
     titleView.textColor = .celeturTintColor
     titleView.textAlignment = .center
     titleView.numberOfLines = 0

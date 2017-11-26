@@ -20,6 +20,7 @@ class TresorAppModel {
   var actMasterKeyAvailable = 0
   
   fileprivate var masterKey: TresorKey?
+  fileprivate var lastMasterKey: TresorKey?
   fileprivate let timer : DispatchSourceTimer
   
   init() {
@@ -33,6 +34,11 @@ class TresorAppModel {
         self.actMasterKeyAvailable = self.actMasterKeyAvailable - 1
         
         DispatchQueue.main.async {
+          if self.lastMasterKey == nil && self.masterKey != nil {
+            self.appDelegate?.masterKeyIsAvailable()
+            self.lastMasterKey = self.masterKey
+          }
+          
           self.appDelegate?.updateMasterKeyAvailablity(self.actMasterKeyAvailable,maxAvailablityInTimeron: self.maxMasterKeyAvailable)
         }
       } else if self.actMasterKeyAvailable == 0 && self.masterKey != nil {
@@ -40,6 +46,11 @@ class TresorAppModel {
         
         DispatchQueue.main.async {
           self.appDelegate?.updateMasterKeyAvailablity(self.actMasterKeyAvailable,maxAvailablityInTimeron: self.maxMasterKeyAvailable)
+        
+          if self.lastMasterKey != nil {
+            self.appDelegate?.masterKeyIsNotAvailable()
+            self.lastMasterKey = nil
+          }
         }
       }
     }

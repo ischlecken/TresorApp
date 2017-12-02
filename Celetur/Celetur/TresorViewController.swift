@@ -38,6 +38,8 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     titleView.adjustsFontSizeToFitWidth = true
     
     self.navigationItem.titleView = titleView
+    
+    self.becomeFirstResponder()
   }
   
   override func viewWillAppear(_ animated: Bool) {
@@ -46,7 +48,19 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     super.viewWillAppear(animated)
     
   }
-
+  
+  override var canBecomeFirstResponder: Bool {
+    get {
+      return true
+    }
+  }
+  
+  override func motionEnded(_ motion: UIEventSubtype, with event: UIEvent?) {
+    if(event?.subtype == UIEventSubtype.motionShake) {
+      self.tresorAppState?.makeMasterKeyUnavailable()
+    }
+  }
+  
   func setTitleInfo(titleinfo:String) {
     let titleLabel = self.navigationItem.titleView as? UILabel
     

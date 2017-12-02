@@ -15,6 +15,10 @@ class GradientView : UIView
   var normalColors           : [Any]!
   let dimGradientAnimation   = CABasicAnimation(keyPath: "colors")
   let resetGradientAnimation = CABasicAnimation(keyPath: "colors")
+  
+  let dimShapeAnimation   = CABasicAnimation(keyPath: "fillColor")
+  let resetShapeAnimation = CABasicAnimation(keyPath: "fillColor")
+  
   var runningAnimation       : String?
   
   var shapeLayer : CAShapeLayer?
@@ -54,7 +58,7 @@ class GradientView : UIView
     self.gradientLayer.endPoint   = CGPoint(x: 0.5,y: 1.0)
     self.gradientLayer.type       = kCAGradientLayerAxial
     self.gradientLayer.colors     = [UIColor.celeturBarTintColor.cgColor,
-                                     UIColor.celeturTintColor.cgColor]
+                                     UIColor.red.cgColor]
     
     self.dimmedColors = [UIColor.gray.cgColor,UIColor.white.cgColor]
     self.normalColors = self.gradientLayer.colors
@@ -69,9 +73,17 @@ class GradientView : UIView
     self.resetGradientAnimation.toValue   = self.normalColors
     self.resetGradientAnimation.delegate  = self
     
+    self.dimShapeAnimation.duration    = 4
+    self.dimShapeAnimation.fromValue   = UIColor.white.cgColor
+    self.dimShapeAnimation.toValue     = UIColor.celeturBarTintColor.cgColor
+    
+    self.resetShapeAnimation.duration  = 2
+    self.resetShapeAnimation.fromValue = UIColor.celeturBarTintColor.cgColor
+    self.resetShapeAnimation.toValue   = UIColor.white.cgColor
+    
     let shapeLayer = CAShapeLayer()
-    shapeLayer.fillColor        = UIColor.celeturBarTintColor.withAlphaComponent(0.8).cgColor
-    shapeLayer.strokeColor      = UIColor.white.cgColor
+    shapeLayer.fillColor        = UIColor.white.cgColor
+    shapeLayer.strokeColor      = UIColor.celeturBarTintColor.cgColor
     shapeLayer.strokeStart      = 0.0
     shapeLayer.strokeEnd        = 0.0
     shapeLayer.lineCap          = kCALineCapRound
@@ -86,9 +98,15 @@ class GradientView : UIView
   
   func dimGradient () {
     self.runningAnimation = "dimGradient"
+    
     self.gradientLayer.removeAllAnimations()
-    self.gradientLayer.add(self.dimGradientAnimation, forKey: runningAnimation)
+    self.gradientLayer.add(self.dimGradientAnimation, forKey: self.runningAnimation)
     self.gradientLayer.colors = self.dimmedColors
+    
+    self.shapeLayer?.removeAllAnimations()
+    self.shapeLayer?.add(self.dimShapeAnimation, forKey: self.runningAnimation)
+    self.shapeLayer?.fillColor = UIColor.celeturBarTintColor.cgColor
+    
   }
   
   func resetGradient() {
@@ -96,6 +114,10 @@ class GradientView : UIView
     self.gradientLayer.removeAllAnimations()
     self.gradientLayer.add(self.resetGradientAnimation, forKey: self.runningAnimation)
     self.gradientLayer.colors = self.normalColors
+    
+    self.shapeLayer?.removeAllAnimations()
+    self.shapeLayer?.add(self.resetShapeAnimation, forKey: self.runningAnimation)
+    self.shapeLayer?.fillColor = UIColor.white.cgColor
   }
   
   

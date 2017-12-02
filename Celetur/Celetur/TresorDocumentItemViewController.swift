@@ -43,10 +43,20 @@ class TresorDocumentItemViewController: UITableViewController {
                                            name: Notification.Name.NSManagedObjectContextObjectsDidChange,
                                            object:self.tresorDocumentItem?.managedObjectContext)
    */
+    
+    self.becomeFirstResponder()
   }
   
-  deinit {
-  //  NotificationCenter.default.removeObserver(self)
+  override var canBecomeFirstResponder: Bool {
+    get {
+      return true
+    }
+  }
+  
+  override func motionEnded(_ motion: UIEventSubtype, with event: UIEvent?) {
+    if(event?.subtype == UIEventSubtype.motionShake) {
+      self.tresorAppState?.makeMasterKeyUnavailable()
+    }
   }
   
   @objc

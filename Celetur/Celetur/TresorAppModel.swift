@@ -42,19 +42,24 @@ class TresorAppModel {
           self.appDelegate?.updateMasterKeyAvailablity(self.actMasterKeyAvailable,maxAvailablityInTimeron: self.maxMasterKeyAvailable)
         }
       } else if self.actMasterKeyAvailable == 0 && self.masterKey != nil {
-        self.masterKey = nil
-        
-        DispatchQueue.main.async {
-          self.appDelegate?.updateMasterKeyAvailablity(self.actMasterKeyAvailable,maxAvailablityInTimeron: self.maxMasterKeyAvailable)
-        
-          if self.lastMasterKey != nil {
-            self.appDelegate?.masterKeyIsNotAvailable()
-            self.lastMasterKey = nil
-          }
-        }
+        self.makeMasterKeyUnavailable()
       }
     }
     self.timer.resume()
+  }
+  
+  func makeMasterKeyUnavailable() {
+    self.masterKey = nil
+    self.actMasterKeyAvailable = 0
+    
+    DispatchQueue.main.async {
+      self.appDelegate?.updateMasterKeyAvailablity(self.actMasterKeyAvailable,maxAvailablityInTimeron: self.maxMasterKeyAvailable)
+      
+      if self.lastMasterKey != nil {
+        self.appDelegate?.masterKeyIsNotAvailable()
+        self.lastMasterKey = nil
+      }
+    }
   }
   
   func removeMasterKey() {

@@ -34,6 +34,8 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     self.title = tresor?.tresordescription
     self.dateFormatter.dateStyle = DateFormatter.Style.short
     self.dateFormatter.timeStyle = DateFormatter.Style.short
+    
+    self.becomeFirstResponder()
   }
   
   @objc
@@ -49,6 +51,18 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   override func viewWillAppear(_ animated: Bool) {
     clearsSelectionOnViewWillAppear = splitViewController!.isCollapsed
     super.viewWillAppear(animated)
+  }
+  
+  override var canBecomeFirstResponder: Bool {
+    get {
+      return true
+    }
+  }
+  
+  override func motionEnded(_ motion: UIEventSubtype, with event: UIEvent?) {
+    if(event?.subtype == UIEventSubtype.motionShake) {
+      self.tresorAppState?.makeMasterKeyUnavailable()
+    }
   }
   
   override func didReceiveMemoryWarning() {

@@ -46,8 +46,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     self.gradientView?.dimGradient()
     
     if let navigationBar = controller.navigationController?.navigationBar {
-      navigationBar.prefersLargeTitles = true
-      
       let progressView = UIProgressView(progressViewStyle: .bar)
       
       progressView.progress = 1.0
@@ -206,11 +204,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
   }
   
   func masterKeyIsAvailable() {
-    self.gradientView?.dimGradient()
+    self.gradientView?.resetGradient()
   }
   
   func masterKeyIsNotAvailable() {
-    self.gradientView?.resetGradient()
+    self.gradientView?.dimGradient()
   }
   
   

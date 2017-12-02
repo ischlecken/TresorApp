@@ -35,6 +35,9 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     self.dateFormatter.dateStyle = DateFormatter.Style.short
     self.dateFormatter.timeStyle = DateFormatter.Style.short
     
+    self.tableView.register(UINib(nibName:"TresorDocumentCell",bundle:nil),forCellReuseIdentifier:"tresorDocumentCell")
+    self.tableView.register(UINib(nibName:"TresorDocumentItemCell0",bundle:nil),forCellReuseIdentifier:"tresorDocumentItemCell")
+    
     self.becomeFirstResponder()
   }
   
@@ -175,38 +178,28 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     return sectionInfo.numberOfObjects + 1
   }
   
-  override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-    if let sections = fetchedResultsController.sections {
-      let currentSection = sections[section]
-      return "\(currentSection.name)"
-    }
-    
-    return nil
-  }
-  
-  override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-    let tresorDocumentItem = fetchedResultsController.object(at: IndexPath(row: 0, section: section) )
-    
-    if let tresorDocument = tresorDocumentItem.document {
-      return "changed at \(self.dateFormatter.string(from: tresorDocument.modifyts))"
-    }
-  
-    return nil
-  }
   
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCell(withIdentifier: "tresorDocumentCell", for: indexPath)
+    var cell : UITableViewCell
     
     if indexPath.row == 0 {
+      let documentCell = tableView.dequeueReusableCell(withIdentifier: "tresorDocumentCell", for: indexPath) as! TresorDocumentCell
+      
       let tresorDocumentItem = fetchedResultsController.object(at: indexPath)
       let tresorDocument = tresorDocumentItem.document
       
-      configureCellForTresorDocument(cell,withTresorDocument: tresorDocument)
+      configureCellForTresorDocument(documentCell,withTresorDocument: tresorDocument)
+      
+      cell = documentCell
     } else {
+      let itemCell = tableView.dequeueReusableCell(withIdentifier: "tresorDocumentItemCell", for: indexPath) as! TresorDocumentItemCell0
+      
       let newIndexPath = IndexPath(row: indexPath.row-1, section: indexPath.section)
       let tresorDocumentItem = fetchedResultsController.object(at: newIndexPath)
       
-      configureCell(cell, withTresorDocumentItem: tresorDocumentItem)
+      configureCell(itemCell, withTresorDocumentItem: tresorDocumentItem)
+      
+      cell = itemCell
     }
     
     return cell
@@ -251,36 +244,38 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     }
   }
   
-  func configureCellForTresorDocument(_ cell: UITableViewCell, withTresorDocument tresorDocument: TresorDocument?) {
-    cell.textLabel!.text = "Document"
-    cell.detailTextLabel!.text = "-"
+  func configureCellForTresorDocument(_ cell: TresorDocumentCell, withTresorDocument tresorDocument: TresorDocument?) {
+    cell.nameLabel!.text = "Document"
+    cell.descriptionLabel!.text = "-"
+    cell.documentIdLabel!.text = "-"
+    cell.createdLabel!.text = "-"
     cell.indentationLevel = 0
-    cell.textLabel?.textColor = UIColor.black
-    cell.detailTextLabel?.textColor = UIColor.black
     
     if let doc = tresorDocument {
       if let docMetaInfo = doc.getMetaInfo(), let title = docMetaInfo["title"] {
-        cell.textLabel?.text = title
+        cell.nameLabel?.text = title
         
         if let description = docMetaInfo["description"] {
-          cell.detailTextLabel?.text = description
+          cell.descriptionLabel?.text = description
         }
+        
+        cell.documentIdLabel!.text = doc.id
+        cell.createdLabel!.text = self.dateFormatter.string(from: doc.modifyts)
       }
     }
   }
   
-  func configureCell(_ cell: UITableViewCell, withTresorDocumentItem tresorDocumentItem: TresorDocumentItem) {
-    cell.textLabel!.text = "Id:\(tresorDocumentItem.id!)"
-    cell.textLabel?.font = UIFont.systemFont(ofSize: UIFont.systemFontSize)
-    cell.textLabel?.textColor = tresorDocumentItem.itemStatusColor
+  func configureCell(_ cell: TresorDocumentItemCell0, withTresorDocumentItem tresorDocumentItem: TresorDocumentItem) {
+    cell.itemIdLabel!.text = "Id:\(tresorDocumentItem.id!)"
+    cell.itemIdLabel?.font = UIFont.systemFont(ofSize: UIFont.systemFontSize)
     cell.indentationLevel = 1
     
     if let tdiUserDevice = tresorDocumentItem.userdevice {
-      cell.detailTextLabel!.text = "Device:"+(tdiUserDevice.devicename ?? "-") + " " + (tdiUserDevice.id ?? "-")
-      cell.detailTextLabel!.textColor = tresorDocumentItem.itemStatusColor
+      cell.deviceIdLabel!.text = (tdiUserDevice.devicename ?? "-") + " " + (tdiUserDevice.id ?? "-")
+      cell.deviceIdLabel!.textColor = tresorDocumentItem.itemStatusColor
       
       if currentDeviceInfo?.isCurrentDevice(tresorUserDevice: tdiUserDevice) ?? false {
-        cell.textLabel?.font = UIFont.boldSystemFont(ofSize: UIFont.systemFontSize)
+        cell.itemIdLabel?.font = UIFont.boldSystemFont(ofSize: UIFont.systemFontSize)
       }
     }
   }
@@ -342,17 +337,17 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     case .update:
       let indexPath1 = IndexPath(row:indexPath!.row+1,section:indexPath!.section)
       
-      let cell = tableView.cellForRow(at: indexPath1)
+      let cell = tableView.cellForRow(at: indexPath1) as! TresorDocumentItemCell0
       
-      configureCell(cell!, withTresorDocumentItem: (anObject as? TresorDocumentItem)!)
+      configureCell(cell, withTresorDocumentItem: (anObject as? TresorDocumentItem)!)
       
     case .move:
       let indexPath1 = IndexPath(row:indexPath!.row+1,section:indexPath!.section)
       let newIndexPath1 = IndexPath(row:newIndexPath!.row+1,section:newIndexPath!.section)
       
-      let cell = tableView.cellForRow(at: indexPath1)
+      let cell = tableView.cellForRow(at: indexPath1) as! TresorDocumentItemCell0
       
-      configureCell(cell!, withTresorDocumentItem: (anObject as? TresorDocumentItem)!)
+      configureCell(cell, withTresorDocumentItem: (anObject as? TresorDocumentItem)!)
       tableView.moveRow(at: indexPath1, to: newIndexPath1)
     }
   }

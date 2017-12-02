@@ -124,6 +124,9 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Documents" id="2AP-hn-RXV"/>
+                    <connections>
+                        <segue destination="DG1-Xh-Iq7" kind="show" identifier="showTresorDocumentItemDetail" id="Iij-ct-xZw"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jOg-tF-UOd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -255,4 +258,7 @@
     <resources>
         <image name="setting" width="24" height="24"/>
     </resources>
+    <inferredMetricsTieBreakers>
+        <segue reference="Iij-ct-xZw"/>
+    </inferredMetricsTieBreakers>
 </document>

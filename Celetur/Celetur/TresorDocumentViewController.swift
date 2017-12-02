@@ -240,8 +240,11 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
           self.tresorAppState?.tresorModel.saveChanges()
         })
       }
-      
     }
+  }
+  
+  override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    self.performSegue(withIdentifier: "showTresorDocumentItemDetail", sender: self)
   }
   
   func configureCellForTresorDocument(_ cell: TresorDocumentCell, withTresorDocument tresorDocument: TresorDocument?) {

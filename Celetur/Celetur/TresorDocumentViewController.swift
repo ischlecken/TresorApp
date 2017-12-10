@@ -269,17 +269,14 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   }
   
   func configureCell(_ cell: TresorDocumentItemCell0, withTresorDocumentItem tresorDocumentItem: TresorDocumentItem) {
-    cell.itemIdLabel!.text = "Id:\(tresorDocumentItem.id!)"
-    cell.itemIdLabel?.font = UIFont.systemFont(ofSize: UIFont.systemFontSize)
+    cell.itemIdLabel!.text = tresorDocumentItem.id
+    cell.itemIdLabel!.textColor = UIColor.black
     cell.indentationLevel = 1
     
     if let tdiUserDevice = tresorDocumentItem.userdevice {
       cell.deviceIdLabel!.text = (tdiUserDevice.devicename ?? "-") + " " + (tdiUserDevice.id ?? "-")
       cell.deviceIdLabel!.textColor = tresorDocumentItem.itemStatusColor
-      
-      if currentDeviceInfo?.isCurrentDevice(tresorUserDevice: tdiUserDevice) ?? false {
-        cell.itemIdLabel?.font = UIFont.boldSystemFont(ofSize: UIFont.systemFontSize)
-      }
+      cell.itemIdLabel!.textColor = tresorDocumentItem.itemStatusColor
     }
   }
   

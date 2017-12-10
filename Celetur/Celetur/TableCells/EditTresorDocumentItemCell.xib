@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -31,11 +31,8 @@
                         </connections>
                     </textField>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="trailing" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9Iu-sJ-HFA">
-                        <rect key="frame" x="16" y="-1" width="125" height="72"/>
+                        <rect key="frame" x="16" y="11" width="125" height="50"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <constraints>
-                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="60" id="atI-co-0al"/>
-                        </constraints>
                         <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
                         <state key="normal" title="Button"/>
                         <connections>
@@ -48,11 +45,11 @@
                 <constraints>
                     <constraint firstItem="aWC-jJ-8ed" firstAttribute="centerY" secondItem="wUN-ob-i5U" secondAttribute="centerY" id="5HG-bG-Ewa"/>
                     <constraint firstAttribute="trailingMargin" secondItem="aWC-jJ-8ed" secondAttribute="trailing" id="94q-IQ-xeH"/>
+                    <constraint firstAttribute="bottomMargin" secondItem="9Iu-sJ-HFA" secondAttribute="bottom" id="DTm-Fk-6RJ"/>
                     <constraint firstItem="9Iu-sJ-HFA" firstAttribute="leading" secondItem="wUN-ob-i5U" secondAttribute="leadingMargin" id="UlT-3v-pe8"/>
-                    <constraint firstItem="9Iu-sJ-HFA" firstAttribute="height" secondItem="wUN-ob-i5U" secondAttribute="height" id="aN8-Pi-sbv"/>
                     <constraint firstItem="aWC-jJ-8ed" firstAttribute="leading" secondItem="9Iu-sJ-HFA" secondAttribute="trailing" constant="8" id="jWm-sA-cV1"/>
+                    <constraint firstItem="9Iu-sJ-HFA" firstAttribute="top" secondItem="wUN-ob-i5U" secondAttribute="topMargin" id="rpR-15-wQn"/>
                     <constraint firstItem="9Iu-sJ-HFA" firstAttribute="width" secondItem="wUN-ob-i5U" secondAttribute="width" multiplier="1:3" id="tui-Y6-FJp"/>
-                    <constraint firstItem="9Iu-sJ-HFA" firstAttribute="centerY" secondItem="wUN-ob-i5U" secondAttribute="centerY" id="ww4-Em-wHj"/>
                 </constraints>
             </tableViewCellContentView>
             <color key="backgroundColor" red="0.99999600649999998" green="1" blue="1" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>

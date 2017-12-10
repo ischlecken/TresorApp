@@ -101,7 +101,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   }
   
   fileprivate func insertNewTresorDocument(t: Tresor, model: Payload, key: TresorKey) {
-    if let context = self.tresorAppState?.tresorModel.tresorCoreDataManager?.privateChildManagedObjectContext() {
+    if let context = self.tresorAppState?.tresorModel.getCoreDataManager(storeType: .icloud)?.privateChildManagedObjectContext() {
       self.beginInsertNewObject()
       context.perform {
         do {

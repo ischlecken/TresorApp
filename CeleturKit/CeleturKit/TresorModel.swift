@@ -14,17 +14,26 @@ extension Notification.Name {
 
 let appGroup = "group.net.prisnoc.Celetur"
 let celeturKitIdentifier = "net.prisnoc.CeleturKit"
+let celetorKitModelName = "CeleturKit"
+let celetorKitMetaModelName = "CeleturKitMetaInfo"
+
+public enum TresorModelStoreType {
+  case local
+  case icloud
+}
 
 public class TresorModel {
   
   public var currentUserInfo : UserInfo?
   public var currentTresorUserDevice : TresorUserDevice?
-  public var tresorCoreDataManager : CoreDataManager?
   public var userDevices: [TresorUserDevice]? {
-    guard let moc = self.tresorCoreDataManager?.mainManagedObjectContext else { return nil }
+    guard let moc = self.icloudCoreDataManager?.mainManagedObjectContext else { return nil }
     
     return TresorUserDevice.loadUserDevices(context: moc)
   }
+  
+  fileprivate var icloudCoreDataManager : CoreDataManager?
+  fileprivate var localCoreDataManager : CoreDataManager?
   
   var tresorMetaInfoCoreDataManager : CoreDataManager?
   var apnDeviceToken : Data?
@@ -39,42 +48,42 @@ public class TresorModel {
     
   }
   
-  deinit {
-    NotificationCenter.default.removeObserver(self)
+  public func getCoreDataManager(storeType:TresorModelStoreType) -> CoreDataManager? {
+    switch(storeType) {
+    case .local: return self.localCoreDataManager
+    case .icloud: return self.icloudCoreDataManager
+    }
+  }
+  
+  public func countCoreDataManager() -> Int {
+    var result = 0
+    
+    if self.localCoreDataManager != nil {
+      result += 1
+    }
+    
+    if self.icloudCoreDataManager != nil {
+      result += 1
+    }
+    
+    return result
   }
   
   @objc
   func checkICloudAvailability(_ notification: Notification? = nil) {
     celeturKitLogger.debug("checkICloudAvailability()")
     
-    if let _ = self.tresorCoreDataManager {
+    if let _ = self.icloudCoreDataManager {
       self.requestUserDiscoverabilityPermission()
     }
   }
   
   public func completeSetup() {
     celeturKitLogger.debug("TresorModel.completeSetup() --enter--")
-    self.initModelDispatchGroup.enter()
-
+    
     self.requestUserDiscoverabilityPermission()
-    
-    let cdm = CoreDataManager(modelName: "CeleturKitMetaInfo",
-                              using:Bundle(identifier:celeturKitIdentifier)!,
-                              inAppGroupContainer:appGroup,
-                              forUserId: nil)
-    
-    cdm.completeSetup { error in
-      if error == nil {
-        celeturKitLogger.debug("TresorMetaInfo ready")
-        
-        self.tresorMetaInfoCoreDataManager = cdm
-        
-        self.loadCurrentDeviceInfo()
-        
-        celeturKitLogger.debug("TresorModel.completeSetup() --leave--")
-        self.initModelDispatchGroup.leave()
-      }
-    }
+    self.createMetainfoCoreDataManager()
+    self.createLocalCoreDataManager()
     
     self.initModelDispatchGroup.notify(queue: DispatchQueue.main) {
       celeturKitLogger.debug("TresorModel.initModelDispatchGroup.notify()")
@@ -83,16 +92,35 @@ public class TresorModel {
     }
   }
   
-  fileprivate func switchTresorCoreDataManager(userIdentity:CKUserIdentity) {
+  fileprivate func createMetainfoCoreDataManager() {
+    self.initModelDispatchGroup.enter()
+    let cdm = CoreDataManager(modelName: celetorKitMetaModelName,
+                              using:Bundle(identifier:celeturKitIdentifier)!,
+                              inAppGroupContainer:appGroup,
+                              forUserId: nil)
+    
+    cdm.completeSetup { error in
+      if error == nil {
+        self.tresorMetaInfoCoreDataManager = cdm
+        
+        self.loadCurrentDeviceInfo()
+        
+        celeturKitLogger.debug("TresorModel.createMetainfoCoreDataManager --leave--")
+        self.initModelDispatchGroup.leave()
+      }
+    }
+  }
+  
+  fileprivate func createIcloudCoreDataManager(userIdentity:CKUserIdentity) {
     guard let userId = userIdentity.userRecordID?.recordName else { return }
     
-    let cdm = CoreDataManager(modelName: "CeleturKit",
+    let cdm = CoreDataManager(modelName: celetorKitModelName,
                               using:Bundle(identifier:celeturKitIdentifier)!,
                               inAppGroupContainer:appGroup,
                               forUserId: userId)
     
     cdm.completeSetup { error in
-      celeturKitLogger.debug("TresorModel.switchTresorCoreDataManager()")
+      celeturKitLogger.debug("TresorModel.createIcloudCoreDataManager()")
       
       do {
         let ckps = try CloudKitPersistenceState(appGroupContainerId: appGroup, forUserId:userId)
@@ -103,19 +131,42 @@ public class TresorModel {
         cdm.cloudKitManager = ckm
         
         DispatchQueue.main.async {
-          self.tresorCoreDataManager = cdm
+          self.icloudCoreDataManager = cdm
           
           self.currentUserInfo = UserInfo.loadUserInfo(self.tresorMetaInfoCoreDataManager!,userIdentity:userIdentity)
           
           self.loadCurrentTresorUserDevice()
           
-          celeturKitLogger.debug("TresorModel.switchTresorCoreDataManager() --leave--")
+          celeturKitLogger.debug("TresorModel.createIcloudCoreDataManager() --leave--")
           self.initModelDispatchGroup.leave()
           
           NotificationCenter.default.post(name: .onTresorUserInfoChanged, object: self)
         }
       } catch {
         celeturKitLogger.error("Error while setup core data manager ...",error:error)
+      }
+    }
+  }
+  
+  
+  fileprivate func createLocalCoreDataManager() {
+    self.initModelDispatchGroup.enter()
+    
+    let cdm = CoreDataManager(modelName: celetorKitModelName,
+                              using:Bundle(identifier:celeturKitIdentifier)!,
+                              inAppGroupContainer:appGroup,
+                              forUserId: nil)
+    
+    cdm.completeSetup { error in
+      celeturKitLogger.debug("createLocalCoreDataManager()")
+      
+      if error == nil {
+        DispatchQueue.main.async {
+          self.localCoreDataManager = cdm
+          
+          celeturKitLogger.debug("TresorModel.createLocalCoreDataManager() --leave--")
+          self.initModelDispatchGroup.leave()
+        }
       }
     }
   }
@@ -131,7 +182,7 @@ public class TresorModel {
   }
   
   fileprivate func loadCurrentTresorUserDevice() {
-    if let cdm = self.tresorCoreDataManager, let cdi = currentDeviceInfo, let userName = self.currentUserInfo?.userDisplayName {
+    if let cdm = self.icloudCoreDataManager, let cdi = currentDeviceInfo, let userName = self.currentUserInfo?.userDisplayName {
       let moc = cdm.mainManagedObjectContext
       
       let fetchRequest : NSFetchRequest<TresorUserDevice> = TresorUserDevice.fetchRequest()
@@ -159,7 +210,7 @@ public class TresorModel {
   }
   
   public func saveChanges(notifyCloudKit:Bool=true) {
-    guard let cdm = self.tresorCoreDataManager else { return }
+    guard let cdm = self.icloudCoreDataManager else { return }
     
     cdm.saveChanges(notifyChangesToCloudKit:notifyCloudKit)
   }
@@ -183,7 +234,7 @@ public class TresorModel {
             
             CKContainer.default().discoverUserIdentity(withUserRecordID: r, completionHandler: { (userIdentity, error) in
               if let u = userIdentity {
-                self.switchTresorCoreDataManager(userIdentity:u)
+                self.createIcloudCoreDataManager(userIdentity:u)
               }
             })
           }
@@ -192,7 +243,7 @@ public class TresorModel {
     }
   }
   
-  public func   setCurrentDeviceAPNToken(deviceToken:Data) {
+  public func setCurrentDeviceAPNToken(deviceToken:Data) {
     celeturKitLogger.debug("setCurrentDeviceAPNToken(\(deviceToken.hexEncodedString()))")
     
     self.apnDeviceToken = deviceToken
@@ -238,12 +289,12 @@ public class TresorModel {
   
   
   public func fetchChanges(in databaseScope: CKDatabaseScope, completion: @escaping () -> Void) {
-    self.tresorCoreDataManager?.cloudKitManager?.fetchChanges(in: databaseScope, completion: completion)
+    self.icloudCoreDataManager?.cloudKitManager?.fetchChanges(in: databaseScope, completion: completion)
   }
   
   
   public func createScratchpadTresorObject(tresor: Tresor?) -> TempTresorObject? {
-    return TempTresorObject(tresorModel: self, tresor: tresor)
+    return TempTresorObject(tresorCoreDataManager: self.getCoreDataManager(storeType: .icloud), tresor: tresor)
   }
   
   
@@ -265,7 +316,7 @@ public class TresorModel {
   }
   
   public func encryptAllDocumentItemsThatShouldBeEncryptedByDevice(tresor: Tresor, masterKey: TresorKey) {
-    guard let context = self.tresorCoreDataManager?.privateChildManagedObjectContext(),
+    guard let context = self.icloudCoreDataManager?.privateChildManagedObjectContext(),
       let tempTresor = context.object(with: tresor.objectID) as? Tresor,
       let documents = tempTresor.documents
       else { return }
@@ -319,7 +370,7 @@ public class TresorModel {
   public func createAndFetchTresorFetchedResultsController() throws -> NSFetchedResultsController<Tresor>? {
     var result : NSFetchedResultsController<Tresor>?
     
-    if let moc = self.tresorCoreDataManager?.mainManagedObjectContext {
+    if let moc = self.icloudCoreDataManager?.mainManagedObjectContext {
       result = try Tresor.createAndFetchTresorFetchedResultsController(context: moc)
     }
     
@@ -329,7 +380,7 @@ public class TresorModel {
   public func createAndFetchUserdeviceFetchedResultsController() throws -> NSFetchedResultsController<TresorUserDevice>? {
     var result : NSFetchedResultsController<TresorUserDevice>?
     
-    if let moc = self.tresorCoreDataManager?.mainManagedObjectContext {
+    if let moc = self.icloudCoreDataManager?.mainManagedObjectContext {
       result = try TresorUserDevice.createAndFetchUserdeviceFetchedResultsController(context: moc)
     }
     
@@ -340,7 +391,7 @@ public class TresorModel {
   public func createAndFetchTresorDocumentItemFetchedResultsController(tresor:Tresor?) throws -> NSFetchedResultsController<TresorDocumentItem>? {
     var result : NSFetchedResultsController<TresorDocumentItem>?
     
-    if let moc = self.tresorCoreDataManager?.mainManagedObjectContext {
+    if let moc = self.icloudCoreDataManager?.mainManagedObjectContext {
       result = try TresorDocumentItem.createAndFetchTresorDocumentItemFetchedResultsController(context: moc, tresor: tresor)
     }
     
@@ -350,16 +401,21 @@ public class TresorModel {
   // MARK: - Reset Data
   
   public func resetChangeTokens() {
-    self.tresorCoreDataManager?.cloudKitManager?.ckPersistenceState.flushChangedIds()
-    self.tresorCoreDataManager?.cloudKitManager?.ckPersistenceState.flushServerChangeTokens()
+    self.icloudCoreDataManager?.cloudKitManager?.ckPersistenceState.flushChangedIds()
+    self.icloudCoreDataManager?.cloudKitManager?.ckPersistenceState.flushServerChangeTokens()
   }
   
   public func removeAllCloudKitData() {
-    self.tresorCoreDataManager?.cloudKitManager?.deleteAllRecordsForZone()
+    self.icloudCoreDataManager?.cloudKitManager?.deleteAllRecordsForZone()
   }
   
   public func removeAllCoreData() {
-    guard let cdm = self.tresorCoreDataManager else { return }
+    self.removeCoreData(for: self.localCoreDataManager)
+    self.removeCoreData(for: self.icloudCoreDataManager)
+  }
+  
+  public func removeCoreData(for coreDataManager:CoreDataManager?) {
+    guard let cdm = coreDataManager else { return }
     
     let tempMoc = cdm.privateChildManagedObjectContext()
     
@@ -371,7 +427,7 @@ public class TresorModel {
       
       try tempMoc.save()
       
-      self.saveChanges(notifyCloudKit: false)
+      cdm.saveChanges(notifyChangesToCloudKit:false)
     } catch {
       celeturKitLogger.error("Error delete all entities",error:error)
     }

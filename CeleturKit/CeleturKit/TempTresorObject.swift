@@ -16,8 +16,8 @@ public class TempTresorObject {
     self.tempTresor = tresor
   }
   
-  convenience init?(tresorModel:TresorModel, tresor:Tresor?) {
-    if let cdm = tresorModel.tresorCoreDataManager {
+  convenience init?(tresorCoreDataManager:CoreDataManager?, tresor:Tresor?) {
+    if let cdm = tresorCoreDataManager {
       do {
         let scratchpadContext = cdm.privateChildManagedObjectContext()
         var tempTresor : Tresor?

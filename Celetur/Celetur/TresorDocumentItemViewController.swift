@@ -157,7 +157,7 @@ class TresorDocumentItemViewController: UITableViewController {
   }
   
   fileprivate func saveChangedItem(tdi: TresorDocumentItem,k: TresorKey, m:Payload) {
-    if let context = self.tresorAppState?.tresorModel.tresorCoreDataManager?.privateChildManagedObjectContext() {
+    if let context = self.tresorAppState?.tresorModel.getCoreDataManager(storeType: .icloud)?.privateChildManagedObjectContext() {
       self.activityView.startAnimating()
       self.navigationItem.rightBarButtonItem?.isEnabled = false
       self.setModel(payload: nil)

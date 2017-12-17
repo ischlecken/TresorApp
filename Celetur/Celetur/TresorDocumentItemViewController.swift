@@ -12,7 +12,7 @@ import CeleturKit
 class TresorDocumentItemViewController: UITableViewController {
   
   var tresorAppState: TresorAppModel?
-  
+  var storeType : TresorModelStoreType = .local
   var tresorDocumentItem: TresorDocumentItem? {
     didSet {
       configureView()
@@ -157,7 +157,7 @@ class TresorDocumentItemViewController: UITableViewController {
   }
   
   fileprivate func saveChangedItem(tdi: TresorDocumentItem,k: TresorKey, m:Payload) {
-    if let context = self.tresorAppState?.tresorModel.getCoreDataManager(storeType: .icloud)?.privateChildManagedObjectContext() {
+    if let context = self.tresorAppState?.tresorModel.getCoreDataManager(storeType: self.storeType)?.privateChildManagedObjectContext() {
       self.activityView.startAnimating()
       self.navigationItem.rightBarButtonItem?.isEnabled = false
       self.setModel(payload: nil)

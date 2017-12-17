@@ -17,6 +17,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     }
   }
   var tresorAppState: TresorAppModel?
+  var storeType: TresorModelStoreType = .local
   
   let dateFormatter = DateFormatter()
   
@@ -31,7 +32,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     self.refreshControl = UIRefreshControl()
     self.refreshControl?.addTarget(self, action: #selector(refreshTable(_:)), for: .valueChanged)
     
-    self.title = tresor?.tresordescription
+    self.title = tresor?.name
     self.dateFormatter.dateStyle = DateFormatter.Style.short
     self.dateFormatter.timeStyle = DateFormatter.Style.short
     
@@ -101,7 +102,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   }
   
   fileprivate func insertNewTresorDocument(t: Tresor, model: Payload, key: TresorKey) {
-    if let context = self.tresorAppState?.tresorModel.getCoreDataManager(storeType: .icloud)?.privateChildManagedObjectContext() {
+    if let context = self.tresorAppState?.tresorModel.getCoreDataManager(storeType: self.storeType)?.privateChildManagedObjectContext() {
       self.beginInsertNewObject()
       context.perform {
         do {
@@ -160,6 +161,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
         let controller = (segue.destination as! UINavigationController).topViewController as! TresorDocumentItemViewController
         controller.tresorAppState = self.tresorAppState
         controller.tresorDocumentItem = object
+        controller.storeType = self.storeType
         controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
         controller.navigationItem.leftItemsSupplementBackButton = true
       }
@@ -289,7 +291,8 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     }
     
     do {
-      try _fetchedResultsController = self.tresorAppState?.tresorModel.createAndFetchTresorDocumentItemFetchedResultsController(tresor: tresor)
+      try _fetchedResultsController = self.tresorAppState?.tresorModel.createAndFetchTresorDocumentItemFetchedResultsController(tresor: tresor,
+                                                                                                                                storeType:self.storeType)
       
       _fetchedResultsController?.delegate = self
     } catch {

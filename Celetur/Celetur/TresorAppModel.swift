@@ -124,7 +124,6 @@ class TresorAppModel {
                                            selector: #selector(tresorUserInfoChanged(_:)),
                                            name: Notification.Name.onTresorUserInfoChanged,
                                            object:self.tresorModel)
-    
   }
   
   public func fetchChanges(in databaseScope: CKDatabaseScope, completion: @escaping () -> Void) {
@@ -150,11 +149,11 @@ class TresorAppModel {
   
   @objc
   func tresorUserInfoChanged(_ note: Notification) {
+    celeturLogger.debug("")
     if let userName = self.tresorModel.currentUserInfo?.userDisplayName {
-      self.appDelegate?.setTitle(title: "Celetur\n\(userName)")
-      
+      celeturLogger.debug("iCloud User:\(userName)")
     } else {
-      self.appDelegate?.setTitle(title: "Celetur\nno icloud user")
+      celeturLogger.debug("no iCloud User")
     }
   }
   

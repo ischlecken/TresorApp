@@ -23,15 +23,15 @@ extension TresorUserDevice {
   }
   
   
-  func updateCurrentUserDevice(deviceInfo:DeviceInfo, userName:String) {
+  func updateCurrentUserDevice(deviceInfo:DeviceInfo, userName:String?) {
     self.devicename = deviceInfo.devicename
     self.devicemodel = deviceInfo.devicemodel
     self.devicesystemname = deviceInfo.devicesystemname
     self.devicesystemversion = deviceInfo.devicesystemversion
     self.deviceuitype = deviceInfo.deviceuitype
+    self.apndevicetoken = deviceInfo.apndevicetoken
     
     self.username = userName
-    self.apndevicetoken = deviceInfo.apndevicetoken
   }
   
   

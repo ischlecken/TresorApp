@@ -10,10 +10,12 @@
 public class TempTresorObject {
   public var tempManagedObjectContext : NSManagedObjectContext
   public var tempTresor : Tresor
+  public var userDevices : [TresorUserDevice]?
   
-  init(context:NSManagedObjectContext, tresor:Tresor) {
+  init(context:NSManagedObjectContext, tresor:Tresor, userDevices: [TresorUserDevice]?) {
     self.tempManagedObjectContext = context
     self.tempTresor = tresor
+    self.userDevices = userDevices
   }
   
   convenience init?(tresorCoreDataManager:CoreDataManager?, tresor:Tresor?) {
@@ -28,7 +30,7 @@ public class TempTresorObject {
           tempTresor = try Tresor.createTempTresor(context: scratchpadContext)
         }
         
-        self.init(context:scratchpadContext, tresor:tempTresor!)
+        self.init(context:scratchpadContext, tresor:tempTresor!, userDevices:TresorUserDevice.loadUserDevices(context: cdm.mainManagedObjectContext))
         
         return 
       } catch {

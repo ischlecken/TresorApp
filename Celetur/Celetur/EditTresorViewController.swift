@@ -16,13 +16,15 @@ class EditTresorViewController: UITableViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    
+
+/*
     if let userDevice = self.tresorAppState?.tresorModel.currentTresorUserDevice,
       self.tresor?.tempTresor.userdevices?.count==0,
       let udnew = self.tresor?.tempManagedObjectContext.object(with: userDevice.objectID) as? TresorUserDevice {
       
       self.tresor?.tempTresor.addToUserdevices(udnew)
     }
+*/
     
     self.nameTextfield.becomeFirstResponder()
     if let t  = self.tresor?.tempTresor {
@@ -32,19 +34,12 @@ class EditTresorViewController: UITableViewController {
     
   }
   
-  func saveTempTresor() {
+  func updateTempTresor() {
     if let t = self.tresor?.tempTresor {
       t.name = self.nameTextfield!.text
       t.tresordescription = self.descriptionTextfield!.text
       t.changets = Date()
     }
-    
-    if let moc = self.tresor?.tempManagedObjectContext {
-      moc.performSave(contextInfo: "tresor object", completion: {
-        self.tresorAppState?.tresorModel.saveChanges()
-      })
-    }
-    
   }
   
   // MARK: - Table View
@@ -54,7 +49,7 @@ class EditTresorViewController: UITableViewController {
   }
   
   override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return self.tresorAppState?.tresorModel.userDevices?.count ?? 0
+    return self.tresor?.userDevices?.count ?? 0
   }
   
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -139,7 +134,7 @@ class EditTresorViewController: UITableViewController {
   
   
   func getUserDevice(forPath indexPath:IndexPath) -> TresorUserDevice? {
-    return self.tresorAppState?.tresorModel.userDevices?[indexPath.row]
+    return self.tresor?.userDevices?[indexPath.row]
   }
   
 }

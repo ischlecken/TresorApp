@@ -161,7 +161,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     let masterNavigationController = splitViewController.viewControllers[0] as! UINavigationController
     let controller = masterNavigationController.topViewController as! TresorViewController
     
-    controller.setTitleInfo(titleinfo: title)
+    controller.navigationController?.title = title
   }
   
   func onOffline() {

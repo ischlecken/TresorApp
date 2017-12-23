@@ -17,8 +17,6 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     }
   }
   var tresorAppState: TresorAppModel?
-  var storeType: TresorModelStoreType = .local
-  
   let dateFormatter = DateFormatter()
   
   override func viewDidLoad() {
@@ -102,7 +100,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   }
   
   fileprivate func insertNewTresorDocument(t: Tresor, model: Payload, key: TresorKey) {
-    if let context = self.tresorAppState?.tresorModel.getCoreDataManager(storeType: self.storeType)?.privateChildManagedObjectContext() {
+    if let context = self.tresorAppState?.tresorModel.getCoreDataManager()?.privateChildManagedObjectContext() {
       self.beginInsertNewObject()
       context.perform {
         do {
@@ -161,7 +159,6 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
         let controller = (segue.destination as! UINavigationController).topViewController as! TresorDocumentItemViewController
         controller.tresorAppState = self.tresorAppState
         controller.tresorDocumentItem = object
-        controller.storeType = self.storeType
         controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
         controller.navigationItem.leftItemsSupplementBackButton = true
       }
@@ -291,8 +288,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     }
     
     do {
-      try _fetchedResultsController = self.tresorAppState?.tresorModel.createAndFetchTresorDocumentItemFetchedResultsController(tresor: tresor,
-                                                                                                                                storeType:self.storeType)
+      try _fetchedResultsController = self.tresorAppState?.tresorModel.createAndFetchTresorDocumentItemFetchedResultsController(tresor: tresor)
       
       _fetchedResultsController?.delegate = self
     } catch {

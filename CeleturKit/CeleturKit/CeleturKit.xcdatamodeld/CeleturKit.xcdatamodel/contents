@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="13533" systemVersion="17B48" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="13772" systemVersion="17C88" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Tresor" representedClassName="Tresor" syncable="YES" codeGenerationType="class">
         <attribute name="changets" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="ckdata" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="ckuserid" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="createts" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="id" attributeType="String" syncable="YES"/>
         <attribute name="name" attributeType="String" syncable="YES"/>
@@ -12,6 +13,8 @@
         <relationship name="userdevices" toMany="YES" deletionRule="Nullify" destinationEntity="TresorUserDevice" inverseName="tresors" inverseEntity="TresorUserDevice" syncable="YES"/>
     </entity>
     <entity name="TresorAudit" representedClassName="TresorAudit" syncable="YES" codeGenerationType="class">
+        <attribute name="ckdata" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="ckuserid" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="createts" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="message" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="messagekey" optional="YES" attributeType="String" syncable="YES"/>
@@ -25,20 +28,10 @@
         <attribute name="userdeviceid" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="userid" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
-    <entity name="TresorCommand" representedClassName="TresorCommand" syncable="YES" codeGenerationType="class">
-        <attribute name="command" attributeType="String" syncable="YES"/>
-        <attribute name="createts" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="destinationdeviceid" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="param1" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="param2" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="param3" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="signature" attributeType="Binary" syncable="YES"/>
-        <attribute name="sourcedeviceid" attributeType="String" syncable="YES"/>
-        <attribute name="status" attributeType="String" syncable="YES"/>
-    </entity>
     <entity name="TresorDocument" representedClassName="TresorDocument" syncable="YES" codeGenerationType="class">
         <attribute name="changets" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="ckdata" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="ckuserid" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="createts" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="id" attributeType="String" syncable="YES"/>
         <attribute name="metainfo" optional="YES" attributeType="Binary" syncable="YES"/>
@@ -49,11 +42,13 @@
     <entity name="TresorDocumentItem" representedClassName="TresorDocumentItem" syncable="YES" codeGenerationType="class">
         <attribute name="changets" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="ckdata" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="ckuserid" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="createts" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="id" attributeType="String" syncable="YES"/>
         <attribute name="mimetype" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="nonce" optional="YES" attributeType="Binary" syncable="YES"/>
         <attribute name="payload" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="sortkey" optional="YES" transient="YES" syncable="YES"/>
         <attribute name="status" attributeType="String" syncable="YES"/>
         <attribute name="type" optional="YES" attributeType="String" defaultValueString="document" syncable="YES"/>
         <relationship name="document" maxCount="1" deletionRule="Nullify" destinationEntity="TresorDocument" inverseName="documentitems" inverseEntity="TresorDocument" syncable="YES"/>
@@ -62,6 +57,7 @@
     <entity name="TresorUserDevice" representedClassName="TresorUserDevice" syncable="YES" codeGenerationType="class">
         <attribute name="apndevicetoken" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="ckdata" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="ckuserid" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="createts" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="devicemodel" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="devicename" attributeType="String" syncable="YES"/>
@@ -76,11 +72,10 @@
         <relationship name="tresors" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tresor" inverseName="userdevices" inverseEntity="Tresor" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Tresor" positionX="-1386" positionY="-67" width="128" height="180"/>
-        <element name="TresorAudit" positionX="-758" positionY="17" width="128" height="223"/>
-        <element name="TresorCommand" positionX="-756" positionY="269" width="128" height="178"/>
-        <element name="TresorDocument" positionX="-1206" positionY="-207" width="128" height="163"/>
-        <element name="TresorDocumentItem" positionX="-1017" positionY="-63" width="126" height="208"/>
-        <element name="TresorUserDevice" positionX="-1197" positionY="198" width="128" height="255"/>
+        <element name="Tresor" positionX="-1386" positionY="-67" width="128" height="193"/>
+        <element name="TresorAudit" positionX="-792" positionY="-153" width="128" height="253"/>
+        <element name="TresorDocument" positionX="-1206" positionY="-207" width="128" height="178"/>
+        <element name="TresorDocumentItem" positionX="-1017" positionY="-63" width="126" height="238"/>
+        <element name="TresorUserDevice" positionX="-1197" positionY="198" width="128" height="268"/>
     </elements>
 </model>

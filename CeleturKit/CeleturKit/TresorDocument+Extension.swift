@@ -23,6 +23,7 @@ extension TresorDocument {
     self.createts = Date()
     self.changets = self.createts
     self.id = String.uuid()
+    self.ckuserid = tresor.ckuserid
     self.tresor = context.object(with: tresor.objectID) as? Tresor
     self.nonce = try Data(withRandomData:SymmetricCipherAlgorithm.aes_256.requiredBlockSize())
   }

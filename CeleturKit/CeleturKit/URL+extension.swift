@@ -34,9 +34,4 @@ extension URL {
     
   }
   
-  static func coreDataPersistentStoreURL(appGroupId:String,storeName:String, forUser userId:String) throws -> URL {
-    let dirURL = try self.appGroupSubdirectoryURL(appGroupId: appGroupId, dirName: userId)
-    
-    return dirURL.appendingPathComponent("\(storeName).sqlite")
-  }
 }

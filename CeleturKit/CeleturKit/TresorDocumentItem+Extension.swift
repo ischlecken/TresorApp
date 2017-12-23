@@ -36,6 +36,7 @@ extension TresorDocumentItem {
     let ud = context.object(with: userDevice.objectID) as? TresorUserDevice
     
     self.createts = Date()
+    self.ckuserid = tresorDocument.ckuserid
     self.changets = self.createts
     self.id = String.uuid()
     self.status = TresorDocumentItemStatus.pending.rawValue

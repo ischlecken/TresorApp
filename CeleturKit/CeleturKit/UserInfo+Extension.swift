@@ -28,7 +28,7 @@ extension UserInfo {
   }
   
   
-  class func loadUserInfo(_ cdm:CoreDataManager, userIdentity:CKUserIdentity) -> UserInfo? {
+  class func loadUserInfo(_ cdm:CoreDataManager, userIdentity:CKUserIdentity) -> UserInfo {
     let moc = cdm.mainManagedObjectContext
     var result : UserInfo?
     
@@ -59,6 +59,6 @@ extension UserInfo {
       }
     }
     
-    return result
+    return result!
   }
 }

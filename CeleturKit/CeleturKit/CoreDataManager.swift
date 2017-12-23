@@ -11,7 +11,6 @@ public class CoreDataManager {
   public typealias CoreDataManagerCompletion = (Error?) -> ()
   
   fileprivate let modelName: String
-  fileprivate let userId: String?
   fileprivate let timer : DispatchSourceTimer
   fileprivate let appGroupContainerId : String
   fileprivate let bundle : Bundle
@@ -23,11 +22,10 @@ public class CoreDataManager {
     }
   }
   
-  public init(modelName: String, using bundle:Bundle, inAppGroupContainer appGroupContainerId:String, forUserId userId:String? = nil) {
+  public init(modelName: String, using bundle:Bundle, inAppGroupContainer appGroupContainerId:String) {
     self.modelName = modelName
     self.appGroupContainerId = appGroupContainerId
     self.bundle = bundle
-    self.userId = userId
     self.timer = DispatchSource.makeTimerSource(flags: [], queue: DispatchQueue.global())
     
     setupCoreDataStack()
@@ -43,9 +41,7 @@ public class CoreDataManager {
   fileprivate func addPersistentStore() throws {
     guard let persistentStoreCoordinator = persistentStoreCoordinator else { celeturKitLogger.fatal("Unable to Initialize Persistent Store Coordinator") }
     
-    let persistentStoreURL = self.userId != nil ?
-      try URL.coreDataPersistentStoreURL(appGroupId: appGroupContainerId, storeName:modelName, forUser:self.userId!) :
-      URL.coreDataPersistentStoreURL(appGroupId: appGroupContainerId, storeName:modelName)
+    let persistentStoreURL = URL.coreDataPersistentStoreURL(appGroupId: appGroupContainerId, storeName:modelName)
     do {
       let options = [ NSMigratePersistentStoresAutomaticallyOption : true, NSInferMappingModelAutomaticallyOption : true ]
       try persistentStoreCoordinator.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: persistentStoreURL, options: options)

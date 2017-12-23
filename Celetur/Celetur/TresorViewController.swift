@@ -7,13 +7,13 @@ import UIKit
 import CoreData
 import CeleturKit
 
-class TresorViewController: UITableViewController {
+class TresorViewController: UITableViewController, NSFetchedResultsControllerDelegate {
   
   var tresorAppState : TresorAppModel?
   
   fileprivate let dateFormatter = DateFormatter()
   fileprivate var infoViewController : InfoViewController?
-  fileprivate var fetchedResultsControllers : [TresorFetchedResultsControllerType] = []
+  fileprivate var fetchedResultsController : NSFetchedResultsController<Tresor>?
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -58,13 +58,13 @@ class TresorViewController: UITableViewController {
     let actionSheet = UIAlertController(title: "Add new tresor", message: "Select store where the new tresor should be added", preferredStyle: .actionSheet)
     
     actionSheet.addAction(UIAlertAction(title: "iCloud", style: .default, handler: { alertAction in
-      let tempTresor = self.tresorAppState?.tresorModel.createScratchpadTresorObject(tresor:nil,storeType: .icloud )
+      let tempTresor = self.tresorAppState?.tresorModel.createScratchpadICloudTresorObject()
       
       self.performSegue(withIdentifier: "showEditTresor", sender: tempTresor)
     }))
     
     actionSheet.addAction(UIAlertAction(title: "Local Device", style: .default, handler: { alertAction in
-      let tempTresor = self.tresorAppState?.tresorModel.createScratchpadTresorObject(tresor:nil,storeType: .local )
+      let tempTresor = self.tresorAppState?.tresorModel.createScratchpadLocalDeviceTresorObject()
       
       self.performSegue(withIdentifier: "showEditTresor", sender: tempTresor)
     }))
@@ -105,7 +105,6 @@ class TresorViewController: UITableViewController {
           
           controller.tresorAppState = self.tresorAppState
           controller.tresor = object
-          controller.storeType = self.getStoreType(indexPath: indexPath)
           controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
           controller.navigationItem.leftItemsSupplementBackButton = true
         }
@@ -153,53 +152,27 @@ class TresorViewController: UITableViewController {
     
     moc.performSave(contextInfo: "tresor object", completion: {
       self.tresorAppState?.tresorModel.saveChanges()
-      
-      DispatchQueue.main.async {
-        self.updateFetchedResultsController()
-        self.tableView.reloadData()
-      }
     })
   }
   
   // MARK: - Table View
   
   override func numberOfSections(in tableView: UITableView) -> Int {
-    return self.fetchedResultsControllers.count
+    return self.fetchedResultsController?.sections?.count ?? 0
   }
   
   override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    let sectionInfo = self.fetchedResultsControllers[section].fetchResultsController
-    
-    return sectionInfo.sections![0].numberOfObjects
-  }
-  
-  fileprivate func getFetchedResultsController(indexPath:IndexPath) -> NSFetchedResultsController<Tresor> {
-    return self.fetchedResultsControllers[indexPath.section].fetchResultsController
-  }
-  
-  fileprivate func getStoreType(indexPath:IndexPath) -> TresorModelStoreType {
-    return self.fetchedResultsControllers[indexPath.section].storeType
+    return self.fetchedResultsController?.sections![section].numberOfObjects ?? 0
   }
   
   fileprivate func getObject(indexPath:IndexPath) -> Tresor {
-    return self.fetchedResultsControllers[indexPath.section].fetchResultsController.object(at: IndexPath(row: indexPath.row, section: 0))
+    return self.fetchedResultsController!.object(at: indexPath)
   }
   
   override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-    var title = "-"
+    let t = self.getObject(indexPath: IndexPath(row:0,section:section))
     
-    switch self.getStoreType(indexPath: IndexPath(row:0,section:section)) {
-    case .icloud:
-      title = "iCloud"
-      
-      if let userName = self.tresorAppState?.tresorModel.currentUserInfo?.userDisplayName {
-        title += ": \(userName)"
-      }
-    case .local:
-      title = "Auf diesem Gerät"
-    }
-    
-    return title
+    return t.ckuserid ?? "This Device"
   }
   
   
@@ -224,8 +197,7 @@ class TresorViewController: UITableViewController {
   override func tableView(_ tableView: UITableView, editActionsForRowAt: IndexPath) -> [UITableViewRowAction]? {
     
     let editAction = UITableViewRowAction(style: .normal, title: "Edit") { action, index in
-      let object = self.getObject(indexPath: index)
-      let tempTresor = self.tresorAppState?.tresorModel.createScratchpadTresorObject(tresor:object,storeType: self.getStoreType(indexPath: index) )
+      let tempTresor = self.tresorAppState?.tresorModel.createScratchpadTresorObject(tresor:self.getObject(indexPath: index))
       
       self.performSegue(withIdentifier: "showEditTresor", sender: tempTresor)
     }
@@ -235,8 +207,6 @@ class TresorViewController: UITableViewController {
       let tresor = self.getObject(indexPath: index)
       
       self.tresorAppState?.tresorModel.deleteTresor(tresor: tresor) {
-        self.updateFetchedResultsController()
-        self.tableView.reloadData()
       }
     }
     
@@ -263,10 +233,47 @@ class TresorViewController: UITableViewController {
   
   func updateFetchedResultsController() {
     do {
-      try self.fetchedResultsControllers = (self.tresorAppState?.tresorModel.createAndFetchTresorFetchedResultsControllers(delegate: nil))!
+      try self.fetchedResultsController = (self.tresorAppState?.tresorModel.createAndFetchTresorFetchedResultsController(delegate: self))!
     } catch {
       celeturLogger.error("error while fetching",error:error)
     }
+  }
+  
+  func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+    tableView.beginUpdates()
+  }
+  
+  func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange sectionInfo: NSFetchedResultsSectionInfo, atSectionIndex sectionIndex: Int, for type: NSFetchedResultsChangeType) {
+    switch type {
+    case .insert:
+      tableView.insertSections(IndexSet(integer: sectionIndex), with: .fade)
+    case .delete:
+      tableView.deleteSections(IndexSet(integer: sectionIndex), with: .fade)
+    default:
+      return
+    }
+  }
+  
+  func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+    switch type {
+    case .insert:
+      tableView.insertRows(at: [newIndexPath!], with: .fade)
+    case .delete:
+      tableView.deleteRows(at: [indexPath!], with: .fade)
+    case .update:
+      let cell = tableView.cellForRow(at: indexPath!) as? TresorCell
+      
+      configureCell(cell!, withTresor: anObject as! Tresor)
+    case .move:
+      let cell = tableView.cellForRow(at: indexPath!) as? TresorCell
+      
+      configureCell(cell!, withTresor: anObject as! Tresor)
+      tableView.moveRow(at: indexPath!, to: newIndexPath!)
+    }
+  }
+  
+  func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+    tableView.endUpdates()
   }
 }
 

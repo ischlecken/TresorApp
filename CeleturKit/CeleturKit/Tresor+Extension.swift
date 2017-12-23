@@ -17,11 +17,12 @@ public extension Tresor {
     }
   }
   
-  public class func createTempTresor(context: NSManagedObjectContext) throws -> Tresor {
+  public class func createTempTresor(context: NSManagedObjectContext, ckUserId: String?) throws -> Tresor {
     let newTresor = Tresor(context: context)
     newTresor.createts = Date()
     newTresor.changets = newTresor.createts
     newTresor.id = String.uuid()
+    newTresor.ckuserid = ckUserId
     newTresor.nonce = try Data(withRandomData: SymmetricCipherAlgorithm.aes_256.requiredBlockSize())
     
     return newTresor
@@ -41,7 +42,7 @@ public extension Tresor {
     
     let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
                                                                managedObjectContext: context,
-                                                               sectionNameKeyPath: nil,
+                                                               sectionNameKeyPath: "ckuserid",
                                                                cacheName: nil)
     
     do {

@@ -40,29 +40,33 @@ class CKAddedObjectInfo : NSObject, NSCoding, NSCopying {
   var entityType : String
   var entityId : String
   var objectUri : String
+  var ckuserid: String
   
   func encode(with aCoder: NSCoder) {
     aCoder.encode(self.entityId, forKey: "entityid")
     aCoder.encode(self.entityType, forKey: "entitytype")
     aCoder.encode(self.objectUri, forKey: "objecturi")
+    aCoder.encode(self.ckuserid, forKey: "ckuserid")
   }
   
   required convenience init?(coder aDecoder: NSCoder) {
     let id = aDecoder.decodeObject(forKey: "entityid") as? String
     let type = aDecoder.decodeObject(forKey: "entitytype") as? String
     let uri = aDecoder.decodeObject(forKey: "objecturi") as? String
+    let ckuserid = aDecoder.decodeObject(forKey: "ckuserid") as? String
     
-    self.init(type: type!, id: id!, uri: uri!)
+    self.init(type: type!, id: id!, uri: uri!, ckuserid:ckuserid!)
   }
   
-  init(type:String,id:String,uri:String) {
+  init(type:String,id:String,uri:String,ckuserid:String) {
     self.entityType = type
     self.entityId = id
     self.objectUri = uri
+    self.ckuserid = ckuserid
   }
   
   static func == (lhs: CKAddedObjectInfo, rhs: CKAddedObjectInfo) -> Bool {
-    return lhs.entityId == rhs.entityId
+    return lhs.entityType == rhs.entityType && lhs.entityId == rhs.entityId
   }
   
   override var hashValue: Int {
@@ -70,7 +74,7 @@ class CKAddedObjectInfo : NSObject, NSCoding, NSCopying {
   }
   
   func copy(with zone: NSZone? = nil) -> Any {
-    return CKAddedObjectInfo(type: self.entityType, id: self.entityId, uri: self.objectUri)
+    return CKAddedObjectInfo(type: self.entityType, id: self.entityId, uri: self.objectUri, ckuserid:self.ckuserid)
   }
 }
 
@@ -79,22 +83,26 @@ class CKDeletedObjectInfo : NSObject, NSCoding {
   
   var entityType : String
   var entityId : String
+  var ckuserid: String
   
   func encode(with aCoder: NSCoder) {
     aCoder.encode(self.entityId, forKey: "entityid")
     aCoder.encode(self.entityType, forKey: "entitytype")
+    aCoder.encode(self.ckuserid, forKey: "ckuserid")
   }
   
   required convenience init?(coder aDecoder: NSCoder) {
     let id = aDecoder.decodeObject(forKey: "entityid") as? String
     let type = aDecoder.decodeObject(forKey: "entitytype") as? String
+    let ckuserid = aDecoder.decodeObject(forKey: "ckuserid") as? String
     
-    self.init(type: type!, id: id!)
+    self.init(type: type!, id: id!, ckuserid: ckuserid!)
   }
   
-  init(type:String,id:String) {
+  init(type:String,id:String,ckuserid:String) {
     self.entityType = type
     self.entityId = id
+    self.ckuserid = ckuserid
   }
   
   static func == (lhs: CKDeletedObjectInfo, rhs: CKDeletedObjectInfo) -> Bool {
@@ -115,17 +123,15 @@ class CloudKitPersistenceState {
   var changeTokens : [String:CKServerChangeTokenModel]?
   var changedObjectIds : Set<CKAddedObjectInfo>?
   var deletedObjectIds : Set<CKDeletedObjectInfo>?
+  
+  let ckUserId : String
 
   var saveLock = NSLock()
   
-  init(appGroupContainerId:String, forUserId userId:String? = nil) throws {
-    let dirURL : URL
+  init(appGroupContainerId:String,ckUserId:String) throws {
+    self.ckUserId = ckUserId
     
-    if let userId = userId {
-      dirURL = try URL.appGroupSubdirectoryURL(appGroupId: appGroupContainerId, dirName: userId)
-    } else {
-      dirURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupContainerId)!
-    }
+    let dirURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupContainerId)!
     
     self.serverChangeTokensFilePath = dirURL.appendingPathComponent("ckserverchangetokens.plist").path
     self.changedIdsFilePath = dirURL.appendingPathComponent("changedids.plist").path
@@ -186,14 +192,14 @@ class CloudKitPersistenceState {
     
     var found = false
     for aoi in c {
-      if aoi.entityId == entityId {
+      if aoi.entityId == entityId && aoi.ckuserid == self.ckUserId {
         found = true
         break
       }
     }
     
     if !found {
-      c.insert(CKAddedObjectInfo(type: entityType, id: entityId, uri: uri) )
+      c.insert(CKAddedObjectInfo(type: entityType, id: entityId, uri: uri, ckuserid:self.ckUserId) )
     }
     
     self.changedObjectIds = c
@@ -239,7 +245,7 @@ class CloudKitPersistenceState {
         var found : CKAddedObjectInfo?
         
         for entityId in entityIds {
-          if aoi.entityId == entityId {
+          if aoi.entityId == entityId && aoi.ckuserid == self.ckUserId {
             found = aoi
           }
         }
@@ -290,7 +296,7 @@ class CloudKitPersistenceState {
     }
     
     if !found {
-      d.insert(CKDeletedObjectInfo(type:entityType, id: entityId))
+      d.insert(CKDeletedObjectInfo(type:entityType, id: entityId, ckuserid: self.ckUserId))
     }
     self.deletedObjectIds = d
     
@@ -312,7 +318,7 @@ class CloudKitPersistenceState {
           var found : CKDeletedObjectInfo?
           
           for entityId in entityIds {
-            if delinfo.entityId == entityId {
+            if delinfo.entityId == entityId && delinfo.ckuserid==self.ckUserId {
               found = delinfo
               
               break
@@ -387,11 +393,15 @@ class CloudKitPersistenceState {
     }
   }
   
-  func changedRecords(moc:NSManagedObjectContext,zoneId:CKRecordZoneID? ) -> [CKRecord] {
+  func changedRecords(moc:NSManagedObjectContext, ckUserId:String, zoneId:CKRecordZoneID? ) -> [CKRecord] {
     var records = [CKRecord]()
     
     if let coi = self.changedObjectIds {
       for aoi in coi {
+        if aoi.ckuserid != ckUserId {
+          continue
+        }
+        
         if let url = URL(string:aoi.objectUri),
           let oID = moc.persistentStoreCoordinator?.managedObjectID(forURIRepresentation: url),
           let r = moc.object(with: oID).mapToRecord(zoneId: zoneId) {
@@ -403,11 +413,15 @@ class CloudKitPersistenceState {
     return records
   }
   
-  func deletedRecordIds(moc:NSManagedObjectContext,zoneId:CKRecordZoneID? ) -> [CKRecordID] {
+  func deletedRecordIds(moc:NSManagedObjectContext, ckUserId:String, zoneId:CKRecordZoneID? ) -> [CKRecordID] {
     var result = [CKRecordID]()
     
     if let dOIds = self.deletedObjectIds {
       for doi in dOIds {
+        if doi.ckuserid != ckUserId {
+          continue
+        }
+        
         if let zId = zoneId {
           result.append(CKRecordID(recordName: doi.entityId, zoneID: zId))
         }

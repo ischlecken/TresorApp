@@ -27,7 +27,7 @@ public class TempTresorObject {
         if let t = tresor {
           tempTresor = scratchpadContext.object(with: t.objectID) as? Tresor
         } else {
-          tempTresor = try Tresor.createTempTresor(context: scratchpadContext)
+          tempTresor = try Tresor.createTempTresor(context: scratchpadContext, ckUserId: tresor?.ckuserid)
         }
         
         self.init(context:scratchpadContext, tresor:tempTresor!, userDevices:TresorUserDevice.loadUserDevices(context: cdm.mainManagedObjectContext))

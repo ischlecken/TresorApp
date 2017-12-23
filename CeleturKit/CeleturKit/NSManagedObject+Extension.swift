@@ -26,7 +26,11 @@ extension NSManagedObject {
     let entityName = ed.name
     let attributesByName = ed.attributesByName
     
-    return entityName!.starts(with: "Tresor") && attributesByName.keys.contains("ckdata") && attributesByName.keys.contains("id")
+    return entityName!.starts(with: "Tresor") &&
+      attributesByName.keys.contains("ckdata") &&
+      attributesByName.keys.contains("ckuserid") &&
+      attributesByName.keys.contains("id") &&
+      self.value(forKey: "ckuserid") != nil
   }
   
   func update(context:NSManagedObjectContext, usingRecord record:CKRecord) {
@@ -126,9 +130,13 @@ extension NSManagedObject {
     let ed = self.entity
     let attributesByName = ed.attributesByName
     
-    for (n,_) in attributesByName {
+    for (n,a) in attributesByName {
       let v = self.value(forKey: n) as? CKRecordValue
-      if n == "ckdata" {
+      if n == "ckdata" || n == "ckuserid" {
+        continue
+      }
+      
+      if a.isTransient {
         continue
       }
       

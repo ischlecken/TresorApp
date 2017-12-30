@@ -36,9 +36,10 @@ public extension Tresor {
     fetchRequest.fetchBatchSize = 20
     
     // Edit the sort key as appropriate.
-    let sortDescriptor = NSSortDescriptor(key: "changets", ascending: false)
+    let sortDescriptor0 = NSSortDescriptor(key: "ckuserid", ascending: false)
+    let sortDescriptor1 = NSSortDescriptor(key: "changets", ascending: false)
     
-    fetchRequest.sortDescriptors = [sortDescriptor]
+    fetchRequest.sortDescriptors = [sortDescriptor0,sortDescriptor1]
     
     let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
                                                                managedObjectContext: context,
@@ -52,6 +53,22 @@ public extension Tresor {
     }
     
     return aFetchedResultsController
+  }
+  
+  class func updateReadonlyInfo(aFetchedResultsController: NSFetchedResultsController<Tresor>, ckUserId: String?) {
+    if let fetchedObjects = aFetchedResultsController.fetchedObjects {
+      for o in fetchedObjects {
+        o.isreadonly = true
+        
+        if o.ckuserid == nil {
+          o.isreadonly = false
+        } else {
+          if let userid = ckUserId, let ckuserid = o.ckuserid, ckuserid==userid {
+            o.isreadonly = false
+          }
+        }
+      }
+    }
   }
   
   public func findUserDevice(userDevice:TresorUserDevice) -> TresorUserDevice? {

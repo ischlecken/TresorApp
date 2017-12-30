@@ -46,7 +46,7 @@
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="75" sectionHeaderHeight="18" sectionFooterHeight="18" id="r7i-6Z-zg0">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" red="0.99999600649999998" green="1" blue="1" alpha="0.59910714285714284" colorSpace="custom" customColorSpace="sRGB"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="templateCell" id="rQA-Li-nuf">
                                 <rect key="frame" x="0.0" y="55.333333333333336" width="414" height="44"/>
@@ -164,12 +164,18 @@
                                     <nil key="textColor"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <textInputTraits key="textInputTraits"/>
+                                    <connections>
+                                        <outlet property="delegate" destination="gL4-ee-YwX" id="3Sc-ZM-INa"/>
+                                    </connections>
                                 </textField>
                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="0HN-w7-xQ7">
                                     <rect key="frame" x="20" y="33" width="374" height="30"/>
                                     <nil key="textColor"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <textInputTraits key="textInputTraits"/>
+                                    <connections>
+                                        <outlet property="delegate" destination="gL4-ee-YwX" id="CYZ-MQ-wzI"/>
+                                    </connections>
                                 </textField>
                             </subviews>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -225,7 +231,7 @@
                                 <segue destination="gQ6-kV-3Uu" kind="unwind" identifier="cancelUnwindToTresor" unwindAction="unwindToTresorWithSegue:" id="zS6-sx-H7A"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="6ZG-9v-yEF">
+                        <barButtonItem key="rightBarButtonItem" title="Save" id="6ZG-9v-yEF">
                             <connections>
                                 <segue destination="gQ6-kV-3Uu" kind="unwind" identifier="saveUnwindToTresor" unwindAction="unwindToTresorWithSegue:" id="zET-t1-CPG"/>
                             </connections>
@@ -234,6 +240,7 @@
                     <connections>
                         <outlet property="descriptionTextfield" destination="O0v-t5-NEK" id="P8N-Ge-7Ec"/>
                         <outlet property="nameTextfield" destination="0HN-w7-xQ7" id="N8g-Fc-fXh"/>
+                        <outlet property="view" destination="Ogm-6F-0yi" id="YL2-qo-Cf4"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="aNK-TV-baJ" userLabel="First Responder" sceneMemberID="firstResponder"/>

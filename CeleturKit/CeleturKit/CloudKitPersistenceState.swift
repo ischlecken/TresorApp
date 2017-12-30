@@ -124,13 +124,9 @@ class CloudKitPersistenceState {
   var changedObjectIds : Set<CKAddedObjectInfo>?
   var deletedObjectIds : Set<CKDeletedObjectInfo>?
   
-  let ckUserId : String
-
   var saveLock = NSLock()
   
-  init(appGroupContainerId:String,ckUserId:String) throws {
-    self.ckUserId = ckUserId
-    
+  init(appGroupContainerId:String) throws {
     let dirURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupContainerId)!
     
     self.serverChangeTokensFilePath = dirURL.appendingPathComponent("ckserverchangetokens.plist").path
@@ -178,7 +174,8 @@ class CloudKitPersistenceState {
   
   func addChangedObject(o:NSManagedObject) {
     guard let entityId = o.value(forKey: "id") as? String,
-      let entityType = o.entity.name
+      let entityType = o.entity.name,
+      let ckUserId = o.value(forKey: "ckuserid") as? String
       else { return }
     
     self.saveLock.lock()
@@ -192,14 +189,14 @@ class CloudKitPersistenceState {
     
     var found = false
     for aoi in c {
-      if aoi.entityId == entityId && aoi.ckuserid == self.ckUserId {
+      if aoi.entityId == entityId && aoi.ckuserid == ckUserId {
         found = true
         break
       }
     }
     
     if !found {
-      c.insert(CKAddedObjectInfo(type: entityType, id: entityId, uri: uri, ckuserid:self.ckUserId) )
+      c.insert(CKAddedObjectInfo(type: entityType, id: entityId, uri: uri, ckuserid:ckUserId) )
     }
     
     self.changedObjectIds = c
@@ -221,13 +218,13 @@ class CloudKitPersistenceState {
     return result
   }
   
-  func changedObjectHasBeenSaved(entityIds:[String]) {
+  func changedObjectHasBeenSaved(ckUserId: String, entityIds:[String]) {
     self.saveLock.lock()
     defer {
       self.saveLock.unlock()
     }
     
-    let removed = self.removeEntityIdFromChangedObjects(entityIds: entityIds)
+    let removed = self.removeEntityIdFromChangedObjects(ckUserId:ckUserId, entityIds: entityIds)
     if removed.count>0 {
       celeturKitLogger.debug("CloudKitPersistenceState.changedObjectHasBeenSaved(\(entityIds))")
     } else {
@@ -235,7 +232,7 @@ class CloudKitPersistenceState {
     }
   }
   
-  fileprivate func removeEntityIdFromChangedObjects(entityIds:[String]) -> [CKAddedObjectInfo] {
+  fileprivate func removeEntityIdFromChangedObjects(ckUserId: String, entityIds:[String]) -> [CKAddedObjectInfo] {
     var removed = [CKAddedObjectInfo]()
     
     if let c = self.changedObjectIds {
@@ -245,7 +242,7 @@ class CloudKitPersistenceState {
         var found : CKAddedObjectInfo?
         
         for entityId in entityIds {
-          if aoi.entityId == entityId && aoi.ckuserid == self.ckUserId {
+          if aoi.entityId == entityId && aoi.ckuserid == ckUserId {
             found = aoi
           }
         }
@@ -275,14 +272,17 @@ class CloudKitPersistenceState {
   }
   
   func addDeletedObject(o:NSManagedObject) {
-    guard let entityId = o.value(forKey: "id") as? String, let entityType = o.entity.name else { return }
+    guard let entityId = o.value(forKey: "id") as? String,
+      let entityType = o.entity.name,
+      let ckUserId = o.value(forKey: "ckuserid") as? String
+      else { return }
   
     self.saveLock.lock()
     defer {
       self.saveLock.unlock()
     }
     
-    let _ = self.removeEntityIdFromChangedObjects(entityIds: [entityId])
+    let _ = self.removeEntityIdFromChangedObjects(ckUserId:ckUserId, entityIds: [entityId])
     
     var d : Set<CKDeletedObjectInfo> = self.deletedObjectIds ?? Set<CKDeletedObjectInfo>()
     
@@ -296,7 +296,7 @@ class CloudKitPersistenceState {
     }
     
     if !found {
-      d.insert(CKDeletedObjectInfo(type:entityType, id: entityId, ckuserid: self.ckUserId))
+      d.insert(CKDeletedObjectInfo(type:entityType, id: entityId, ckuserid: ckUserId))
     }
     self.deletedObjectIds = d
     
@@ -304,7 +304,7 @@ class CloudKitPersistenceState {
   }
   
   
-  func deletedObjectHasBeenDeleted(entityIds:[String]) {
+  func deletedObjectHasBeenDeleted(ckUserId: String, entityIds:[String]) {
     if let _ = self.deletedObjectIds {
       self.saveLock.lock()
       defer {
@@ -318,7 +318,7 @@ class CloudKitPersistenceState {
           var found : CKDeletedObjectInfo?
           
           for entityId in entityIds {
-            if delinfo.entityId == entityId && delinfo.ckuserid==self.ckUserId {
+            if delinfo.entityId == entityId && delinfo.ckuserid==ckUserId {
               found = delinfo
               
               break

@@ -80,6 +80,10 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     
     self.updateFetchedResultsController()
     self.tableView.reloadData()
+    
+    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+      self.tresorAppState?.tresorModel.updateTresorReadonlyInfo(tresorFetchedResultsController: self.fetchedResultsController!)
+    }
   }
   
   
@@ -138,7 +142,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   @IBAction
   func unwindToTresor(segue: UIStoryboardSegue) {
     if segue.identifier == "saveUnwindToTresor" {
-      if let controller = segue.source as? EditTresorViewController, let tt = controller.tresor {
+      if let controller = segue.source as? EditTresorViewController, let tt = controller.tresor, !tt.tempTresor.isreadonly {
         controller.updateTempTresor()
         
         self.saveTempTresor(tempTresor: tt)
@@ -195,17 +199,17 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   }
   
   override func tableView(_ tableView: UITableView, editActionsForRowAt: IndexPath) -> [UITableViewRowAction]? {
+    let tresor = self.getObject(indexPath: editActionsForRowAt)
+    let editActionTitle = tresor.isreadonly ? "Show" : "Edit"
     
-    let editAction = UITableViewRowAction(style: .normal, title: "Edit") { action, index in
-      let tempTresor = self.tresorAppState?.tresorModel.createScratchpadTresorObject(tresor:self.getObject(indexPath: index))
+    let editAction = UITableViewRowAction(style: .normal, title: editActionTitle) { action, index in
+      let tempTresor = self.tresorAppState?.tresorModel.createScratchpadTresorObject(tresor: tresor)
       
       self.performSegue(withIdentifier: "showEditTresor", sender: tempTresor)
     }
     editAction.backgroundColor = .orange
     
     let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { action, index in
-      let tresor = self.getObject(indexPath: index)
-      
       self.tresorAppState?.tresorModel.deleteTresor(tresor: tresor) {
       }
     }
@@ -224,6 +228,17 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   }
   
   func configureCell(_ cell: TresorCell, withTresor tresor: Tresor) {
+    
+    if tresor.isreadonly {
+      cell.createdLabel!.textColor = UIColor.lightGray
+      cell.nameLabel!.textColor = UIColor.lightGray
+      cell.descriptionLabel!.textColor = UIColor.lightGray
+    } else {
+      cell.createdLabel!.textColor = UIColor.darkText
+      cell.nameLabel!.textColor = UIColor.red
+      cell.descriptionLabel!.textColor = UIColor.darkText
+    }
+    
     cell.createdLabel!.text = self.dateFormatter.string(from: tresor.modifyts)
     cell.nameLabel!.text = tresor.name
     cell.descriptionLabel!.text = tresor.tresordescription
@@ -231,7 +246,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   
   // MARK: - Fetched results controller
   
-  func updateFetchedResultsController() {
+  fileprivate func updateFetchedResultsController() {
     do {
       try self.fetchedResultsController = (self.tresorAppState?.tresorModel.createAndFetchTresorFetchedResultsController(delegate: self))!
     } catch {

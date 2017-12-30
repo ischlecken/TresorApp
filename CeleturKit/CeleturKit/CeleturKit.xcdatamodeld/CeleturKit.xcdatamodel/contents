@@ -5,7 +5,9 @@
         <attribute name="ckdata" optional="YES" attributeType="Binary" syncable="YES"/>
         <attribute name="ckuserid" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="createts" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="iconname" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="id" attributeType="String" syncable="YES"/>
+        <attribute name="isreadonly" transient="YES" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="name" attributeType="String" syncable="YES"/>
         <attribute name="nonce" optional="YES" attributeType="Binary" syncable="YES"/>
         <attribute name="tresordescription" optional="YES" attributeType="String" syncable="YES"/>
@@ -72,7 +74,7 @@
         <relationship name="tresors" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tresor" inverseName="userdevices" inverseEntity="Tresor" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Tresor" positionX="-1386" positionY="-67" width="128" height="193"/>
+        <element name="Tresor" positionX="-1386" positionY="-67" width="128" height="225"/>
         <element name="TresorAudit" positionX="-792" positionY="-153" width="128" height="253"/>
         <element name="TresorDocument" positionX="-1206" positionY="-207" width="128" height="178"/>
         <element name="TresorDocumentItem" positionX="-1017" positionY="-63" width="126" height="238"/>

@@ -80,7 +80,7 @@ public class CloudKitManager {
               return r.recordID.recordName
             })
             
-            self.ckPersistenceState.changedObjectHasBeenSaved(entityIds: entityIds)
+            self.ckPersistenceState.changedObjectHasBeenSaved(ckUserId: self.cloudKitUserId, entityIds: entityIds)
           }
           
           if let dr=deletedRecordIDs {
@@ -92,7 +92,7 @@ public class CloudKitManager {
               return r.recordName
             })
             
-            self.ckPersistenceState.deletedObjectHasBeenDeleted(entityIds: entityIds)
+            self.ckPersistenceState.deletedObjectHasBeenDeleted(ckUserId: self.cloudKitUserId, entityIds: entityIds)
           }
           
           //self.ckPersistenceState.flushChangedIds()

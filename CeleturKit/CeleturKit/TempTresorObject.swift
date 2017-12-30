@@ -26,6 +26,7 @@ public class TempTresorObject {
         
         if let t = tresor {
           tempTresor = scratchpadContext.object(with: t.objectID) as? Tresor
+          tempTresor?.isreadonly = t.isreadonly
         } else {
           tempTresor = try Tresor.createTempTresor(context: scratchpadContext, ckUserId: tresor?.ckuserid)
         }

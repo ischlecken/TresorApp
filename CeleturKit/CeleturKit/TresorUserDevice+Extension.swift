@@ -3,6 +3,10 @@
 //  CeleturKit
 //
 
+let localUserDeviceId = "00000000-0000-0000-0000-000000000000"
+
+public var localTresorUserDevice : TresorUserDevice?
+
 extension TresorUserDevice {
   
   
@@ -11,6 +15,7 @@ extension TresorUserDevice {
     
     newUserDevice.createts = Date()
     newUserDevice.id = deviceInfo.id
+    newUserDevice.updateCurrentUserDevice(deviceInfo:deviceInfo)
     
     do {
       newUserDevice.messagekey = try Data(withRandomData:SymmetricCipherAlgorithm.aes_256.requiredKeySize())
@@ -22,8 +27,18 @@ extension TresorUserDevice {
     return newUserDevice
   }
   
+  class func createLocalUserDevice(context:NSManagedObjectContext, deviceInfo:DeviceInfo) -> TresorUserDevice {
+    let newUserDevice = TresorUserDevice(context:context)
+    
+    newUserDevice.createts = Date()
+    newUserDevice.id = localUserDeviceId
+    newUserDevice.updateCurrentUserDevice(deviceInfo:deviceInfo)
+    
+    return newUserDevice
+  }
   
-  func updateCurrentUserDevice(deviceInfo:DeviceInfo) {
+  
+  fileprivate func updateCurrentUserDevice(deviceInfo:DeviceInfo) {
     self.devicename = deviceInfo.devicename
     self.devicemodel = deviceInfo.devicemodel
     self.devicesystemname = deviceInfo.devicesystemname
@@ -34,6 +49,8 @@ extension TresorUserDevice {
   
   
   func updateCurrentUserInfo(currentUserInfo:UserInfo) {
+    guard self.id != localUserDeviceId else { return }
+    
     self.username = currentUserInfo.userDisplayName
     self.ckuserid = currentUserInfo.id
   }
@@ -50,6 +67,26 @@ extension TresorUserDevice {
     }
     
     return result
+  }
+  
+  class func loadLocalUserDevice(context: NSManagedObjectContext, deviceInfo:DeviceInfo) {
+    let fetchRequest : NSFetchRequest<TresorUserDevice> = TresorUserDevice.fetchRequest()
+    fetchRequest.fetchBatchSize = 1
+    
+    do {
+      var result : TresorUserDevice?
+      
+      let records = try context.fetch(fetchRequest)
+      if records.count>0 {
+        result = records[0]
+      } else {
+        result = TresorUserDevice.createLocalUserDevice(context: context,deviceInfo:deviceInfo)
+      }
+      
+      localTresorUserDevice = result
+    } catch {
+      celeturKitLogger.error("Error while saving local userdevice...",error:error)
+    }
   }
   
   class func createAndFetchUserdeviceFetchedResultsController(context:NSManagedObjectContext) throws -> NSFetchedResultsController<TresorUserDevice> {

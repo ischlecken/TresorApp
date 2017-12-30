@@ -6,7 +6,7 @@
 import UIKit
 import CeleturKit
 
-class EditTresorViewController: UITableViewController {
+class EditTresorViewController: UITableViewController, UITextFieldDelegate {
   
   var tresorAppState: TresorAppModel?
   var tresor: TempTresorObject?
@@ -27,11 +27,13 @@ class EditTresorViewController: UITableViewController {
 */
     
     self.nameTextfield.becomeFirstResponder()
+    
     if let t  = self.tresor?.tempTresor {
       self.nameTextfield.text = t.name
       self.descriptionTextfield.text = t.tresordescription
     }
-    
+  
+    self.navigationItem.rightBarButtonItem?.title = (self.tresor?.tempTresor.isreadonly ?? false) ? "Done" : "Save"
   }
   
   func updateTempTresor() {
@@ -135,6 +137,16 @@ class EditTresorViewController: UITableViewController {
   
   func getUserDevice(forPath indexPath:IndexPath) -> TresorUserDevice? {
     return self.tresor?.userDevices?[indexPath.row]
+  }
+  
+  //
+  // MARK: - UITextFieldDelegate
+  //
+  
+  public func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+    let readonly = self.tresor?.tempTresor.isreadonly ?? false
+    
+    return !readonly
   }
   
 }

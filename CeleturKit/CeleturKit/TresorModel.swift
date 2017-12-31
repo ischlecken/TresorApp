@@ -9,7 +9,7 @@ import CloudKit
 
 extension Notification.Name {
   public static let onTresorModelReady = Notification.Name("onTresorModelReady")
-  public static let onTresorUserInfoChanged = Notification.Name("onTresorUserInfoChanged")
+  public static let onTresorCloudkitStatusChanged = Notification.Name("onTresorCloudkitStatusChanged")
 }
 
 let appGroup = "group.net.prisnoc.Celetur"
@@ -27,11 +27,18 @@ public class TresorModel {
   fileprivate var apnDeviceToken : Data?
   fileprivate let initModelDispatchGroup  = DispatchGroup()
   
+  // used to get the .ckaccountchanged notification
+  fileprivate let ckDefaultContainer : CKContainer
+  fileprivate var ckAccountStatus: CKAccountStatus = .couldNotDetermine
+  
   public init() {
+    self.ckDefaultContainer = CKContainer.default()
+    
     NotificationCenter.default.addObserver(self,
                                            selector: #selector(checkICloudAvailability),
                                            name: .CKAccountChanged,
                                            object: nil)
+    
     
   }
   
@@ -43,7 +50,30 @@ public class TresorModel {
   func checkICloudAvailability(_ notification: Notification? = nil) {
     celeturKitLogger.debug("checkICloudAvailability()")
     
-    self.requestUserDiscoverabilityPermission()
+    self.requestCKAccountStatus()
+  }
+  
+  fileprivate func requestCKAccountStatus() {
+    self.ckDefaultContainer.accountStatus { [unowned self] (accountStatus, error) in
+      if let error = error {
+        celeturKitLogger.error("Error while request CloudKit account status", error: error)
+      }
+      
+      self.ckAccountStatus = accountStatus
+      
+      celeturKitLogger.debug("ckAccountStatus="+String(self.ckAccountStatus.rawValue))
+      
+      switch self.ckAccountStatus {
+      case .available:
+        self.requestUserDiscoverabilityPermission()
+      case .noAccount:
+        self.resetCloudKitManager()
+      case .restricted:
+        break
+      case .couldNotDetermine:
+        self.resetCloudKitManager()
+      }
+    }
   }
   
   public func completeSetup() {
@@ -51,7 +81,7 @@ public class TresorModel {
     
     self.createCoreDataManager()
     self.createMetainfoCoreDataManager()
-    self.requestUserDiscoverabilityPermission()
+    self.requestCKAccountStatus()
     
     self.initModelDispatchGroup.notify(queue: DispatchQueue.main) {
       celeturKitLogger.debug("TresorModel.initModelDispatchGroup.notify()")
@@ -130,8 +160,24 @@ public class TresorModel {
       
       self.findAndUpdateCurrentTresorUserDevice(cdm: cdm, cui: cui)
       
+      NotificationCenter.default.post(name: .onTresorCloudkitStatusChanged, object: self)
+      
       celeturKitLogger.debug("createCloudKitManager() --success--")
     }
+  }
+  
+  fileprivate func resetCloudKitManager() {
+    guard let cdm = self.coreDataManager else { return }
+    
+    cdm.cloudKitManager = nil
+    
+    self.currentUserInfo = nil
+    
+    DispatchQueue.main.async {
+      NotificationCenter.default.post(name: .onTresorCloudkitStatusChanged, object: self)
+    }
+    
+    celeturKitLogger.debug("resetCloudKitManager()")
   }
   
   fileprivate func loadCurrentDeviceInfo() {
@@ -177,7 +223,7 @@ public class TresorModel {
   }
   
   
-  func requestUserDiscoverabilityPermission() {
+  fileprivate func requestUserDiscoverabilityPermission() {
     celeturKitLogger.debug("TresorModel.requestUserDiscoverabilityPermission() --enter--")
     
     CKContainer.default().requestApplicationPermission(CKApplicationPermissions.userDiscoverability) { (status, error) in
@@ -349,6 +395,10 @@ public class TresorModel {
     if let moc = self.coreDataManager?.mainManagedObjectContext {
       result = try Tresor.createAndFetchTresorFetchedResultsController(context: moc)
       
+      if let r = result {
+        self.updateTresorReadonlyInfo(tresorFetchedResultsController: r)
+      }
+      
       result?.delegate = delegate
     }
     
@@ -419,6 +469,23 @@ public class TresorModel {
     self.resetChangeTokens()
     self.removeAllCloudKitData()
     self.removeAllCoreData()
+  }
+  
+  
+  public func displayInfoForCkUserId(ckUserId:String?) -> String {
+    var result = "This Device"
+    
+    if let userid = ckUserId {
+      result = "icloud: \(userid)"
+      
+      if let cui = self.currentUserInfo, let currentCkUserId = cui.id, currentCkUserId == userid, let userDisplayName = cui.userDisplayName {
+        result = "icloud: \(userDisplayName)"
+      }
+    }
+    
+    celeturKitLogger.debug("displayInfoForCkUserId(\(String(describing: ckUserId))):\(result)")
+    
+    return result
   }
   
 }

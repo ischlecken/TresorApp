@@ -30,7 +30,12 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
                                            selector: #selector(onTresorModelReady(_:)),
                                            name: Notification.Name.onTresorModelReady,
                                            object:self.tresorAppState?.tresorModel)
-    
+
+    NotificationCenter.default.addObserver(self,
+                                           selector: #selector(onTresorCloudkitStatusChanged(_:)),
+                                           name: Notification.Name.onTresorCloudkitStatusChanged,
+                                           object:self.tresorAppState?.tresorModel)
+
     self.becomeFirstResponder()
   }
   
@@ -80,10 +85,17 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     
     self.updateFetchedResultsController()
     self.tableView.reloadData()
+  }
+  
+  @objc
+  func onTresorCloudkitStatusChanged(_ notification: Notification) {
+    celeturLogger.debug("onTresorCloudkitStatusChanged")
     
-    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-      self.tresorAppState?.tresorModel.updateTresorReadonlyInfo(tresorFetchedResultsController: self.fetchedResultsController!)
+    if let f = self.fetchedResultsController {
+      self.tresorAppState?.tresorModel.updateTresorReadonlyInfo(tresorFetchedResultsController: f)
     }
+    
+    self.tableView.reloadData()
   }
   
   
@@ -176,7 +188,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
     let t = self.getObject(indexPath: IndexPath(row:0,section:section))
     
-    return t.ckuserid ?? "This Device"
+    return self.tresorAppState?.tresorModel.displayInfoForCkUserId(ckUserId: t.ckuserid)
   }
   
   
@@ -278,12 +290,16 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     case .update:
       let cell = tableView.cellForRow(at: indexPath!) as? TresorCell
       
-      configureCell(cell!, withTresor: anObject as! Tresor)
+      if let c = cell {
+        configureCell(c, withTresor: anObject as! Tresor)
+      }
     case .move:
       let cell = tableView.cellForRow(at: indexPath!) as? TresorCell
       
-      configureCell(cell!, withTresor: anObject as! Tresor)
-      tableView.moveRow(at: indexPath!, to: newIndexPath!)
+      if let c = cell {
+        configureCell(c, withTresor: anObject as! Tresor)
+        tableView.moveRow(at: indexPath!, to: newIndexPath!)
+      }
     }
   }
   

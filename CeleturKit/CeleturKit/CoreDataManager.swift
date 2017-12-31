@@ -28,7 +28,8 @@ public class CoreDataManager {
     self.bundle = bundle
     self.timer = DispatchSource.makeTimerSource(flags: [], queue: DispatchQueue.global())
     
-    setupCoreDataStack()
+    self.setupCoreDataStack()
+    self.startTimer()
   }
   
   
@@ -146,13 +147,17 @@ public class CoreDataManager {
     let _ = mainManagedObjectContext.persistentStoreCoordinator
   }
  
-  fileprivate func setupCloudKitSupport() {
+  fileprivate func startTimer() {
     self.timer.schedule(deadline: .now(), repeating: .seconds(10))
-    self.timer.setEventHandler {
-      self.saveChangesToCloudKit()
+    self.timer.setEventHandler { [weak self] in
+      self?.saveChangesToCloudKit()
     }
-    
+      
     self.timer.resume()
+  }
+  
+  fileprivate func setupCloudKitSupport() {
+    celeturKitLogger.debug(self.cloudKitManager != nil ? "cloudKitManager set" : "cloudKitManager unset")
   }
   
   func completeSetup(completion: @escaping CoreDataManagerCompletion) {

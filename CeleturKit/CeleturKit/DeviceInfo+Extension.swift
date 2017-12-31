@@ -31,7 +31,7 @@ public extension DeviceInfo {
   public func isCurrentDevice(tresorUserDevice: TresorUserDevice?) -> Bool {
     guard let tud = tresorUserDevice else { return false }
     
-    return self.id == tud.id
+    return tud.id == localUserDeviceId || self.id == tud.id
   }
   
   

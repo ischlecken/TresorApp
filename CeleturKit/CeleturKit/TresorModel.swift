@@ -252,28 +252,19 @@ public class TresorModel {
     self.coreDataManager?.cloudKitManager?.fetchChanges(in: databaseScope, completion: completion)
   }
   
-  public func createScratchpadTresorObject(tresor: Tresor?) -> TempTresorObject? {
+  public func createScratchpadTresorObject(tresor: Tresor) -> TempTresorObject? {
     return TempTresorObject(tresorCoreDataManager: self.getCoreDataManager(), tresor: tresor)
   }
   
   
   public func createScratchpadLocalDeviceTresorObject() -> TempTresorObject? {
-    let result = TempTresorObject(tresorCoreDataManager: self.getCoreDataManager(), tresor: nil)
-    
-    result?.tempTresor.isreadonly = false
-    
-    return result
+    return TempTresorObject(tresorCoreDataManager: self.getCoreDataManager(), ckUserId: nil, isReadOnly: false)
   }
   
   public func createScratchpadICloudTresorObject() -> TempTresorObject? {
-    let result = TempTresorObject(tresorCoreDataManager: self.getCoreDataManager(), tresor: nil)
+    guard let ckuserid = self.currentUserInfo?.id  else { return nil }
     
-    if let ckuserid = self.currentUserInfo?.id {
-      result?.tempTresor.ckuserid = ckuserid
-      result?.tempTresor.isreadonly = false
-    }
-    
-    return result
+    return TempTresorObject(tresorCoreDataManager: self.getCoreDataManager(), ckUserId: ckuserid, isReadOnly: false)
   }
   
   

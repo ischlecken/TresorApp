@@ -18,27 +18,40 @@ public class TempTresorObject {
     self.userDevices = userDevices
   }
   
-  convenience init?(tresorCoreDataManager:CoreDataManager?, tresor:Tresor?) {
-    if let cdm = tresorCoreDataManager {
-      do {
-        let scratchpadContext = cdm.privateChildManagedObjectContext()
-        var tempTresor : Tresor?
-        
-        if let t = tresor {
-          tempTresor = scratchpadContext.object(with: t.objectID) as? Tresor
-          tempTresor?.isreadonly = t.isreadonly
-        } else {
-          tempTresor = try Tresor.createTempTresor(context: scratchpadContext, ckUserId: tresor?.ckuserid)
-        }
-        
-        self.init(context:scratchpadContext, tresor:tempTresor!, userDevices:TresorUserDevice.loadUserDevices(context: cdm.mainManagedObjectContext))
-        
-        return 
-      } catch {
-        celeturKitLogger.error("Error creating temp tresor object",error:error)
-      }
+  convenience init?(tresorCoreDataManager:CoreDataManager?, tresor:Tresor) {
+    guard let cdm = tresorCoreDataManager else { return nil }
+    
+    let scratchpadContext = cdm.privateChildManagedObjectContext()
+    let tempTresor = scratchpadContext.object(with: tresor.objectID) as? Tresor
+    
+    tempTresor?.isreadonly = tresor.isreadonly
+    
+    if let t = tempTresor {
+      self.init(context:scratchpadContext, tresor:t, userDevices:TresorUserDevice.loadUserDevices(context: cdm.mainManagedObjectContext))
+    } else {
+      return nil
     }
+  }
   
-    return nil
+  convenience init?(tresorCoreDataManager:CoreDataManager?, ckUserId: String?, isReadOnly: Bool) {
+    guard let cdm = tresorCoreDataManager else { return nil }
+    
+    let scratchpadContext = cdm.privateChildManagedObjectContext()
+    var tempTresor : Tresor?
+    
+    do {
+      tempTresor = try Tresor.createTempTresor(context: scratchpadContext, ckUserId: ckUserId)
+      tempTresor?.ckuserid = ckUserId
+      tempTresor?.isreadonly = isReadOnly
+    } catch {
+      celeturKitLogger.error("Error creating temp tresor object",error:error)
+    }
+    
+    if let t = tempTresor {
+      self.init(context:scratchpadContext, tresor:t, userDevices:TresorUserDevice.loadUserDevices(context: cdm.mainManagedObjectContext))
+    } else {
+      return nil
+    }
+    
   }
 }

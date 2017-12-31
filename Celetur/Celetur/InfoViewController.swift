@@ -17,7 +17,7 @@ class InfoViewController: UIViewController, CAAnimationDelegate {
     
     self.infoLabel.text = info
     self.infoLabel.textAlignment = .center
-    self.infoLabel.textColor = UIColor.celeturBarTintColor
+    self.infoLabel.textColor = UIColor.celeturPrimary
     
     //self.infoLabel.layer.borderColor = UIColor.white.cgColor
     //self.infoLabel.layer.borderWidth = CGFloat(2.0)

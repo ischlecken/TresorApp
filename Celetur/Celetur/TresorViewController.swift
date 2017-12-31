@@ -247,7 +247,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
       cell.descriptionLabel!.textColor = UIColor.lightGray
     } else {
       cell.createdLabel!.textColor = UIColor.darkText
-      cell.nameLabel!.textColor = UIColor.red
+      cell.nameLabel!.textColor = UIColor.celeturPrimary
       cell.descriptionLabel!.textColor = UIColor.darkText
     }
     

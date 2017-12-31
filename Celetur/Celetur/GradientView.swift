@@ -57,10 +57,11 @@ class GradientView : UIView
     self.gradientLayer.startPoint = CGPoint(x: 0.5,y: 0.0)
     self.gradientLayer.endPoint   = CGPoint(x: 0.5,y: 1.0)
     self.gradientLayer.type       = kCAGradientLayerAxial
-    self.gradientLayer.colors     = [UIColor.celeturBarTintColor.cgColor,
-                                     UIColor.red.cgColor]
     
-    self.dimmedColors = [UIColor.gray.cgColor,UIColor.white.cgColor]
+    
+    self.gradientLayer.colors     = [UIColor.celeturPrimary.cgColor, UIColor.celeturPrimary1.cgColor]
+    
+    self.dimmedColors = [UIColor.celeturGradient0.cgColor, UIColor.celeturGradient1.cgColor]
     self.normalColors = self.gradientLayer.colors
     
     self.dimGradientAnimation.duration    = 4
@@ -74,16 +75,16 @@ class GradientView : UIView
     self.resetGradientAnimation.delegate  = self
     
     self.dimShapeAnimation.duration    = 4
-    self.dimShapeAnimation.fromValue   = UIColor.white.cgColor
-    self.dimShapeAnimation.toValue     = UIColor.celeturBarTintColor.cgColor
+    self.dimShapeAnimation.fromValue   = UIColor.celeturSecondary.cgColor
+    self.dimShapeAnimation.toValue     = UIColor.celeturPrimary.cgColor
     
     self.resetShapeAnimation.duration  = 2
-    self.resetShapeAnimation.fromValue = UIColor.celeturBarTintColor.cgColor
-    self.resetShapeAnimation.toValue   = UIColor.white.cgColor
+    self.resetShapeAnimation.fromValue = UIColor.celeturPrimary.cgColor
+    self.resetShapeAnimation.toValue   = UIColor.celeturSecondary.cgColor
     
     let shapeLayer = CAShapeLayer()
-    shapeLayer.fillColor        = UIColor.white.cgColor
-    shapeLayer.strokeColor      = UIColor.celeturBarTintColor.cgColor
+    shapeLayer.fillColor        = UIColor.celeturSecondary.cgColor
+    shapeLayer.strokeColor      = UIColor.celeturPrimary.cgColor
     shapeLayer.strokeStart      = 0.0
     shapeLayer.strokeEnd        = 0.0
     shapeLayer.lineCap          = kCALineCapRound
@@ -105,7 +106,7 @@ class GradientView : UIView
     
     self.shapeLayer?.removeAllAnimations()
     self.shapeLayer?.add(self.dimShapeAnimation, forKey: self.runningAnimation)
-    self.shapeLayer?.fillColor = UIColor.celeturBarTintColor.cgColor
+    self.shapeLayer?.fillColor = UIColor.celeturPrimary.cgColor
     
   }
   
@@ -117,7 +118,7 @@ class GradientView : UIView
     
     self.shapeLayer?.removeAllAnimations()
     self.shapeLayer?.add(self.resetShapeAnimation, forKey: self.runningAnimation)
-    self.shapeLayer?.fillColor = UIColor.white.cgColor
+    self.shapeLayer?.fillColor = UIColor.celeturSecondary.cgColor
   }
   
   

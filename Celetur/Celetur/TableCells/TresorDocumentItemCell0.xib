@@ -20,7 +20,6 @@
                 <subviews>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="wireless" translatesAutoresizingMaskIntoConstraints="NO" id="ffe-dF-Aof">
                         <rect key="frame" x="16" y="34" width="32" height="32.5"/>
-                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="32" id="601-gM-GLF"/>
                             <constraint firstAttribute="width" constant="32" id="uXc-s4-0t2"/>

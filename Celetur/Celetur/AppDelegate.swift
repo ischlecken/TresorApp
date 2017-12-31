@@ -191,9 +191,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
   }
   
   fileprivate func celeturUIAppearance() {
-    UINavigationBar.appearance().barTintColor = .celeturBarTintColor
-    UINavigationBar.appearance().tintColor = .celeturTintColor
-    UINavigationBar.appearance().titleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.celeturTintColor]
+    
+    UINavigationBar.appearance().barTintColor = .celeturPrimary
+    UINavigationBar.appearance().tintColor = .celeturSecondary
+    UINavigationBar.appearance().largeTitleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.celeturSecondary]
+    UINavigationBar.appearance().titleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.celeturSecondary]
+    
     UINavigationBar.appearance().isTranslucent = false
   }
   

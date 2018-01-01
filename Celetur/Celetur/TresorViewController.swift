@@ -60,23 +60,29 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   
   @IBAction
   func onAddAction(_ sender: Any) {
-    let actionSheet = UIAlertController(title: "Add new tresor", message: "Select store where the new tresor should be added", preferredStyle: .actionSheet)
-    
-    actionSheet.addAction(UIAlertAction(title: "iCloud", style: .default, handler: { alertAction in
-      let tempTresor = self.tresorAppState?.tresorModel.createScratchpadICloudTresorObject()
+    if self.tresorAppState?.tresorModel.icloudAvailable() ?? false {
+      let actionSheet = UIAlertController(title: "Add new tresor", message: "Select store where the new tresor should be added", preferredStyle: .actionSheet)
       
-      self.performSegue(withIdentifier: "showEditTresor", sender: tempTresor)
-    }))
-    
-    actionSheet.addAction(UIAlertAction(title: "Local Device", style: .default, handler: { alertAction in
+      actionSheet.addAction(UIAlertAction(title: "iCloud", style: .default, handler: { alertAction in
+        let tempTresor = self.tresorAppState?.tresorModel.createScratchpadICloudTresorObject()
+        
+        self.performSegue(withIdentifier: "showEditTresor", sender: tempTresor)
+      }))
+      
+      actionSheet.addAction(UIAlertAction(title: "Local Device", style: .default, handler: { alertAction in
+        let tempTresor = self.tresorAppState?.tresorModel.createScratchpadLocalDeviceTresorObject()
+        
+        self.performSegue(withIdentifier: "showEditTresor", sender: tempTresor)
+      }))
+      
+      actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler:nil))
+      
+      self.present(actionSheet, animated: true, completion: nil)
+    } else {
       let tempTresor = self.tresorAppState?.tresorModel.createScratchpadLocalDeviceTresorObject()
       
       self.performSegue(withIdentifier: "showEditTresor", sender: tempTresor)
-    }))
-    
-    actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler:nil))
-    
-    self.present(actionSheet, animated: true, completion: nil)
+    }
   }
   
   @objc

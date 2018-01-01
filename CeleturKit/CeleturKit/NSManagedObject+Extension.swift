@@ -132,7 +132,7 @@ extension NSManagedObject {
     
     for (n,a) in attributesByName {
       let v = self.value(forKey: n) as? CKRecordValue
-      if n == "ckdata" || n == "ckuserid" {
+      if n == "ckdata" {
         continue
       }
       

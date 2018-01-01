@@ -180,6 +180,10 @@ public class TresorModel {
     celeturKitLogger.debug("resetCloudKitManager()")
   }
   
+  public func icloudAvailable() -> Bool {
+    return self.currentUserInfo != nil
+  }
+  
   fileprivate func loadCurrentDeviceInfo() {
     if let metacdm = self.tresorMetaInfoCoreDataManager {
       let moc = metacdm.mainManagedObjectContext
@@ -475,6 +479,35 @@ public class TresorModel {
   public func displayInfoForCkUserId(ckUserId:String?) -> String {
     var result = "This Device"
     
+    if let cdi = currentDeviceInfo {
+      if let ui = UIUserInterfaceIdiom(rawValue: Int(cdi.deviceuitype)) {
+        switch ui {
+        case .phone:
+          result = "This iPhone"
+        case .pad:
+          result = "This iPad"
+        default:
+          break
+        }
+      }
+      
+      result += " ("
+      
+      if let s = cdi.devicemodel {
+        result += "\(s)"
+      }
+      
+      if let s = cdi.devicename {
+        result += " '\(s)'"
+      }
+      
+      if let s0 = cdi.devicesystemname,let s1 = cdi.devicesystemversion {
+        result += " with \(s0) \(s1)"
+      }
+      
+      result += ")"
+    }
+    
     if let userid = ckUserId {
       result = "icloud: \(userid)"
       
@@ -482,8 +515,6 @@ public class TresorModel {
         result = "icloud: \(userDisplayName)"
       }
     }
-    
-    celeturKitLogger.debug("displayInfoForCkUserId(\(String(describing: ckUserId))):\(result)")
     
     return result
   }

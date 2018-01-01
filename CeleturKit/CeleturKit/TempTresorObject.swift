@@ -27,7 +27,7 @@ public class TempTresorObject {
     tempTresor?.isreadonly = tresor.isreadonly
     
     if let t = tempTresor {
-      self.init(context:scratchpadContext, tresor:t, userDevices:TresorUserDevice.loadUserDevices(context: cdm.mainManagedObjectContext))
+      self.init(context:scratchpadContext, tresor:t, userDevices:TresorUserDevice.loadUserDevices(context: cdm.mainManagedObjectContext, ckUserId: tresor.ckuserid))
     } else {
       return nil
     }
@@ -48,7 +48,7 @@ public class TempTresorObject {
     }
     
     if let t = tempTresor {
-      self.init(context:scratchpadContext, tresor:t, userDevices:TresorUserDevice.loadUserDevices(context: cdm.mainManagedObjectContext))
+      self.init(context:scratchpadContext, tresor:t, userDevices:TresorUserDevice.loadUserDevices(context: cdm.mainManagedObjectContext, ckUserId: ckUserId))
     } else {
       return nil
     }

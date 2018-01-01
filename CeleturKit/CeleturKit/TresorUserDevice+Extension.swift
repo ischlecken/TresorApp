@@ -56,11 +56,21 @@ extension TresorUserDevice {
   }
   
   
-  class public func loadUserDevices(context:NSManagedObjectContext) -> [TresorUserDevice]? {
+  class public func loadUserDevices(context:NSManagedObjectContext, ckUserId: String?) -> [TresorUserDevice]? {
     var result : [TresorUserDevice]?
     
     do {
-      result = try context.fetch(TresorUserDevice.fetchRequest())
+      let fetchRequest : NSFetchRequest<TresorUserDevice> = TresorUserDevice.fetchRequest()
+      
+      fetchRequest.fetchBatchSize = 20
+      
+      if let userid = ckUserId {
+        fetchRequest.predicate = NSPredicate(format: "ckuserid = %@", userid)
+      } else {
+        fetchRequest.predicate = NSPredicate(format: "ckuserid = nil ")
+      }
+      
+      result = try context.fetch(fetchRequest)
       
     } catch {
       celeturKitLogger.error("Error while loading user devices...",error:error)
@@ -92,13 +102,8 @@ extension TresorUserDevice {
   class func createAndFetchUserdeviceFetchedResultsController(context:NSManagedObjectContext) throws -> NSFetchedResultsController<TresorUserDevice> {
     let fetchRequest: NSFetchRequest<TresorUserDevice> = TresorUserDevice.fetchRequest()
     
-    // Set the batch size to a suitable number.
     fetchRequest.fetchBatchSize = 20
-    
-    // Edit the sort key as appropriate.
-    let sortDescriptor = NSSortDescriptor(key: "createts", ascending: false)
-    
-    fetchRequest.sortDescriptors = [sortDescriptor]
+    fetchRequest.sortDescriptors = [NSSortDescriptor(key: "username", ascending: true),NSSortDescriptor(key: "createts", ascending: false)]
     
     let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context, sectionNameKeyPath: "username", cacheName: nil)
     

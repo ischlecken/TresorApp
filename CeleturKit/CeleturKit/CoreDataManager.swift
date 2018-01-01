@@ -15,12 +15,7 @@ public class CoreDataManager {
   fileprivate let appGroupContainerId : String
   fileprivate let bundle : Bundle
   fileprivate var saveToCKIsRunning = false
-  
-  var cloudKitManager : CloudKitManager? {
-    didSet {
-      setupCloudKitSupport()
-    }
-  }
+  fileprivate var cloudKitManager : CloudKitManager?
   
   public init(modelName: String, using bundle:Bundle, inAppGroupContainer appGroupContainerId:String) {
     self.modelName = modelName
@@ -32,6 +27,26 @@ public class CoreDataManager {
     self.startTimer()
   }
   
+  func connectToCloudKitManager(ckm: CloudKitManager) {
+    self.cloudKitManager = ckm
+  }
+  
+  func disconnectFromCloudKitManager() {
+    self.cloudKitManager = nil
+  }
+  
+  func resetChangeTokens() {
+    self.cloudKitManager?.ckPersistenceState.flushChangedIds()
+    self.cloudKitManager?.ckPersistenceState.flushServerChangeTokens()
+  }
+  
+  func removeAllCloudKitData() {
+    self.cloudKitManager?.deleteAllRecordsForZone()
+  }
+  
+  public func fetchCloudKitChanges(in databaseScope: CKDatabaseScope, completion: @escaping () -> Void) {
+    self.cloudKitManager?.fetchChanges(in: databaseScope, completion: completion)
+  }
   
   // MARK: - Core Data Stack
   
@@ -154,10 +169,6 @@ public class CoreDataManager {
     }
       
     self.timer.resume()
-  }
-  
-  fileprivate func setupCloudKitSupport() {
-    celeturKitLogger.debug(self.cloudKitManager != nil ? "cloudKitManager set" : "cloudKitManager unset")
   }
   
   func completeSetup(completion: @escaping CoreDataManagerCompletion) {

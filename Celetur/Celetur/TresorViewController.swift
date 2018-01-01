@@ -98,7 +98,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     celeturLogger.debug("onTresorCloudkitStatusChanged")
     
     if let f = self.fetchedResultsController {
-      self.tresorAppState?.tresorModel.updateTresorReadonlyInfo(tresorFetchedResultsController: f)
+      f.updateReadonlyInfo(ckUserId: self.tresorAppState?.tresorModel.ckUserId)
     }
     
     self.tableView.reloadData()
@@ -107,7 +107,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   
   @objc
   private func refreshTable(_ sender: Any) {
-    self.tresorAppState?.fetchChanges(in: .private, completion: {
+    self.tresorAppState?.fetchCloudKitChanges(in: .private, completion: {
       DispatchQueue.main.async {
         self.refreshControl?.endRefreshing()
       }

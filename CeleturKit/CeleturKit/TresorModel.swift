@@ -31,6 +31,12 @@ public class TresorModel {
   fileprivate let ckDefaultContainer : CKContainer
   fileprivate var ckAccountStatus: CKAccountStatus = .couldNotDetermine
   
+  public var ckUserId : String? {
+    get {
+      return self.currentUserInfo?.id
+    }
+  }
+  
   public init() {
     self.ckDefaultContainer = CKContainer.default()
     
@@ -151,7 +157,7 @@ public class TresorModel {
     let ckm = CloudKitManager(cloudKitPersistenceState: ckps, coreDataManager: cdm, ckUserId:userId)
     ckm.createCloudKitSubscription()
     
-    cdm.cloudKitManager = ckm
+    cdm.connectToCloudKitManager(ckm: ckm)
     
     DispatchQueue.main.async {
       let cui = UserInfo.loadUserInfo(self.tresorMetaInfoCoreDataManager!,userIdentity:userIdentity)
@@ -169,7 +175,7 @@ public class TresorModel {
   fileprivate func resetCloudKitManager() {
     guard let cdm = self.coreDataManager else { return }
     
-    cdm.cloudKitManager = nil
+    cdm.disconnectFromCloudKitManager()
     
     self.currentUserInfo = nil
     
@@ -298,8 +304,8 @@ public class TresorModel {
   }
   
   
-  public func fetchChanges(in databaseScope: CKDatabaseScope, completion: @escaping () -> Void) {
-    self.coreDataManager?.cloudKitManager?.fetchChanges(in: databaseScope, completion: completion)
+  public func fetchCloudKitChanges(in databaseScope: CKDatabaseScope, completion: @escaping () -> Void) {
+    self.coreDataManager?.fetchCloudKitChanges(in: databaseScope, completion: completion)
   }
   
   public func createScratchpadTresorObject(tresor: Tresor) -> TempTresorObject? {
@@ -400,17 +406,13 @@ public class TresorModel {
       result = try Tresor.createAndFetchTresorFetchedResultsController(context: moc)
       
       if let r = result {
-        self.updateTresorReadonlyInfo(tresorFetchedResultsController: r)
+        r.updateReadonlyInfo(ckUserId: self.ckUserId)
       }
       
       result?.delegate = delegate
     }
     
     return result
-  }
-  
-  public func updateTresorReadonlyInfo(tresorFetchedResultsController:NSFetchedResultsController<Tresor>) {
-    Tresor.updateReadonlyInfo(aFetchedResultsController: tresorFetchedResultsController, ckUserId: self.coreDataManager?.cloudKitManager?.cloudKitUserId)
   }
   
   public func createAndFetchUserdeviceFetchedResultsController() throws -> NSFetchedResultsController<TresorUserDevice>? {
@@ -437,12 +439,11 @@ public class TresorModel {
   // MARK: - Reset Data
   
   public func resetChangeTokens() {
-    self.coreDataManager?.cloudKitManager?.ckPersistenceState.flushChangedIds()
-    self.coreDataManager?.cloudKitManager?.ckPersistenceState.flushServerChangeTokens()
+    self.coreDataManager?.resetChangeTokens()
   }
   
   public func removeAllCloudKitData() {
-    self.coreDataManager?.cloudKitManager?.deleteAllRecordsForZone()
+    self.coreDataManager?.resetChangeTokens()
   }
   
   public func removeAllCoreData() {

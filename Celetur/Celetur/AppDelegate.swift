@@ -150,7 +150,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     let dict = userInfo as! [String: NSObject]
     guard let notification:CKDatabaseNotification = CKNotification(fromRemoteNotificationDictionary:dict) as? CKDatabaseNotification else { return }
     
-    self.tresorAppModel.fetchChanges(in: notification.databaseScope) {
+    self.tresorAppModel.fetchCloudKitChanges(in: notification.databaseScope) {
       completionHandler( .newData )
     }
   }
@@ -239,7 +239,7 @@ extension AppDelegate : UNUserNotificationCenterDelegate {
     
     guard let notification:CKDatabaseNotification = CKNotification(fromRemoteNotificationDictionary:userInfo) as? CKDatabaseNotification else { return }
     
-    self.tresorAppModel.fetchChanges(in: notification.databaseScope) {
+    self.tresorAppModel.fetchCloudKitChanges(in: notification.databaseScope) {
        completionHandler()
     }
     

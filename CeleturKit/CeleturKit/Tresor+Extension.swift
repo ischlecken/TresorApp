@@ -55,22 +55,6 @@ public extension Tresor {
     return aFetchedResultsController
   }
   
-  class func updateReadonlyInfo(aFetchedResultsController: NSFetchedResultsController<Tresor>, ckUserId: String?) {
-    if let fetchedObjects = aFetchedResultsController.fetchedObjects {
-      for o in fetchedObjects {
-        o.isreadonly = true
-        
-        if o.ckuserid == nil {
-          o.isreadonly = false
-        } else {
-          if let userid = ckUserId, let ckuserid = o.ckuserid, ckuserid==userid {
-            o.isreadonly = false
-          }
-        }
-      }
-    }
-  }
-  
   public func findUserDevice(userDevice:TresorUserDevice) -> TresorUserDevice? {
     var result : TresorUserDevice?
     

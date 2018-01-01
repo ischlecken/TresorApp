@@ -121,8 +121,8 @@ class TresorAppModel {
     }
   }
   
-  public func fetchChanges(in databaseScope: CKDatabaseScope, completion: @escaping () -> Void) {
-    self.tresorModel.fetchChanges(in: databaseScope,completion: completion)
+  public func fetchCloudKitChanges(in databaseScope: CKDatabaseScope, completion: @escaping () -> Void) {
+    self.tresorModel.fetchCloudKitChanges(in: databaseScope,completion: completion)
   }
   
   @objc

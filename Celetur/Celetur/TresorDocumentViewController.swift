@@ -42,7 +42,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   
   @objc
   private func refreshTable(_ sender: Any) {
-    self.tresorAppState?.fetchChanges(in: .private, completion: {
+    self.tresorAppState?.fetchCloudKitChanges(in: .private, completion: {
       DispatchQueue.main.async {
         self.refreshControl?.endRefreshing()
       }

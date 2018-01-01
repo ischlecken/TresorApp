@@ -7,6 +7,10 @@ import Foundation
 import Contacts
 import CloudKit
 
+
+extension Notification.Name {
+  public static let onTresorCloudkitChangesFetched = Notification.Name("onTresorCloudkitChangesFetched")
+}
 public class CloudKitManager {
   let privateDB : CKDatabase
   let sharedDB : CKDatabase
@@ -414,6 +418,10 @@ public class CloudKitManager {
       
       if changedZoneIDs.count>0 {
         self.fetchZoneChanges(database: database, databaseTokenKey: databaseTokenKey, zoneIDs: changedZoneIDs) {
+          DispatchQueue.main.async {
+            NotificationCenter.default.post(name: .onTresorCloudkitChangesFetched, object: self.coreDataManager)
+          }
+          
           // Flush in-memory database change token to disk
           completion()
         }

@@ -176,6 +176,38 @@ extension TresorDocumentItem {
     
     return nil
   }
+  
+  public func saveDocumentItemModelData(context:NSManagedObjectContext,
+                                        model : Payload,
+                                        masterKey: TresorKey) {
+    
+    if let payload = PayloadSerializer.jsonData(model: model),
+      let tresorDocument = self.document,
+      let tempTresorDocument = context.object(with: tresorDocument.objectID) as? TresorDocument {
+      
+      tempTresorDocument.setMetaInfo(model:model)
+      
+      for case let it as TresorDocumentItem in (tempTresorDocument.documentitems)! {
+        if let ud = it.userdevice {
+          let isUserDeviceCurrentDevice = currentDeviceInfo?.isCurrentDevice(tresorUserDevice: ud) ?? false
+          
+          celeturKitLogger.debug("  docItem:\(it.id ?? "-") userdevice:\(ud.id ?? "-") isUserDeviceCurrentDevice:\(isUserDeviceCurrentDevice)")
+          
+          if let key = isUserDeviceCurrentDevice ? masterKey.accessToken : ud.messagekey {
+            let status : TresorDocumentItemStatus = isUserDeviceCurrentDevice ? .encrypted : .shouldBeEncryptedByDevice
+            
+            let _ = it.encryptPayload(key: key, payload: payload, status: status)
+            
+            celeturKitLogger.debug("item after encryption:\(it)")
+          }
+        }
+      }
+      
+      tempTresorDocument.changets = Date()
+      
+      celeturKitLogger.debug("saveDocumentItemModelData(): encryption completed")
+    }
+  }
 }
 
 

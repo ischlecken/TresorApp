@@ -17,14 +17,13 @@ class EditTresorViewController: UITableViewController, UITextFieldDelegate {
   override func viewDidLoad() {
     super.viewDidLoad()
 
-/*
-    if let currentUserDevice = self.tresorAppState?.tresorModel.currentTresorUserDevice,
+
+    if let currentUserDevice = self.tresorAppState?.tresorModel.currentTresorUserDevice(ckUserId: self.tresor?.tempTresor.ckuserid),
       self.tresor?.tempTresor.userdevices?.count==0,
-      let udnew = self.tresor?.tempManagedObjectContext.object(with: userDevice.objectID) as? TresorUserDevice {
+      let udnew = self.tresor?.tempManagedObjectContext.object(with: currentUserDevice.objectID) as? TresorUserDevice {
       
       self.tresor?.tempTresor.addToUserdevices(udnew)
     }
-  */
     
     self.nameTextfield.becomeFirstResponder()
     

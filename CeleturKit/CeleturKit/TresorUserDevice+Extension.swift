@@ -63,12 +63,14 @@ extension TresorUserDevice {
       let fetchRequest : NSFetchRequest<TresorUserDevice> = TresorUserDevice.fetchRequest()
       
       fetchRequest.fetchBatchSize = 20
+      fetchRequest.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
       
       if let userid = ckUserId {
         fetchRequest.predicate = NSPredicate(format: "ckuserid = %@", userid)
       } else {
         fetchRequest.predicate = NSPredicate(format: "ckuserid = nil ")
       }
+      
       
       result = try context.fetch(fetchRequest)
       
@@ -79,25 +81,6 @@ extension TresorUserDevice {
     return result
   }
   
-  class func loadLocalUserDevice(context: NSManagedObjectContext, deviceInfo:DeviceInfo) {
-    let fetchRequest : NSFetchRequest<TresorUserDevice> = TresorUserDevice.fetchRequest()
-    fetchRequest.fetchBatchSize = 1
-    
-    do {
-      var result : TresorUserDevice?
-      
-      let records = try context.fetch(fetchRequest)
-      if records.count>0 {
-        result = records[0]
-      } else {
-        result = TresorUserDevice.createLocalUserDevice(context: context,deviceInfo:deviceInfo)
-      }
-      
-      localTresorUserDevice = result
-    } catch {
-      celeturKitLogger.error("Error while saving local userdevice...",error:error)
-    }
-  }
   
   class func createAndFetchUserdeviceFetchedResultsController(context:NSManagedObjectContext) throws -> NSFetchedResultsController<TresorUserDevice> {
     let fetchRequest: NSFetchRequest<TresorUserDevice> = TresorUserDevice.fetchRequest()
@@ -114,5 +97,32 @@ extension TresorUserDevice {
     }
     
     return aFetchedResultsController
+  }
+  
+  class func loadCurrentCloudTresorUserDevice(cdm: CoreDataManager,cui:UserInfo) {
+    if let cdi = currentDeviceInfo {
+      let moc = cdm.mainManagedObjectContext
+      
+      let fetchRequest : NSFetchRequest<TresorUserDevice> = TresorUserDevice.fetchRequest()
+      fetchRequest.predicate = NSPredicate(format: "ckuserid = %@", cui.id!)
+      fetchRequest.fetchBatchSize = 1
+      
+      do {
+        var tresorUserDevice : TresorUserDevice?
+        
+        let records = try moc.fetch(fetchRequest)
+        if records.count>0 {
+          tresorUserDevice = records[0]
+        } else {
+          tresorUserDevice = TresorUserDevice.createCurrentUserDevice(context: moc, deviceInfo: cdi)
+        }
+        
+        tresorUserDevice!.updateCurrentUserInfo(currentUserInfo: cui)
+        
+        cdm.saveChanges(notifyChangesToCloudKit:true)
+      } catch {
+        celeturKitLogger.error("Error while saving tresor userdevice info...",error:error)
+      }
+    }
   }
 }

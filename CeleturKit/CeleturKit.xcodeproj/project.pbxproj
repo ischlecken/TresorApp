@@ -32,6 +32,8 @@
 		85E312741F6D408300EB8AD8 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85E312731F6D408300EB8AD8 /* CoreDataManager.swift */; };
 		85E312761F6D453500EB8AD8 /* CloudKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85E312751F6D453500EB8AD8 /* CloudKitManager.swift */; };
 		85E84D131FFA86D3009D9BCB /* NSFetchedResultsController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85E84D121FFA86D3009D9BCB /* NSFetchedResultsController+Extension.swift */; };
+		85E84D151FFA9BDD009D9BCB /* CoreDataManager+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85E84D141FFA9BDD009D9BCB /* CoreDataManager+Extension.swift */; };
+		85E84D171FFA9F61009D9BCB /* CloudKitModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85E84D161FFA9F61009D9BCB /* CloudKitModel.swift */; };
 		85EEE21A1F1B4E4B002CE85E /* CeleturKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85EEE2101F1B4E4B002CE85E /* CeleturKit.framework */; };
 		85EEE21F1F1B4E4B002CE85E /* CeleturKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85EEE21E1F1B4E4B002CE85E /* CeleturKitTests.swift */; };
 		85EEE2211F1B4E4B002CE85E /* CeleturKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 85EEE2131F1B4E4B002CE85E /* CeleturKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -79,6 +81,8 @@
 		85E312731F6D408300EB8AD8 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 		85E312751F6D453500EB8AD8 /* CloudKitManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudKitManager.swift; sourceTree = "<group>"; };
 		85E84D121FFA86D3009D9BCB /* NSFetchedResultsController+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSFetchedResultsController+Extension.swift"; sourceTree = "<group>"; };
+		85E84D141FFA9BDD009D9BCB /* CoreDataManager+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CoreDataManager+Extension.swift"; sourceTree = "<group>"; };
+		85E84D161FFA9F61009D9BCB /* CloudKitModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudKitModel.swift; sourceTree = "<group>"; };
 		85EEE2101F1B4E4B002CE85E /* CeleturKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CeleturKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		85EEE2131F1B4E4B002CE85E /* CeleturKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CeleturKit.h; sourceTree = "<group>"; };
 		85EEE2141F1B4E4B002CE85E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -127,7 +131,9 @@
 				85E312751F6D453500EB8AD8 /* CloudKitManager.swift */,
 				85F5AC4B1F767E12003B14F9 /* CloudKitPersistenceState.swift */,
 				85E312731F6D408300EB8AD8 /* CoreDataManager.swift */,
+				85E84D141FFA9BDD009D9BCB /* CoreDataManager+Extension.swift */,
 				85C5C5851F36E6C100DE7EBC /* TresorModel.swift */,
+				85E84D161FFA9F61009D9BCB /* CloudKitModel.swift */,
 				85B667CC1F92143C00621A12 /* UserInfo+Extension.swift */,
 				85B667CE1F92148E00621A12 /* DeviceInfo+Extension.swift */,
 				85BADF921F6E5F3200DAC130 /* Tresor+Extension.swift */,
@@ -328,6 +334,7 @@
 				85A6A1051F934ABE00EBDD48 /* CeleturKitMetaInfo.xcdatamodeld in Sources */,
 				85797EB01FA4919800CB9D87 /* Reachability.swift in Sources */,
 				85EEE23A1F1B52DE002CE85E /* Logger.swift in Sources */,
+				85E84D151FFA9BDD009D9BCB /* CoreDataManager+Extension.swift in Sources */,
 				85A6A1091F936D4D00EBDD48 /* Bundle+extension.swift in Sources */,
 				85F5AC4C1F767E12003B14F9 /* CloudKitPersistenceState.swift in Sources */,
 				85BADF951F6E616B00DAC130 /* TresorDocument+Extension.swift in Sources */,
@@ -340,6 +347,7 @@
 				85E121A51F814C800002EEB4 /* UIViewController+Extension.swift in Sources */,
 				85F5AC481F764659003B14F9 /* CKRecord+Extension.swift in Sources */,
 				85B667CD1F92143C00621A12 /* UserInfo+Extension.swift in Sources */,
+				85E84D171FFA9F61009D9BCB /* CloudKitModel.swift in Sources */,
 				85E312761F6D453500EB8AD8 /* CloudKitManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

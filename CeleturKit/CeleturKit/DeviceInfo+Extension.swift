@@ -58,4 +58,102 @@ public extension DeviceInfo {
       celeturKitLogger.error("Error while saving device info...",error:error)
     }
   }
+  
+  func currentCloudTresorUserDevice(cdm: CoreDataManager, cui:UserInfo) -> TresorUserDevice? {
+    var result : TresorUserDevice?
+    
+    let moc = cdm.mainManagedObjectContext
+    let fetchRequest : NSFetchRequest<TresorUserDevice> = TresorUserDevice.fetchRequest()
+    fetchRequest.predicate = NSPredicate(format: "ckuserid = %@ and id = %@", cui.id!, self.id!)
+    fetchRequest.fetchBatchSize = 1
+    
+    do {
+      var tresorUserDevice : TresorUserDevice?
+      
+      let records = try moc.fetch(fetchRequest)
+      if records.count>0 {
+        tresorUserDevice = records[0]
+      } else {
+        tresorUserDevice = TresorUserDevice.createCurrentUserDevice(context: moc, deviceInfo: self)
+      }
+      
+      tresorUserDevice!.updateCurrentUserInfo(currentUserInfo: cui)
+      
+      cdm.saveChanges(notifyChangesToCloudKit:true)
+      
+      result = tresorUserDevice
+    } catch {
+      celeturKitLogger.error("Error while saving tresor userdevice info...",error:error)
+    }
+    
+    return result
+  }
+  
+  func currentLocalTresorUserDevice(cdm: CoreDataManager) -> TresorUserDevice? {
+    var result : TresorUserDevice?
+    
+    let moc = cdm.mainManagedObjectContext
+    let fetchRequest : NSFetchRequest<TresorUserDevice> = TresorUserDevice.fetchRequest()
+    fetchRequest.predicate = NSPredicate(format: "ckuserid = nil and id = %@", localUserDeviceId)
+    fetchRequest.fetchBatchSize = 1
+    
+    do {
+      var tresorUserDevice : TresorUserDevice?
+      
+      let records = try moc.fetch(fetchRequest)
+      if records.count>0 {
+        tresorUserDevice = records[0]
+      } else {
+        tresorUserDevice = TresorUserDevice.createLocalUserDevice(context: moc, deviceInfo: self)
+      }
+      
+      result = tresorUserDevice
+    } catch {
+      celeturKitLogger.error("Error while saving tresor userdevice info...",error:error)
+    }
+    
+    return result
+  }
+  
+  public func displayInfoForCkUserId(ckUserId:String?, userInfo: UserInfo?) -> String {
+    var result = "This Device"
+    
+    if let ui = UIUserInterfaceIdiom(rawValue: Int(self.deviceuitype)) {
+      switch ui {
+      case .phone:
+        result = "This iPhone"
+      case .pad:
+        result = "This iPad"
+      default:
+        break
+      }
+    }
+    
+    result += " ("
+    
+    if let s = self.devicemodel {
+      result += "\(s)"
+    }
+    
+    if let s = self.devicename {
+      result += " '\(s)'"
+    }
+    
+    if let s0 = self.devicesystemname,let s1 = self.devicesystemversion {
+      result += " with \(s0) \(s1)"
+    }
+    
+    result += ")"
+    
+    
+    if let userid = ckUserId {
+      result = "icloud: \(userid)"
+      
+      if let cui = userInfo, let currentCkUserId = cui.id, currentCkUserId == userid, let userDisplayName = cui.userDisplayName {
+        result = "icloud: \(userDisplayName)"
+      }
+    }
+    
+    return result
+  }
 }

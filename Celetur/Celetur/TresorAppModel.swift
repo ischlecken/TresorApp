@@ -143,11 +143,13 @@ class TresorAppModel {
   }
   
   public func encryptAllDocumentItemsThatShouldBeEncryptedByDevice(tresor: Tresor) {
-    guard self.tresorModel.shouldEncryptAllDocumentItemsThatShouldBeEncryptedByDevice(tresor:tresor)  else { return }
+    guard tresor.shouldEncryptAllDocumentItemsThatShouldBeEncryptedByDevice() else { return }
     
     self.getMasterKey { (tresorKey, error) in
-      if let mk = tresorKey {
-        self.tresorModel.encryptAllDocumentItemsThatShouldBeEncryptedByDevice(tresor: tresor, masterKey: mk)
+      if let mk = tresorKey, let context = self.tresorModel.getCoreDataManager()?.privateChildManagedObjectContext() {
+        tresor.encryptAllDocumentItemsThatShouldBeEncryptedByDevice(context:context, masterKey: mk)
+        
+        self.tresorModel.saveChanges()
       }
     }
   }

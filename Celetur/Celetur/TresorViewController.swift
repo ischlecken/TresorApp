@@ -29,12 +29,19 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     NotificationCenter.default.addObserver(self,
                                            selector: #selector(onTresorModelReady(_:)),
                                            name: Notification.Name.onTresorModelReady,
-                                           object:self.tresorAppState?.tresorModel)
+                                           object:nil)
 
     NotificationCenter.default.addObserver(self,
                                            selector: #selector(onTresorCloudkitStatusChanged(_:)),
                                            name: Notification.Name.onTresorCloudkitStatusChanged,
-                                           object:self.tresorAppState?.tresorModel)
+                                           object:nil)
+    
+    NotificationCenter.default.addObserver(self,
+                                           selector: #selector(onTresorCloudkitChangesFetched(_:)),
+                                           name: Notification.Name.onTresorCloudkitChangesFetched,
+                                           object:nil)
+    
+    
 
     self.becomeFirstResponder()
   }
@@ -104,6 +111,16 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     self.tableView.reloadData()
   }
   
+  @objc
+  func onTresorCloudkitChangesFetched(_ notification: Notification) {
+    celeturLogger.debug("onTresorCloudkitChangesFetched")
+    
+    if let f = self.fetchedResultsController {
+      f.updateReadonlyInfo(ckUserId: self.tresorAppState?.tresorModel.ckUserId)
+    }
+    
+    self.tableView.reloadData()
+  }
   
   @objc
   private func refreshTable(_ sender: Any) {

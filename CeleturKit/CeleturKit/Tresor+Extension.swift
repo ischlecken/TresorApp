@@ -82,4 +82,46 @@ public extension Tresor {
     
     self.managedObjectContext?.delete(self)
   }
+  
+  public func shouldEncryptAllDocumentItemsThatShouldBeEncryptedByDevice() -> Bool {
+    guard let documents = self.documents else { return false }
+    
+    var result = false
+    
+    for case let tresorDocument as TresorDocument in documents {
+      if let items = tresorDocument.documentitems {
+        for case let item as TresorDocumentItem in items where item.itemStatus == .shouldBeEncryptedByDevice {
+          result = true
+          break
+        }
+      }
+    }
+    
+    return result
+  }
+  
+  public func encryptAllDocumentItemsThatShouldBeEncryptedByDevice(context: NSManagedObjectContext, masterKey: TresorKey) {
+    guard let tempTresor = context.object(with: self.objectID) as? Tresor,
+      let documents = tempTresor.documents
+      else { return }
+    
+    celeturKitLogger.debug("encryptAllDocumentItemsThatShouldBeEncryptedByDevice()")
+    
+    context.perform {
+      do {
+        for case let tresorDocument as TresorDocument in documents {
+          if let items = tresorDocument.documentitems {
+            for case let item as TresorDocumentItem in items where item.itemStatus == .shouldBeEncryptedByDevice {
+              let _ = item.encryptMessagePayload(masterKey: masterKey)
+            }
+          }
+        }
+        
+        celeturKitLogger.debug("save for encryptAllDocumentItemsThatShouldBeEncryptedByDevice...")
+        try context.save()
+      } catch {
+        celeturKitLogger.error("Error while saving encryptAllDocumentItemsThatShouldBeEncryptedByDevice...",error:error)
+      }
+    }
+  }
 }

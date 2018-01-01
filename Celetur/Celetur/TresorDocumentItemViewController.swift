@@ -163,7 +163,7 @@ class TresorDocumentItemViewController: UITableViewController {
       self.tableView.reloadData()
       
       context.perform {
-        self.tresorAppState?.tresorModel.saveDocumentItemModelData(context: context, tresorDocumentItem: tdi, model : m, masterKey: k)
+        tdi.saveDocumentItemModelData(context: context, model : m, masterKey: k)
         
         do {
           let _ = try context.save()

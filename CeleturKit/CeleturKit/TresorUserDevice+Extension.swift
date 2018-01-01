@@ -7,8 +7,8 @@ let localUserDeviceId = "00000000-0000-0000-0000-000000000000"
 
 public var localTresorUserDevice : TresorUserDevice?
 
+
 extension TresorUserDevice {
-  
   
   class func createCurrentUserDevice(context:NSManagedObjectContext, deviceInfo:DeviceInfo) -> TresorUserDevice {
     let newUserDevice = TresorUserDevice(context:context)

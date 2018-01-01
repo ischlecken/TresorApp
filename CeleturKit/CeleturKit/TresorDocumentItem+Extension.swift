@@ -10,7 +10,6 @@ public enum TresorDocumentItemStatus : String {
   case shouldBeEncryptedByDevice
 }
 
-
 extension TresorDocumentItem {
 
   public var modifyts: Date {
@@ -24,7 +23,6 @@ extension TresorDocumentItem {
       return result
     }
   }
-  
   
   convenience init(context: NSManagedObjectContext,
                    tresorDocument:TresorDocument,
@@ -52,15 +50,11 @@ extension TresorDocumentItem {
                                                                       tresor:Tresor?) throws -> NSFetchedResultsController<TresorDocumentItem> {
     let fetchRequest: NSFetchRequest<TresorDocumentItem> = TresorDocumentItem.fetchRequest()
     
-    // Set the batch size to a suitable number.
     fetchRequest.fetchBatchSize = 20
     fetchRequest.predicate = NSPredicate(format: "document.tresor.id = %@", (tresor?.id)!)
     
-    
-    // Edit the sort key as appropriate.
-    let sortDescriptor = NSSortDescriptor(key: "createts", ascending: false)
-    
-    fetchRequest.sortDescriptors = [sortDescriptor]
+    fetchRequest.sortDescriptors = [NSSortDescriptor(key: "document.id", ascending: true),
+                                    NSSortDescriptor(key: "createts", ascending: false)]
     
     let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
                                                                managedObjectContext: context,

@@ -67,10 +67,6 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     }
   }
   
-  override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-    // Dispose of any resources that can be recreated.
-  }
   
   @IBAction
   func insertNewObject(_ sender: Any) {
@@ -271,11 +267,18 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     cell.itemIdLabel!.text = tresorDocumentItem.id
     cell.itemIdLabel!.textColor = UIColor.black
     cell.indentationLevel = 1
+    cell.deviceIdLabel?.font = UIFont.systemFont(ofSize: UIFont.systemFontSize)
+    cell.itemIdLabel?.font = UIFont.systemFont(ofSize: UIFont.systemFontSize)
     
     if let tdiUserDevice = tresorDocumentItem.userdevice {
       cell.deviceIdLabel!.text = (tdiUserDevice.devicename ?? "-") + " " + (tdiUserDevice.id ?? "-")
       cell.deviceIdLabel!.textColor = tresorDocumentItem.itemStatusColor
       cell.itemIdLabel!.textColor = tresorDocumentItem.itemStatusColor
+      
+      if currentDeviceInfo?.isCurrentDevice(tresorUserDevice:tdiUserDevice) ?? false {
+        cell.deviceIdLabel?.font = UIFont.boldSystemFont(ofSize: UIFont.systemFontSize)
+        cell.itemIdLabel?.font = UIFont.boldSystemFont(ofSize: UIFont.systemFontSize)
+      }
     }
   }
   

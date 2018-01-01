@@ -77,7 +77,7 @@
         <element name="Tresor" positionX="-1386" positionY="-67" width="128" height="225"/>
         <element name="TresorAudit" positionX="-792" positionY="-153" width="128" height="253"/>
         <element name="TresorDocument" positionX="-1206" positionY="-207" width="128" height="178"/>
-        <element name="TresorDocumentItem" positionX="-1017" positionY="-63" width="126" height="238"/>
-        <element name="TresorUserDevice" positionX="-1197" positionY="198" width="128" height="268"/>
+        <element name="TresorDocumentItem" positionX="-1017" positionY="-63" width="126" height="240"/>
+        <element name="TresorUserDevice" positionX="-1197" positionY="198" width="128" height="270"/>
     </elements>
 </model>

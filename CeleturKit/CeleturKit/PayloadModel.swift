@@ -88,6 +88,20 @@ public class PayloadSerializer {
     
     return result
   }
+  
+  public class func payload(jsonUrl:URL) -> Payload? {
+    var result : Payload?
+    
+    do {
+      let data = try Data(contentsOf: jsonUrl)
+      
+      result = PayloadSerializer.payload(jsonData:data)
+    } catch {
+      celeturKitLogger.error("Error while reading json data",error:error)
+    }
+    
+    return result
+  }
 }
 
 public protocol JSONSerializable {

@@ -19,9 +19,26 @@ class TresorAppModel {
   let maxMasterKeyAvailable = 10
   var actMasterKeyAvailable = 0
   
+  var templates : [Payload] {
+    get {
+      if self._templates.count == 0 {
+        let templateUrls = Bundle.templateURLs()
+        
+        for u in templateUrls {
+          if let p = PayloadSerializer.payload(jsonUrl: u) {
+            _templates.append(p)
+          }
+        }
+      }
+      
+      return self._templates
+    }
+  }
+  
   fileprivate var masterKey: TresorKey?
   fileprivate var lastMasterKey: TresorKey?
   fileprivate let timer : DispatchSourceTimer
+  fileprivate var _templates : [Payload] = []
   
   init() {
     self.timer = DispatchSource.makeTimerSource(flags: [], queue: DispatchQueue.main)
@@ -46,6 +63,8 @@ class TresorAppModel {
       }
     }
     self.timer.resume()
+    
+    celeturLogger.debug("templates:\(self.templates)")
   }
   
   func makeMasterKeyUnavailable() {

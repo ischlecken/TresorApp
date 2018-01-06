@@ -22,6 +22,8 @@
 		85810E201FADBA940012B06C /* TresorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85810E1E1FADBA940012B06C /* TresorCell.swift */; };
 		85810E211FADBA940012B06C /* TresorDocumentItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85810E1F1FADBA940012B06C /* TresorDocumentItemCell.swift */; };
 		859739111FAA88E8003196B2 /* UIRefreshControl+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 859739101FAA88E8003196B2 /* UIRefreshControl+Extension.swift */; };
+		85A08A8C200103E0001DC299 /* website.ctpl in Resources */ = {isa = PBXBuildFile; fileRef = 85A08A8A200103E0001DC299 /* website.ctpl */; };
+		85A08A8D200103E0001DC299 /* emailaccount.ctpl in Resources */ = {isa = PBXBuildFile; fileRef = 85A08A8B200103E0001DC299 /* emailaccount.ctpl */; };
 		85C867E51FAE1CFD00CAAEFD /* EditTresorDocumentItemCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 85C867E41FAE1CFD00CAAEFD /* EditTresorDocumentItemCell.xib */; };
 		85C867E81FAE1E2400CAAEFD /* EditTresorDocumentItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85C867E71FAE1E2400CAAEFD /* EditTresorDocumentItemCell.swift */; };
 		85C8AE4C1FA8CFF3002B7613 /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85C8AE4B1FA8CFF3002B7613 /* UIColor+Extension.swift */; };
@@ -105,6 +107,8 @@
 		85810E1E1FADBA940012B06C /* TresorCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TresorCell.swift; sourceTree = "<group>"; };
 		85810E1F1FADBA940012B06C /* TresorDocumentItemCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TresorDocumentItemCell.swift; sourceTree = "<group>"; };
 		859739101FAA88E8003196B2 /* UIRefreshControl+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIRefreshControl+Extension.swift"; sourceTree = "<group>"; };
+		85A08A8A200103E0001DC299 /* website.ctpl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = website.ctpl; path = Templates/website.ctpl; sourceTree = "<group>"; };
+		85A08A8B200103E0001DC299 /* emailaccount.ctpl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = emailaccount.ctpl; path = Templates/emailaccount.ctpl; sourceTree = "<group>"; };
 		85C867E41FAE1CFD00CAAEFD /* EditTresorDocumentItemCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EditTresorDocumentItemCell.xib; sourceTree = "<group>"; };
 		85C867E71FAE1E2400CAAEFD /* EditTresorDocumentItemCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditTresorDocumentItemCell.swift; sourceTree = "<group>"; };
 		85C8AE4B1FA8CFF3002B7613 /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
@@ -180,6 +184,15 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		85A08A812000FC6A001DC299 /* Templates */ = {
+			isa = PBXGroup;
+			children = (
+				85A08A8B200103E0001DC299 /* emailaccount.ctpl */,
+				85A08A8A200103E0001DC299 /* website.ctpl */,
+			);
+			name = Templates;
+			sourceTree = "<group>";
+		};
 		85DC68D11F40FA34004AFAAC /* TableCells */ = {
 			isa = PBXGroup;
 			children = (
@@ -234,6 +247,7 @@
 				85F9081E1F12D9E30062BD63 /* Info.plist */,
 				852C26601F37CCDB0041273F /* TresorAppModel.swift */,
 				852C26631F37CD850041273F /* TresorConstants.swift */,
+				85A08A812000FC6A001DC299 /* Templates */,
 			);
 			path = Celetur;
 			sourceTree = "<group>";
@@ -400,9 +414,11 @@
 				85F9081D1F12D9E30062BD63 /* LaunchScreen.storyboard in Resources */,
 				85810E191FADB7300012B06C /* Editor.storyboard in Resources */,
 				85C867E51FAE1CFD00CAAEFD /* EditTresorDocumentItemCell.xib in Resources */,
+				85A08A8D200103E0001DC299 /* emailaccount.ctpl in Resources */,
 				85F9081A1F12D9E30062BD63 /* Assets.xcassets in Resources */,
 				85DC68CF1F40FA26004AFAAC /* TresorCell.xib in Resources */,
 				853328821FD311AE000F4C87 /* TresorDocumentItemCell0.xib in Resources */,
+				85A08A8C200103E0001DC299 /* website.ctpl in Resources */,
 				85F908181F12D9E30062BD63 /* Main.storyboard in Resources */,
 				85810E151FADB5D50012B06C /* Settings.storyboard in Resources */,
 				85810E1D1FADB8720012B06C /* TresorDocumentItemCell.xib in Resources */,

@@ -1,0 +1,36 @@
+{
+  "title": "email",
+  
+  "list": [
+           {
+           "created": "2017-11-05T22:26:57Z",
+           "sections": [
+                        {
+                        "name": "main",
+                        "items": [
+                                  {
+                                  "name": "provider",
+                                  "value": ""
+                                  },
+                                  
+                                  {
+                                  "name": "email",
+                                  "value": ""
+                                  },
+                                  
+                                  {
+                                  "name": "username",
+                                  "value": ""
+                                  },
+                                  
+                                  {
+                                  "name": "password",
+                                  "value": "",
+                                  "attributes": { "revealable": 1 }
+                                  }
+                                  ]
+                        }
+                        ]
+           }
+           ]
+}

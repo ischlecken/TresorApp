@@ -70,30 +70,30 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   
   @IBAction
   func insertNewObject(_ sender: Any) {
+    if let templates = self.tresorAppState?.templates, templates.count > 0 {
+      let actionSheet = UIAlertController(title: "Add new Document", message: "Select template for new document", preferredStyle: .actionSheet)
+      
+      for t in templates {
+        actionSheet.addAction(UIAlertAction(title: t.title, style: .default, handler: { [weak self] alertAction in
+          self?.createNewDocument(model: t)
+        }))
+      }
+      
+      actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler:nil))
+    
+      self.present(actionSheet, animated: true, completion: nil)
+    }
+  }
+  
+  
+  fileprivate func createNewDocument(model:Payload) {
     self.tresorAppState?.getMasterKey() { (tresorKey, error) in
-      if let key = tresorKey,
-        let t = self.tresor {
-        let model = self.getDummyPayload()
-        
+      if let key = tresorKey, let t = self.tresor {
         self.insertNewTresorDocument(t: t, model: model, key: key)
       }
     }
   }
   
-  fileprivate func getDummyPayload() -> Payload {
-    let json = """
-{"list": [{"created":"2017-11-05T22:26:57Z",
-           "sections": [ { "items": [{"name":"user","value":"hugo"},
-                                     {"name":"password","value":"secret123","attributes":{"revealable":1}}
-                                    ],
-                           "name" : "main" }
-                       ]
-         }],
- "title":"test"
-}
-"""
-    return PayloadSerializer.payload(jsonData: json.data(using: .utf8)!)!
-  }
   
   fileprivate func insertNewTresorDocument(t: Tresor, model: Payload, key: TresorKey) {
     if let context = self.tresorAppState?.tresorModel.getCoreDataManager()?.privateChildManagedObjectContext() {

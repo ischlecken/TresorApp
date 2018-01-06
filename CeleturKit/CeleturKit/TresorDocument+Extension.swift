@@ -57,8 +57,12 @@ extension TresorDocument {
   }
   
   public func setMetaInfo(model: Payload) {
-    var metaInfo = [ "title":model.title ]
+    var metaInfo = [ "title":model.title,"iconname":model.iconname ]
   
+    if let d = model.description {
+      metaInfo["description"] = d
+    }
+    
     if let d = model.description {
       metaInfo["description"] = d
     }

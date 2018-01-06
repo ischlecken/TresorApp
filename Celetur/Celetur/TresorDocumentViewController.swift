@@ -257,6 +257,10 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
           cell.descriptionLabel?.text = description
         }
         
+        if let iconname = docMetaInfo["iconname"] {
+          cell.documentImage.image = UIImage(named: iconname)
+        }
+        
         cell.documentIdLabel!.text = doc.id
         cell.createdLabel!.text = self.dateFormatter.string(from: doc.modifyts)
       }

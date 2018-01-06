@@ -370,6 +370,7 @@ public struct Payload : JSONSerializable {
     var result = Dictionary<String, Any>()
     
     result["title"] = self.title
+    result["iconname"] = self.iconname
     if let d = self.description {
       result["description"] = d
     }
@@ -385,12 +386,14 @@ public struct Payload : JSONSerializable {
   
   public init?(json: [String : Any]) {
     guard let title = json["title"] as? String,
+      let iconname = json["iconname"] as? String,
       let list = json["list"] as? [Any]
       else {
         return nil
     }
     
     self.title = title
+    self.iconname = iconname
     self.description = json["description"] as? String
     
     self.list = [PayloadSections]()
@@ -402,13 +405,15 @@ public struct Payload : JSONSerializable {
     }
   }
   
-  public init(title:String, description: String?, list: [PayloadSections]) {
+  public init(title:String, iconname:String, description: String?, list: [PayloadSections]) {
     self.title = title
+    self.iconname = iconname
     self.description = description
     self.list = list
   }
   
   public var title      : String
+  public var iconname   : String
   public var description: String?
   
   public var list       : [PayloadSections]

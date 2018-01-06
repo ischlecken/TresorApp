@@ -1,5 +1,7 @@
 {
   "title": "email",
+  "iconname": "shield",
+  "description": "My EMail Accounts",
   
   "list": [
            {

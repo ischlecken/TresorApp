@@ -156,7 +156,7 @@ class TresorDocumentItemViewController: UITableViewController {
         let controller = (segue.destination as! UINavigationController).topViewController as! EditTresorDocumentItemViewController
         
         controller.tresorAppState = self.tresorAppState
-        controller.setModel(payload: self.model)
+        controller.setModel(tresorDocumentItem: self.tresorDocumentItem!, payload: self.model)
         
         controller.navigationItem.title = self.model?.title
         

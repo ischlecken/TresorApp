@@ -1,9 +1,6 @@
 //
-//  GradientView.swift
-//  Celetur
-//
 //  Created by Feldmaus on 15.11.17.
-//  Copyright © 2017 ischlecken. All rights reserved.
+//  Copyright © 2017-2018 ischlecken. All rights reserved.
 //
 
 import UIKit

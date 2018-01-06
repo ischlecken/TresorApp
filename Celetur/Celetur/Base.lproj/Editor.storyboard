@@ -6,11 +6,12 @@
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
-        <array key="CourierNew.ttf">
-            <string>CourierNewPSMT</string>
+        <array key="AmericanTypewriter.ttc">
+            <string>AmericanTypewriter-Bold</string>
         </array>
     </customFonts>
     <scenes>
@@ -39,30 +40,28 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.99999600649999998" green="1" blue="1" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
                         <view key="tableHeaderView" contentMode="scaleToFill" id="Ykv-hj-bxA">
-                            <rect key="frame" x="0.0" y="0.0" width="375" height="65"/>
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="120"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.69999999999999996" translatesAutoresizingMaskIntoConstraints="NO" id="YQa-zI-kqj">
-                                    <rect key="frame" x="56" y="9.5" width="311" height="46"/>
+                                    <rect key="frame" x="56" y="0.0" width="311" height="120"/>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    <constraints>
-                                        <constraint firstAttribute="height" constant="46" id="rED-jS-V4I"/>
-                                    </constraints>
-                                    <fontDescription key="fontDescription" name="CourierNewPSMT" family="Courier New" pointSize="12"/>
-                                    <nil key="textColor"/>
+                                    <fontDescription key="fontDescription" name="AmericanTypewriter-Bold" family="American Typewriter" pointSize="16"/>
+                                    <color key="textColor" name="celeturPrimary"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="9LQ-1B-Zsw">
-                                    <rect key="frame" x="8" y="12.5" width="40" height="40"/>
+                                    <rect key="frame" x="8" y="40" width="40" height="40"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="40" id="SgH-df-nMb"/>
                                         <constraint firstAttribute="width" constant="40" id="gwg-nX-zLA"/>
                                     </constraints>
-                                    <color key="color" red="1" green="0.5" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="color" name="celeturPrimary"/>
                                 </activityIndicatorView>
                             </subviews>
-                            <color key="backgroundColor" red="0.99999600649999998" green="1" blue="1" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="backgroundColor" cocoaTouchSystemColor="lightTextColor"/>
                             <constraints>
+                                <constraint firstAttribute="height" secondItem="YQa-zI-kqj" secondAttribute="height" id="P4d-LU-GI6"/>
                                 <constraint firstItem="YQa-zI-kqj" firstAttribute="centerY" secondItem="9LQ-1B-Zsw" secondAttribute="centerY" id="dRQ-dG-RU3"/>
                                 <constraint firstItem="YQa-zI-kqj" firstAttribute="leading" secondItem="9LQ-1B-Zsw" secondAttribute="trailing" constant="8" id="uA7-V4-o0F"/>
                                 <constraint firstAttribute="trailing" secondItem="YQa-zI-kqj" secondAttribute="trailing" constant="8" id="xei-bJ-qBb"/>
@@ -71,7 +70,7 @@
                             </constraints>
                         </view>
                         <view key="tableFooterView" contentMode="scaleToFill" id="MXT-jn-zTj">
-                            <rect key="frame" x="0.0" y="65" width="375" height="39"/>
+                            <rect key="frame" x="0.0" y="120" width="375" height="39"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="createts" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="z5E-hV-pXk">
@@ -105,6 +104,7 @@
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="activityView" destination="9LQ-1B-Zsw" id="CmL-PK-eWP"/>
+                        <outlet property="activityViewLeadingContraint" destination="yHM-yS-Ryg" id="VDu-1A-u9G"/>
                         <outlet property="createtsLabel" destination="z5E-hV-pXk" id="q32-ST-389"/>
                         <outlet property="dataLabel" destination="YQa-zI-kqj" id="4Qh-sA-16K"/>
                     </connections>
@@ -362,4 +362,9 @@
             <point key="canvasLocation" x="3924" y="152"/>
         </scene>
     </scenes>
+    <resources>
+        <namedColor name="celeturPrimary">
+            <color red="1" green="0.1803921568627451" blue="0.33725490196078434" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+    </resources>
 </document>

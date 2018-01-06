@@ -245,8 +245,19 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     editAction.backgroundColor = .orange
     
     let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { action, index in
-      self.tresorAppState?.tresorModel.deleteTresor(tresor: tresor) {
-      }
+      let message = tresor.ckuserid != nil ? "Delete tresor with all documents on all devices" : "Delete tresor with all documents on this device"
+      let actionSheet = UIAlertController(title: "Delete tresor", message: message, preferredStyle: .actionSheet)
+      
+      actionSheet.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { alertAction in
+        self.tresorAppState?.tresorModel.deleteTresor(tresor: tresor) {
+        }
+      }))
+      
+      actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler:nil))
+      
+      self.present(actionSheet, animated: true, completion: nil)
+      
+      
     }
     
     let testAction = UITableViewRowAction(style: .normal, title: "Test") { action, index in

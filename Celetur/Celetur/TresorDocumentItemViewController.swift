@@ -11,6 +11,8 @@ import CeleturKit
 
 class TresorDocumentItemViewController: UITableViewController {
   
+  @IBOutlet weak var activityViewLeadingContraint: NSLayoutConstraint!
+  
   var tresorAppState: TresorAppModel?
   var tresorDocumentItem: TresorDocumentItem? {
     didSet {
@@ -32,16 +34,16 @@ class TresorDocumentItemViewController: UITableViewController {
     self.dateFormatter.timeStyle = DateFormatter.Style.short
     
     self.navigationItem.rightBarButtonItem?.isEnabled = false
+    self.activityViewLeadingContraint.constant = -40
     
     self.tableView.register(UINib(nibName:"TresorDocumentItemCell",bundle:nil),forCellReuseIdentifier:"tresorDocumentItemCell")
     
     configureView()
     
-    /*
     NotificationCenter.default.addObserver(self, selector: #selector(contextDidSave(_:)),
                                            name: Notification.Name.NSManagedObjectContextObjectsDidChange,
                                            object:self.tresorDocumentItem?.managedObjectContext)
-   */
+    
     
     self.becomeFirstResponder()
   }
@@ -60,13 +62,13 @@ class TresorDocumentItemViewController: UITableViewController {
   
   @objc
   func contextDidSave(_ notification: Notification) {
+    celeturLogger.debug("contextDidSave")
+    
+    self.configureView()
   }
   
-  fileprivate func setModel(payload:Payload?) {
-    self.model = payload
-  }
   
-  func configureView() {
+  fileprivate func configureView() {
     if let item = tresorDocumentItem {
       
       if let metaInfo = item.document?.getMetaInfo() {
@@ -85,19 +87,16 @@ class TresorDocumentItemViewController: UITableViewController {
           
           self.tresorAppState?.getMasterKey(){ (tresorKey, error) in
             if let key = tresorKey {
-              self.activityView.startAnimating()
+              self.startAnimation()
               DispatchQueue.global().async {
                 if let decryptedPayload = item.decryptPayload(masterKey:key), let d = PayloadSerializer.payload(jsonData: decryptedPayload) {
-                  self.setModel(payload: d)
-                  
                   DispatchQueue.main.async {
-                    self.setDataLabel(data: nil, error: nil)
-                    self.navigationItem.rightBarButtonItem?.isEnabled = true
+                    self.setModel(payload: d)
                   }
-                } else {
-                  DispatchQueue.main.async {
-                    self.setDataLabel(data: nil, error: nil)
-                  }
+                }
+                
+                DispatchQueue.main.async {
+                  self.stopAnimation()
                 }
               }
             } else {
@@ -109,7 +108,14 @@ class TresorDocumentItemViewController: UITableViewController {
     }
   }
   
-  func setDataLabel(data:Data?, error:Error?) {
+  fileprivate func setModel(payload:Payload?) {
+    self.model = payload
+    
+    self.navigationItem.rightBarButtonItem?.isEnabled = self.model != nil
+    self.tableView.reloadData()
+  }
+  
+  fileprivate func setDataLabel(data:Data?, error:Error?) {
     if let e=error {
       self.dataLabel!.text = e.localizedDescription
     } else if let d=data {
@@ -117,9 +123,28 @@ class TresorDocumentItemViewController: UITableViewController {
     } else {
       self.dataLabel!.text = ""
     }
+  }
+  
+  fileprivate func startAnimation() {
+    celeturLogger.debug("startAnimation")
     
-    self.tableView.reloadData()
-    self.activityView.stopAnimating()
+    self.activityView.startAnimating()
+    
+    self.activityViewLeadingContraint.constant = 8
+    UIView.animate(withDuration: 1.0) {
+      self.activityView.superview?.layoutIfNeeded()
+    }
+  }
+  
+  fileprivate func stopAnimation() {
+    celeturLogger.debug("stopAnimation")
+    
+    self.activityViewLeadingContraint.constant = -40
+    UIView.animate(withDuration: 2, animations: {
+      self.activityView.superview?.layoutIfNeeded()
+    }) { complete in
+      self.activityView.stopAnimating()
+    }
   }
   
   // MARK: - Segue
@@ -157,10 +182,8 @@ class TresorDocumentItemViewController: UITableViewController {
   
   fileprivate func saveChangedItem(tdi: TresorDocumentItem,k: TresorKey, m:Payload) {
     if let context = self.tresorAppState?.tresorModel.getCoreDataManager()?.privateChildManagedObjectContext() {
-      self.activityView.startAnimating()
-      self.navigationItem.rightBarButtonItem?.isEnabled = false
       self.setModel(payload: nil)
-      self.tableView.reloadData()
+      self.startAnimation()
       
       context.perform {
         tdi.saveDocumentItemModelData(context: context, model : m, masterKey: k)
@@ -170,16 +193,9 @@ class TresorDocumentItemViewController: UITableViewController {
           
           DispatchQueue.main.async {
             self.tresorAppState?.tresorModel.saveChanges()
-            self.setModel(payload: m)
-            self.tableView.reloadData()
           }
         } catch {
           celeturLogger.error("Error while saving changed tresor document items...",error:error)
-        }
-        
-        DispatchQueue.main.async {
-          self.activityView.stopAnimating()
-          self.navigationItem.rightBarButtonItem?.isEnabled = true
         }
       }
     }
@@ -262,7 +278,7 @@ class TresorDocumentItemViewController: UITableViewController {
     } else {
       cell.itemValueLabel?.text = value
     }
-  
+    
   }
   
 }

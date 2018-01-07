@@ -24,6 +24,7 @@
 		859739111FAA88E8003196B2 /* UIRefreshControl+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 859739101FAA88E8003196B2 /* UIRefreshControl+Extension.swift */; };
 		85A08A8C200103E0001DC299 /* website.ctpl in Resources */ = {isa = PBXBuildFile; fileRef = 85A08A8A200103E0001DC299 /* website.ctpl */; };
 		85A08A8D200103E0001DC299 /* emailaccount.ctpl in Resources */ = {isa = PBXBuildFile; fileRef = 85A08A8B200103E0001DC299 /* emailaccount.ctpl */; };
+		85BE07D820027B01008991AF /* TresorTemplateInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BE07D620027B01008991AF /* TresorTemplateInfo.swift */; };
 		85C867E51FAE1CFD00CAAEFD /* EditTresorDocumentItemCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 85C867E41FAE1CFD00CAAEFD /* EditTresorDocumentItemCell.xib */; };
 		85C867E81FAE1E2400CAAEFD /* EditTresorDocumentItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85C867E71FAE1E2400CAAEFD /* EditTresorDocumentItemCell.swift */; };
 		85C8AE4C1FA8CFF3002B7613 /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85C8AE4B1FA8CFF3002B7613 /* UIColor+Extension.swift */; };
@@ -109,6 +110,7 @@
 		859739101FAA88E8003196B2 /* UIRefreshControl+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIRefreshControl+Extension.swift"; sourceTree = "<group>"; };
 		85A08A8A200103E0001DC299 /* website.ctpl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = website.ctpl; path = Templates/website.ctpl; sourceTree = "<group>"; };
 		85A08A8B200103E0001DC299 /* emailaccount.ctpl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = emailaccount.ctpl; path = Templates/emailaccount.ctpl; sourceTree = "<group>"; };
+		85BE07D620027B01008991AF /* TresorTemplateInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TresorTemplateInfo.swift; sourceTree = "<group>"; };
 		85C867E41FAE1CFD00CAAEFD /* EditTresorDocumentItemCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EditTresorDocumentItemCell.xib; sourceTree = "<group>"; };
 		85C867E71FAE1E2400CAAEFD /* EditTresorDocumentItemCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditTresorDocumentItemCell.swift; sourceTree = "<group>"; };
 		85C8AE4B1FA8CFF3002B7613 /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
@@ -246,6 +248,7 @@
 				85F35D3B1FAF01D800349BF0 /* SelectItemNameTableViewController.swift */,
 				85F9081E1F12D9E30062BD63 /* Info.plist */,
 				852C26601F37CCDB0041273F /* TresorAppModel.swift */,
+				85BE07D620027B01008991AF /* TresorTemplateInfo.swift */,
 				852C26631F37CD850041273F /* TresorConstants.swift */,
 				85A08A812000FC6A001DC299 /* Templates */,
 			);
@@ -454,6 +457,7 @@
 				85EE8DA21F497D3600F6409D /* EditTresorDocumentItemViewController.swift in Sources */,
 				85F35D3C1FAF01D800349BF0 /* SelectItemNameTableViewController.swift in Sources */,
 				853328871FD317E1000F4C87 /* TresorDocumentCell.swift in Sources */,
+				85BE07D820027B01008991AF /* TresorTemplateInfo.swift in Sources */,
 				850B80F31F35DFF10078F042 /* TresorDocumentViewController.swift in Sources */,
 				852C26611F37CCDB0041273F /* TresorAppModel.swift in Sources */,
 				85810E211FADBA940012B06C /* TresorDocumentItemCell.swift in Sources */,

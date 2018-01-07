@@ -1,42 +1,34 @@
 {
-  "title": "email",
+  "name": "email",
   "iconname": "shield",
   "description": "My EMail Accounts",
 
-  "list": [
-           {
-           "created": "2017-11-05T22:26:57Z",
-           "sections": [
-                        {
-                        "name": "main",
-                        "items": [
-                                  {
-                                  "name": "provider",
-                                  "value": "",
-                                  "placeholder": "The EMail Provider"
-                                  },
+   "sections": [
+                {
+                "name": "main",
+                "items": [
+                          {
+                          "name": "provider",
+                          "placeholder": "The EMail Provider"
+                          },
 
-                                  {
-                                  "name": "email",
-                                  "value": "",
-                                  "placeholder": "Your EMail Address"
-                                  },
+                          {
+                          "name": "email",
+                          "placeholder": "Your EMail Address"
+                          },
 
-                                  {
-                                  "name": "username",
-                                  "value": "",
-                                  "placeholder": "Your Username"
-                                  },
+                          {
+                          "name": "username",
+                          "placeholder": "Your Username"
+                          },
 
-                                  {
-                                  "name": "password",
-                                  "value": "Your Passwort",
-                                  "placeholder": "The EMail Provider",
-                                  "attributes": { "revealable": 1 }
-                                  }
-                                  ]
-                        }
-                        ]
-           }
-           ]
+                          {
+                          "name": "password",
+                          "placeholder": "The EMail Provider",
+                          "attributes": { "revealable": 1 }
+                          }
+                          ]
+                }
+                ]
+
 }

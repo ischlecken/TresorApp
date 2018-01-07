@@ -25,15 +25,17 @@ class EditTresorDocumentItemViewController: UIViewController, UITableViewDataSou
   var tresorAppState: TresorAppModel?
   
   fileprivate let dateFormatter = DateFormatter()
+  fileprivate var tresorDocumentMetaInfo : TresorDocumentMetaInfo?
   fileprivate var model : Payload?
   fileprivate var tresorDocumentItem : TresorDocumentItem?
   
   fileprivate var actualEditingItemValueIndexPath : IndexPath?
   fileprivate var clickedItemNameIndexPath : IndexPath?
   
-  func setModel(tresorDocumentItem:TresorDocumentItem, payload:Payload?) {
+  func setModel(tresorDocumentItem:TresorDocumentItem, payload:Payload?, metaInfo: TresorDocumentMetaInfo?) {
     self.tresorDocumentItem = tresorDocumentItem
     self.model = payload
+    self.tresorDocumentMetaInfo = metaInfo
   }
   
   func getModel() -> Payload? {
@@ -46,13 +48,13 @@ class EditTresorDocumentItemViewController: UIViewController, UITableViewDataSou
         self.model?.setActualItem(forPath: indexPath, payloadItem:item)
       }
     }
-  
+    
     return self.model
   }
   
   override func viewDidLoad() {
     super.viewDidLoad()
-  
+    
     self.tableView.register(UINib(nibName:"EditTresorDocumentItemCell",bundle:nil),forCellReuseIdentifier:"editTresorDocumentItemCell")
     
     self.headerViewHeightConstraint.constant = self.maxHeaderHeight
@@ -109,9 +111,7 @@ class EditTresorDocumentItemViewController: UIViewController, UITableViewDataSou
   func addFieldAction(_ sender: Any) {
     if let maxSection = self.model?.getActualSectionCount() {
       let payloadItem = PayloadItem(name: "New Item "+String(Int(arc4random())%100),
-                                    value: .s(""),
-                                    placeholder: nil,
-                                    attributes: [:])
+                                    value: .s(""))
       
       self.model?.appendToActualSection(forSection: maxSection - 1, payloadItem: payloadItem)
       self.tableView.reloadData()
@@ -121,7 +121,7 @@ class EditTresorDocumentItemViewController: UIViewController, UITableViewDataSou
   @IBAction func deleteFieldsAction(_ sender: Any) {
     if let maxSection = self.model?.getActualSectionCount() {
       self.model?.removeAllItemsFromActualSection(forSection: maxSection - 1)
-    
+      
       self.tableView.reloadData()
     }
   }
@@ -159,7 +159,7 @@ class EditTresorDocumentItemViewController: UIViewController, UITableViewDataSou
           item.name = newItemName
           
           self.model?.setActualItem(forPath: self.clickedItemNameIndexPath!, payloadItem: item)
-        
+          
           DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
             self.tableView.reloadRows(at: [IndexPath(row:selectedItem,section:0)], with: .fade)
           }
@@ -228,11 +228,15 @@ class EditTresorDocumentItemViewController: UIViewController, UITableViewDataSou
   }
   
   fileprivate func configureCell(_ cell: EditTresorDocumentItemCell, forPath indexPath: IndexPath) {
-    if let payloadItem = self.model?.getActualItem(forPath: indexPath) {
+    if let payloadItem = self.model?.getActualItem(forPath: indexPath), let metainfoName = self.model?.metainfo {
+      
       cell.itemNameButton?.setTitle(payloadItem.name, for: .normal)
       cell.itemValueTextfield?.text = payloadItem.value.toString()
       
-      cell.itemValueTextfield.placeholder = payloadItem.placeholder
+      if let payloadMetainfoItem = self.tresorAppState?.templates.payloadMetainfoItem(name: metainfoName, indexPath: indexPath) {
+        cell.itemValueTextfield.placeholder = payloadMetainfoItem.placeholder
+      }
+      
     }
   }
   
@@ -247,7 +251,7 @@ class EditTresorDocumentItemViewController: UIViewController, UITableViewDataSou
     
     let isScrollingDown = scrollDiff > 0 && scrollView.contentOffset.y > absoluteTop
     let isScrollingUp = scrollDiff < 0 && scrollView.contentOffset.y < absoluteBottom
-
+    
     if canAnimateHeader(scrollView) {
       var newHeight = self.headerViewHeightConstraint.constant
       if isScrollingDown {
@@ -265,7 +269,7 @@ class EditTresorDocumentItemViewController: UIViewController, UITableViewDataSou
     
     self.previousScrollOffset = scrollView.contentOffset.y
   }
- 
+  
   func canAnimateHeader(_ scrollView: UIScrollView) -> Bool {
     // Calculate the size of the scrollView when header is collapsed
     let scrollViewMaxHeight = scrollView.frame.height + self.headerViewHeightConstraint.constant - minHeaderHeight

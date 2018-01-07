@@ -3,6 +3,8 @@
 //  CeleturKit
 //
 
+public typealias TresorDocumentMetaInfo =  [String:String]
+
 extension TresorDocument {
   
   public var modifyts: Date {
@@ -31,14 +33,15 @@ extension TresorDocument {
   public convenience init(context: NSManagedObjectContext,
                           masterKey: TresorKey,
                           tresor: Tresor,
-                          model: Payload
-    ) throws {
+                          metaInfo: TresorDocumentMetaInfo,
+                          model: Payload) throws {
+    
     try self.init(context: context, tresor: tresor)
     
     if let payload = PayloadSerializer.jsonData(model: model),
       let currentDeviceKey = masterKey.accessToken {
       
-      self.setMetaInfo(model: model)
+      self.setMetaInfo(metaInfo: metaInfo)
       
       for case let userDevice as TresorUserDevice in tresor.userdevices! {
         let isUserDeviceCurrentDevice = currentDeviceInfo?.isCurrentDevice(tresorUserDevice: userDevice) ?? false
@@ -56,17 +59,7 @@ extension TresorDocument {
     }
   }
   
-  public func setMetaInfo(model: Payload) {
-    var metaInfo = [ "title":model.title,"iconname":model.iconname ]
-  
-    if let d = model.description {
-      metaInfo["description"] = d
-    }
-    
-    if let d = model.description {
-      metaInfo["description"] = d
-    }
-    
+  public func setMetaInfo(metaInfo: TresorDocumentMetaInfo) {
     do {
       self.metainfo = try JSONSerialization.data(withJSONObject: metaInfo, options: [])
     } catch {
@@ -74,12 +67,12 @@ extension TresorDocument {
     }
   }
   
-  public func getMetaInfo() -> [String:String]? {
-    var result : [String:String]?
+  public func getMetaInfo() -> TresorDocumentMetaInfo? {
+    var result : TresorDocumentMetaInfo?
     
     if let m = self.metainfo {
       do {
-        result = try JSONSerialization.jsonObject(with: m, options: []) as? [String:String]
+        result = try JSONSerialization.jsonObject(with: m, options: []) as? TresorDocumentMetaInfo
       } catch {
         celeturKitLogger.error("Error serializing metainfo json",error:error)
       }

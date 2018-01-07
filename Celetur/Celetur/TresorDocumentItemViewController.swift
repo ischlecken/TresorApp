@@ -26,6 +26,7 @@ class TresorDocumentItemViewController: UITableViewController {
   
   let dateFormatter = DateFormatter()
   var model : Payload?
+  var revealInfo : [String:Bool] = [:]
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -156,9 +157,12 @@ class TresorDocumentItemViewController: UITableViewController {
         let controller = (segue.destination as! UINavigationController).topViewController as! EditTresorDocumentItemViewController
         
         controller.tresorAppState = self.tresorAppState
-        controller.setModel(tresorDocumentItem: self.tresorDocumentItem!, payload: self.model)
         
-        controller.navigationItem.title = self.model?.title
+        let tresorDocumentMetaInfo = self.tresorDocumentItem?.document?.getMetaInfo()
+        
+        controller.setModel(tresorDocumentItem: self.tresorDocumentItem!, payload: self.model, metaInfo: tresorDocumentMetaInfo)
+        
+        controller.navigationItem.title = tresorDocumentMetaInfo?["title"]
         
       default:
         break
@@ -230,23 +234,22 @@ class TresorDocumentItemViewController: UITableViewController {
   override func tableView(_ tableView: UITableView, editActionsForRowAt: IndexPath) -> [UITableViewRowAction]? {
     var result = [UITableViewRowAction]()
     
-    if let payloadItem = self.model?.getActualItem(forPath: editActionsForRowAt) {
+    if let payloadItem = self.model?.getActualItem(forPath: editActionsForRowAt),
+      let metainfoName = self.model?.metainfo,
+      let payloadMetainfoItem = self.tresorAppState?.templates.payloadMetainfoItem(name: metainfoName, indexPath: editActionsForRowAt) {
+      
       let editAction = UITableViewRowAction(style: .normal, title: "Copy") { action, index in
         UIPasteboard.general.string = self.model?.getActualItem(forPath: editActionsForRowAt).value.toString()
       }
       editAction.backgroundColor = .orange
       result.append(editAction)
       
-      if payloadItem.isRevealable() && !payloadItem.isRevealed() {
+      if payloadMetainfoItem.isRevealable() && !(self.payloadItemIsRevealed(indexPath: editActionsForRowAt,payloadItem: payloadItem) ?? false) {
         let revealAction = UITableViewRowAction(style: .normal, title: "Reveal") { action, index in
-          if var item = self.model?.getActualItem(forPath: editActionsForRowAt) {
-            item.reveal()
+          self.revealPayloadItem(indexPath: editActionsForRowAt, payloadItem: payloadItem)
             
-            self.model?.setActualItem(forPath: editActionsForRowAt,payloadItem:item)
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-              self.tableView.reloadRows(at: [editActionsForRowAt], with: .fade)
-            }
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            self.tableView.reloadRows(at: [editActionsForRowAt], with: .fade)
           }
         }
         revealAction.backgroundColor = .blue
@@ -265,26 +268,39 @@ class TresorDocumentItemViewController: UITableViewController {
   }
   
   func configureCell(_ cell: TresorDocumentItemCell, forPath indexPath:IndexPath) {
-    guard let payloadItem = self.model?.getActualItem(forPath: indexPath) else {
-      return
-    }
+    guard let payloadItem = self.model?.getActualItem(forPath: indexPath), let metainfoName = self.model?.metainfo else { return }
+    
+    let payloadMetainfoItem = self.tresorAppState?.templates.payloadMetainfoItem(name: metainfoName, indexPath: indexPath)
     
     cell.itemKeyLabel?.text = payloadItem.name
     cell.itemValueLabel?.text = nil
     cell.itemValueLabel?.textColor = UIColor.darkText
     
     let value = payloadItem.value.toString()
-    if payloadItem.isRevealable() && !payloadItem.isRevealed() {
+    if payloadMetainfoItem != nil &&
+      (payloadMetainfoItem?.isRevealable() ?? false) &&
+      !(self.payloadItemIsRevealed(indexPath: indexPath, payloadItem: payloadItem) ?? false) {
       cell.itemValueLabel?.text = String(repeating:"*", count:value.count)
     } else {
       cell.itemValueLabel?.text = value
     }
     
-    if let c = cell.itemValueLabel?.text?.count, c == 0, let p = payloadItem.placeholder {
+    if let pmii = payloadMetainfoItem, let c = cell.itemValueLabel?.text?.count, c == 0, let p = pmii.placeholder {
       cell.itemValueLabel?.text = p
       cell.itemValueLabel?.textColor = UIColor.lightGray
     }
   }
   
+  fileprivate func payloadItemIsRevealed(indexPath:IndexPath, payloadItem: PayloadItem) -> Bool? {
+    guard let metainfoName = self.model?.metainfo else { return false }
+    
+    return self.revealInfo["\(metainfoName).\(indexPath.section).\(payloadItem.name)"]
+  }
+  
+  fileprivate func revealPayloadItem(indexPath:IndexPath, payloadItem: PayloadItem) {
+    if let metainfoName = self.model?.metainfo {
+      self.revealInfo["\(metainfoName).\(indexPath.section).\(payloadItem.name)"] = true
+    }
+  }
 }
 

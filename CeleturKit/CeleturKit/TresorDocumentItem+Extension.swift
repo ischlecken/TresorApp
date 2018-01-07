@@ -175,33 +175,28 @@ extension TresorDocumentItem {
                                         model : Payload,
                                         masterKey: TresorKey) {
     
-    if let tresorDocument = self.document, let tempTresorDocument = context.object(with: tresorDocument.objectID) as? TresorDocument {
-      tempTresorDocument.setMetaInfo(model:model)
+    if let tresorDocument = self.document,
+      let tempTresorDocument = context.object(with: tresorDocument.objectID) as? TresorDocument,
+      let payload = PayloadSerializer.jsonData(model: model) {
       
-      var cleanedModel = model
-      
-      cleanedModel.clean()
-      
-      if let payload = PayloadSerializer.jsonData(model: cleanedModel) {
-        for case let it as TresorDocumentItem in (tempTresorDocument.documentitems)! {
-          if let ud = it.userdevice {
-            let isUserDeviceCurrentDevice = currentDeviceInfo?.isCurrentDevice(tresorUserDevice: ud) ?? false
+      for case let it as TresorDocumentItem in (tempTresorDocument.documentitems)! {
+        if let ud = it.userdevice {
+          let isUserDeviceCurrentDevice = currentDeviceInfo?.isCurrentDevice(tresorUserDevice: ud) ?? false
+          
+          celeturKitLogger.debug("  docItem:\(it.id ?? "-") userdevice:\(ud.id ?? "-") isUserDeviceCurrentDevice:\(isUserDeviceCurrentDevice)")
+          
+          if let key = isUserDeviceCurrentDevice ? masterKey.accessToken : ud.messagekey {
+            let status : TresorDocumentItemStatus = isUserDeviceCurrentDevice ? .encrypted : .shouldBeEncryptedByDevice
             
-            celeturKitLogger.debug("  docItem:\(it.id ?? "-") userdevice:\(ud.id ?? "-") isUserDeviceCurrentDevice:\(isUserDeviceCurrentDevice)")
+            let _ = it.encryptPayload(key: key, payload: payload, status: status)
             
-            if let key = isUserDeviceCurrentDevice ? masterKey.accessToken : ud.messagekey {
-              let status : TresorDocumentItemStatus = isUserDeviceCurrentDevice ? .encrypted : .shouldBeEncryptedByDevice
-              
-              let _ = it.encryptPayload(key: key, payload: payload, status: status)
-              
-              celeturKitLogger.debug("item after encryption:\(it)")
-            }
+            celeturKitLogger.debug("item after encryption:\(it)")
           }
         }
-      
-        tempTresorDocument.changets = Date()
       }
-      
+    
+      tempTresorDocument.changets = Date()
+    
       celeturKitLogger.debug("saveDocumentItemModelData(): encryption completed")
     }
   }

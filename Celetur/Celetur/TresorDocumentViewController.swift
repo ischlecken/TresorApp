@@ -70,12 +70,14 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   
   @IBAction
   func insertNewObject(_ sender: Any) {
-    if let templates = self.tresorAppState?.templates, templates.count > 0 {
+    if let templates = self.tresorAppState?.templates.templatenames, templates.count > 0 {
       let actionSheet = UIAlertController(title: "Add new Document", message: "Select template for new document", preferredStyle: .actionSheet)
       
       for t in templates {
-        actionSheet.addAction(UIAlertAction(title: t.title, style: .default, handler: { [weak self] alertAction in
-          self?.createNewDocument(model: t)
+        actionSheet.addAction(UIAlertAction(title: t, style: .default, handler: { [weak self] alertAction in
+          let payloadMetainfo = self!.tresorAppState?.templates.payloadMetainfo(name: t)
+          
+          self?.createNewDocument(modelMetaInfo: payloadMetainfo)
         }))
       }
       
@@ -86,21 +88,27 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   }
   
   
-  fileprivate func createNewDocument(model:Payload) {
-    self.tresorAppState?.getMasterKey() { (tresorKey, error) in
-      if let key = tresorKey, let t = self.tresor {
-        self.insertNewTresorDocument(t: t, model: model, key: key)
+  fileprivate func createNewDocument(modelMetaInfo:PayloadMetainfo?) {
+    if let mmi = modelMetaInfo {
+      self.tresorAppState?.getMasterKey() { (tresorKey, error) in
+        if let key = tresorKey, let t = self.tresor {
+          self.insertNewTresorDocument(t: t, modelMetainfo: mmi, key: key)
+        }
       }
     }
   }
   
   
-  fileprivate func insertNewTresorDocument(t: Tresor, model: Payload, key: TresorKey) {
+  fileprivate func insertNewTresorDocument(t: Tresor, modelMetainfo: PayloadMetainfo, key: TresorKey) {
     if let context = self.tresorAppState?.tresorModel.getCoreDataManager()?.privateChildManagedObjectContext() {
       self.beginInsertNewObject()
       context.perform {
         do {
-          let _ = try TresorDocument(context: context, masterKey: key, tresor: t, model: model)
+          let _ = try TresorDocument(context: context,
+                                     masterKey: key,
+                                     tresor: t,
+                                     metaInfo: modelMetainfo.toTresorDocumentMetaInfo(),
+                                     model: modelMetainfo.toModel())
           
           let _ = try context.save()
           

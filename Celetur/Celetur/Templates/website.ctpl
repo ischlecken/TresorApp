@@ -1,41 +1,33 @@
 {
-  "title": "website",
+  "name": "website",
   "iconname": "password",
   
-  "list": [
-           {
-           "created": "2017-11-05T22:26:57Z",
-           "sections": [
-                        {
-                        "name": "main",
-                        "items": [
-                                  {
-                                  "name": "website",
-                                  "value": "",
-                                  "placeholder": "The Website Name"
-                                  },
-                                  
-                                  {
-                                  "name": "homepage",
-                                  "value": "",
-                                  "placeholder":"The Website Homepage URL"
-                                  },
-                                  
-                                  {
-                                  "name": "username",
-                                  "value": "",
-                                  "placeholder": "Your Username"
-                                  },
-                                  
-                                  {
-                                  "name": "password",
-                                  "value": "",
-                                  "placeholder": "Your Password",
-                                  "attributes": { "revealable": 1 }
-                                  }
-                                  ]
-                        }
-                        ]
-           }
-           ]
+   "sections": [
+                {
+                "name": "main",
+                "items": [
+                          {
+                          "name": "website",
+                          "placeholder": "The Website Name"
+                          },
+
+                          {
+                          "name": "homepage",
+                          "placeholder":"The Website Homepage URL"
+                          },
+
+                          {
+                          "name": "username",
+                          "placeholder": "Your Username"
+                          },
+
+                          {
+                          "name": "password",
+                          "placeholder": "Your Password",
+                          "attributes": { "revealable": 1 }
+                          }
+                          ]
+                }
+                ]
+
 }

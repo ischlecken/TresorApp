@@ -2,7 +2,7 @@
   "title": "email",
   "iconname": "shield",
   "description": "My EMail Accounts",
-  
+
   "list": [
            {
            "created": "2017-11-05T22:26:57Z",
@@ -12,22 +12,26 @@
                         "items": [
                                   {
                                   "name": "provider",
-                                  "value": ""
+                                  "value": "",
+                                  "placeholder": "The EMail Provider"
                                   },
-                                  
+
                                   {
                                   "name": "email",
-                                  "value": ""
+                                  "value": "",
+                                  "placeholder": "Your EMail Address"
                                   },
-                                  
+
                                   {
                                   "name": "username",
-                                  "value": ""
+                                  "value": "",
+                                  "placeholder": "Your Username"
                                   },
-                                  
+
                                   {
                                   "name": "password",
-                                  "value": "",
+                                  "value": "Your Passwort",
+                                  "placeholder": "The EMail Provider",
                                   "attributes": { "revealable": 1 }
                                   }
                                   ]

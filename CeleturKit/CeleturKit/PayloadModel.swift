@@ -1,9 +1,6 @@
 //
-//  PayloadSerializer.swift
-//  CeleturKit
-//
 //  Created by Feldmaus on 31.10.17.
-//  Copyright © 2017 prisnoc. All rights reserved.
+//  Copyright © 2017-2018 prisnoc. All rights reserved.
 //
 
 fileprivate let jsonDateFormatter = ISO8601DateFormatter()
@@ -111,77 +108,6 @@ public protocol JSONSerializable {
 }
 
 public struct PayloadItem : JSONSerializable {
-  
-  public init(name:String, value:ValueType, attributes:[AttributeName:ValueType]) {
-    self.name = name
-    self.value = value
-    self.attributes = attributes
-  }
-  
-  public init?(json: [String : Any]) {
-    guard let name = json["name"] as? String,
-      json["value"] != nil
-      else {
-        return nil
-    }
-    
-    let value = json["value"]
-    
-    self.name = name
-    if let v = ValueType.toValueType(any: value as Any) {
-      self.value = v
-    } else {
-      return nil
-    }
-    
-    self.attributes = [AttributeName:ValueType]()
-    
-    if let attributes = json["attributes"] as? [String:Any] {
-      for (an,av) in attributes {
-        switch an {
-        case "minlength":
-          self.attributes[.minlength] = ValueType.toValueType(any: av)
-        case "maxlength":
-          self.attributes[.maxlength] = ValueType.toValueType(any: av)
-        case "revealable":
-          self.attributes[.revealable] = ValueType.toValueType(any: av)
-        case "revealed":
-          self.attributes[.revealed] = ValueType.toValueType(any: av)
-        default:
-          break
-        }
-      }
-    }
-  }
-  
-  
-  public func toJSOnSerializableObject() -> Any {
-    var result = Dictionary<String, Any>()
-    
-    result["name"] = self.name
-    result["value"] = self.value.toAny()
-    
-    var attributes = Dictionary<String,Any>()
-    for (an,av) in self.attributes {
-      switch an {
-      case .minlength:
-        attributes["minlength"] = av.toAny()
-      case .maxlength:
-        attributes["maxlength"] = av.toAny()
-      case .revealable:
-        attributes["revealable"] = av.toAny()
-      case .revealed:
-        attributes["revealed"] = av.toAny()
-      }
-    }
-    
-    if attributes.count>0 {
-      result["attributes"] = attributes
-    }
-    
-    return result
-  }
-  
   public enum ValueType {
     case s(String)
     case i(Int)
@@ -256,9 +182,86 @@ public struct PayloadItem : JSONSerializable {
     case revealed
   }
   
-  public var name      : String
-  public var value     : ValueType
-  public var attributes: [AttributeName:ValueType]
+  public var name        : String
+  public var placeholder : String?
+  public var value       : ValueType
+  public var attributes  : [AttributeName:ValueType]
+  
+  
+  public init(name:String, value:ValueType, placeholder:String?, attributes:[AttributeName:ValueType]) {
+    self.name = name
+    self.value = value
+    self.placeholder = placeholder
+    self.attributes = attributes
+  }
+  
+  public init?(json: [String : Any]) {
+    guard let name = json["name"] as? String,
+      json["value"] != nil
+      else {
+        return nil
+    }
+    
+    self.name = name
+    self.placeholder = json["placeholder"] as? String
+    
+    let value = json["value"]
+    if let v = ValueType.toValueType(any: value as Any) {
+      self.value = v
+    } else {
+      return nil
+    }
+    
+    self.attributes = [AttributeName:ValueType]()
+    if let attributes = json["attributes"] as? [String:Any] {
+      for (an,av) in attributes {
+        switch an {
+        case "minlength":
+          self.attributes[.minlength] = ValueType.toValueType(any: av)
+        case "maxlength":
+          self.attributes[.maxlength] = ValueType.toValueType(any: av)
+        case "revealable":
+          self.attributes[.revealable] = ValueType.toValueType(any: av)
+        case "revealed":
+          self.attributes[.revealed] = ValueType.toValueType(any: av)
+        default:
+          break
+        }
+      }
+    }
+  }
+  
+  
+  public func toJSOnSerializableObject() -> Any {
+    var result = Dictionary<String, Any>()
+    
+    result["name"] = self.name
+    result["value"] = self.value.toAny()
+    
+    if let p = self.placeholder {
+      result["placeholder"] = p
+    }
+    
+    var attributes = Dictionary<String,Any>()
+    for (an,av) in self.attributes {
+      switch an {
+      case .minlength:
+        attributes["minlength"] = av.toAny()
+      case .maxlength:
+        attributes["maxlength"] = av.toAny()
+      case .revealable:
+        attributes["revealable"] = av.toAny()
+      case .revealed:
+        attributes["revealed"] = av.toAny()
+      }
+    }
+    
+    if attributes.count>0 {
+      result["attributes"] = attributes
+    }
+    
+    return result
+  }
   
   public func isRevealable() -> Bool {
     guard let a = self.attributes[.revealable] else { return false }
@@ -366,11 +369,42 @@ public struct PayloadSections : JSONSerializable {
 }
 
 public struct Payload : JSONSerializable {
+  
+  public var title      : String?
+  public var iconname   : String?
+  public var description: String?
+  public var list       : [PayloadSections]
+  
+  
+  public mutating func clean() {
+    self.title = nil
+    self.iconname = nil
+    self.description = nil
+    
+    /* try to clean unnecessary data
+    for pss in list {
+      for ps in pss.sections {
+        for pi in ps.items {
+          if pi.value.toString().count>0 {
+            
+          }
+        }
+      }
+    }
+    */
+  }
+  
   public func toJSOnSerializableObject() -> Any {
     var result = Dictionary<String, Any>()
     
-    result["title"] = self.title
-    result["iconname"] = self.iconname
+    if let d = self.title {
+      result["title"] = d
+    }
+    
+    if let d = self.iconname {
+      result["iconname"] = d
+    }
+    
     if let d = self.description {
       result["description"] = d
     }
@@ -385,15 +419,10 @@ public struct Payload : JSONSerializable {
   }
   
   public init?(json: [String : Any]) {
-    guard let title = json["title"] as? String,
-      let iconname = json["iconname"] as? String,
-      let list = json["list"] as? [Any]
-      else {
-        return nil
-    }
+    guard let list = json["list"] as? [Any] else { return nil }
     
-    self.title = title
-    self.iconname = iconname
+    self.title = json["title"] as? String
+    self.iconname = json["iconname"] as? String
     self.description = json["description"] as? String
     
     self.list = [PayloadSections]()
@@ -405,18 +434,14 @@ public struct Payload : JSONSerializable {
     }
   }
   
-  public init(title:String, iconname:String, description: String?, list: [PayloadSections]) {
+  public init(title:String?, iconname:String?, description: String?, list: [PayloadSections]) {
     self.title = title
     self.iconname = iconname
     self.description = description
     self.list = list
   }
   
-  public var title      : String
-  public var iconname   : String
-  public var description: String?
   
-  public var list       : [PayloadSections]
   
   public func getActualPayloadSections() -> [PayloadSection] {
     return self.list[0].sections

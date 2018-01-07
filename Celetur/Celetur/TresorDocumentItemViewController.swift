@@ -270,15 +270,20 @@ class TresorDocumentItemViewController: UITableViewController {
     }
     
     cell.itemKeyLabel?.text = payloadItem.name
+    cell.itemValueLabel?.text = nil
+    cell.itemValueLabel?.textColor = UIColor.darkText
     
     let value = payloadItem.value.toString()
-    
     if payloadItem.isRevealable() && !payloadItem.isRevealed() {
       cell.itemValueLabel?.text = String(repeating:"*", count:value.count)
     } else {
       cell.itemValueLabel?.text = value
     }
     
+    if let c = cell.itemValueLabel?.text?.count, c == 0, let p = payloadItem.placeholder {
+      cell.itemValueLabel?.text = p
+      cell.itemValueLabel?.textColor = UIColor.lightGray
+    }
   }
   
 }

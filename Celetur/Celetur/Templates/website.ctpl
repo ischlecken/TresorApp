@@ -11,22 +11,26 @@
                         "items": [
                                   {
                                   "name": "website",
-                                  "value": ""
+                                  "value": "",
+                                  "placeholder": "The Website Name"
                                   },
                                   
                                   {
                                   "name": "homepage",
-                                  "value": ""
+                                  "value": "",
+                                  "placeholder":"The Website Homepage URL"
                                   },
                                   
                                   {
                                   "name": "username",
-                                  "value": ""
+                                  "value": "",
+                                  "placeholder": "Your Username"
                                   },
                                   
                                   {
                                   "name": "password",
                                   "value": "",
+                                  "placeholder": "Your Password",
                                   "attributes": { "revealable": 1 }
                                   }
                                   ]

@@ -110,6 +110,7 @@ class EditTresorDocumentItemViewController: UIViewController, UITableViewDataSou
     if let maxSection = self.model?.getActualSectionCount() {
       let payloadItem = PayloadItem(name: "New Item "+String(Int(arc4random())%100),
                                     value: .s(""),
+                                    placeholder: nil,
                                     attributes: [:])
       
       self.model?.appendToActualSection(forSection: maxSection - 1, payloadItem: payloadItem)
@@ -230,6 +231,8 @@ class EditTresorDocumentItemViewController: UIViewController, UITableViewDataSou
     if let payloadItem = self.model?.getActualItem(forPath: indexPath) {
       cell.itemNameButton?.setTitle(payloadItem.name, for: .normal)
       cell.itemValueTextfield?.text = payloadItem.value.toString()
+      
+      cell.itemValueTextfield.placeholder = payloadItem.placeholder
     }
   }
   

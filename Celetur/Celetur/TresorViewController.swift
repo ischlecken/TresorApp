@@ -274,6 +274,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   }
   
   func configureCell(_ cell: TresorCell, withTresor tresor: Tresor) {
+    cell.tresorImage.image = UIImage(named: tresor.iconname ?? "shield")
     
     if tresor.isreadonly {
       cell.createdLabel!.textColor = UIColor.lightGray

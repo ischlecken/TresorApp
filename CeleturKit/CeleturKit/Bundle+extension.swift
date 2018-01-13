@@ -23,7 +23,25 @@ extension Bundle {
         }
       }
     } catch {
-      celeturKitLogger.error("Error while getting templates directory content", error: error)
+      celeturKitLogger.error("Error while getting templates directory url", error: error)
+    }
+    
+    return result
+  }
+  
+  public class func iconCatalogURLs() -> [URL] {
+    var result : [URL] = []
+    
+    do {
+      let fileNames = try FileManager.default.contentsOfDirectory(atPath: Bundle.main.resourcePath!)
+      
+      for f in fileNames {
+        if f.hasSuffix(".ictl") {
+          result.append( URL(fileURLWithPath: f, isDirectory: false, relativeTo: Bundle.main.resourceURL) )
+        }
+      }
+    } catch {
+      celeturKitLogger.error("Error while getting icon catalog directory url", error: error)
     }
     
     return result

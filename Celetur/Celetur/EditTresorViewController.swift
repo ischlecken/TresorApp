@@ -13,6 +13,8 @@ class EditTresorViewController: UITableViewController, UITextFieldDelegate {
   
   @IBOutlet weak var nameTextfield: UITextField!
   @IBOutlet weak var descriptionTextfield: UITextField!
+  @IBOutlet weak var iconImageView: UIImageView!
+  
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -30,6 +32,7 @@ class EditTresorViewController: UITableViewController, UITextFieldDelegate {
     if let t  = self.tresor?.tempTresor {
       self.nameTextfield.text = t.name
       self.descriptionTextfield.text = t.tresordescription
+      self.iconImageView.image = UIImage(named: t.iconname ?? "shield")
     }
   
     self.navigationItem.rightBarButtonItem?.title = (self.tresor?.tempTresor.isreadonly ?? false) ? "Done" : "Save"
@@ -42,6 +45,17 @@ class EditTresorViewController: UITableViewController, UITextFieldDelegate {
       t.changets = Date()
     }
   }
+  
+  @IBAction
+  func iconImageTappedAction(_ sender: Any) {
+    celeturLogger.debug("iconTapped")
+    
+    if let t  = self.tresor?.tempTresor {
+      t.iconname = "icloud"
+      self.iconImageView.image = UIImage(named: t.iconname ?? "shield")
+    }
+  }
+  
   
   // MARK: - Table View
   

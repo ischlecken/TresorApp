@@ -1,0 +1,58 @@
+{
+  "name": "iconcatalog",
+  
+  "sections" : [
+                { "name":"Home",
+                "icons":[
+                         {"name":"3d-view","description":"3d-view description"},
+                         {"name":"addfolder","description":"addfolder description"},
+                         {"name":"android-os","description":"android-os description"},
+                         {"name":"apple-os","description":"apple-os description"},
+                         {"name":"badge-award","description":"badge-award description"},
+                         {"name":"badge-medal","description":"badge-medal description"},
+                         {"name":"badge-police","description":"badge-police description"},
+                         {"name":"bitcoin","description":"bitcoin description"},
+                         {"name":"coin","description":"coin description"},
+                         {"name":"credit-card","description":"credit-card description"},
+                         {"name":"email-12","description":"email-12 description"},
+                         {"name":"fax","description":"fax description"},
+                         {"name":"folder","description":"folder description"},
+                         {"name":"gear","description":"gear description"},
+                         {"name":"icloud","description":"icloud description"},
+                         {"name":"id-card","description":"id-card description"},
+                         {"name":"key","description":"key description"},
+                         {"name":"linux-os","description":"linux-os description"},
+                         {"name":"password","description":"password description"},
+                         {"name":"paypal","description":"paypal description"},
+                         {"name":"phone","description":"phone description"},
+                         {"name":"server","description":"server description"},
+                         {"name":"share","description":"share description"},
+                         {"name":"sharethis","description":"sharethis description"},
+                         {"name":"shield","description":"shield description"},
+                         {"name":"skype","description":"skype description"},
+                         {"name":"sms","description":"sms description"},
+                         {"name":"user","description":"user description"},
+                         {"name":"vault","description":"vault description"},
+                         {"name":"windows-os","description":"windows-os description"},
+                         {"name":"wireless","description":"wireless description"},
+                         {"name":"wordpress","description":"wordpress description"}
+                         ]
+                },
+                
+                
+                { "name":"Social Media",
+                "icons":[
+                         {"name":"delicious","description":"delicious description"},
+                         {"name":"facebook","description":"facebook description"},
+                         {"name":"facebook-like","description":"facebook-like description"},
+                         {"name":"flickr","description":"flickr description"},
+                         {"name":"google-plus","description":"google-plus description"},
+                         {"name":"linkedin","description":"linkedin description"},
+                         {"name":"pinterest","description":"pinterest description"},
+                         {"name":"twitter","description":"twitter description"},
+                         {"name":"vimeo","description":"vimeo description"},
+                         {"name":"xing","description":"xing description"}
+                         ]
+                }
+                ]
+}

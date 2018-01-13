@@ -23,6 +23,7 @@ public extension Tresor {
     newTresor.changets = newTresor.createts
     newTresor.id = String.uuid()
     newTresor.ckuserid = ckUserId
+    newTresor.iconname = "vault"
     newTresor.nonce = try Data(withRandomData: SymmetricCipherAlgorithm.aes_256.requiredBlockSize())
     
     return newTresor

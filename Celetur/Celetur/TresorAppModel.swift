@@ -1,9 +1,5 @@
 //
-//  TresorAppState.swift
-//  Celetur
-//
-//  Created by Feldmaus on 07.08.17.
-//  Copyright © 2017 ischlecken. All rights reserved.
+//  Copyright © 2017-2018 prisnoc. All rights reserved.
 //
 
 import Foundation
@@ -17,6 +13,7 @@ class TresorAppModel {
   let reachability = Reachability()!
   
   var templates : TresorTemplateInfo
+  var iconCatalogInfo : IconCatalogInfo
   
   let maxMasterKeyAvailable = 10
   var actMasterKeyAvailable = 0
@@ -30,6 +27,7 @@ class TresorAppModel {
     self.tresorModel = TresorModel()
     self.tresorKeys = TresorKeys(appGroup: appGroup)
     self.templates = TresorTemplateInfo()
+    self.iconCatalogInfo = IconCatalogInfo()
     
     self.timer.schedule(deadline: .now(), repeating:.seconds(5))
     self.timer.setEventHandler {
@@ -49,7 +47,6 @@ class TresorAppModel {
       }
     }
     self.timer.resume()
-    
   }
   
   func makeMasterKeyUnavailable() {

@@ -28,6 +28,9 @@
 		85BE07DA20029A3C008991AF /* iconcatalog.ictl in Resources */ = {isa = PBXBuildFile; fileRef = 85BE07D920029A3C008991AF /* iconcatalog.ictl */; };
 		85BE07DC20029E16008991AF /* IconCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BE07DB20029E16008991AF /* IconCatalog.swift */; };
 		85BE07DE200A1FF5008991AF /* IconCatalogInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BE07DD200A1FF5008991AF /* IconCatalogInfo.swift */; };
+		85BE07E0200A755E008991AF /* SelectIconViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BE07DF200A755E008991AF /* SelectIconViewController.swift */; };
+		85BE07E7200A79E0008991AF /* IconCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BE07E5200A79E0008991AF /* IconCell.swift */; };
+		85BE07E8200A79E0008991AF /* IconCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 85BE07E6200A79E0008991AF /* IconCell.xib */; };
 		85C867E51FAE1CFD00CAAEFD /* EditTresorDocumentItemCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 85C867E41FAE1CFD00CAAEFD /* EditTresorDocumentItemCell.xib */; };
 		85C867E81FAE1E2400CAAEFD /* EditTresorDocumentItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85C867E71FAE1E2400CAAEFD /* EditTresorDocumentItemCell.swift */; };
 		85C8AE4C1FA8CFF3002B7613 /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85C8AE4B1FA8CFF3002B7613 /* UIColor+Extension.swift */; };
@@ -117,6 +120,9 @@
 		85BE07D920029A3C008991AF /* iconcatalog.ictl */ = {isa = PBXFileReference; explicitFileType = text.json; fileEncoding = 4; name = iconcatalog.ictl; path = Templates/iconcatalog.ictl; sourceTree = "<group>"; };
 		85BE07DB20029E16008991AF /* IconCatalog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IconCatalog.swift; sourceTree = "<group>"; };
 		85BE07DD200A1FF5008991AF /* IconCatalogInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IconCatalogInfo.swift; sourceTree = "<group>"; };
+		85BE07DF200A755E008991AF /* SelectIconViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectIconViewController.swift; sourceTree = "<group>"; };
+		85BE07E5200A79E0008991AF /* IconCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IconCell.swift; sourceTree = "<group>"; };
+		85BE07E6200A79E0008991AF /* IconCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = IconCell.xib; sourceTree = "<group>"; };
 		85C867E41FAE1CFD00CAAEFD /* EditTresorDocumentItemCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EditTresorDocumentItemCell.xib; sourceTree = "<group>"; };
 		85C867E71FAE1E2400CAAEFD /* EditTresorDocumentItemCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditTresorDocumentItemCell.swift; sourceTree = "<group>"; };
 		85C8AE4B1FA8CFF3002B7613 /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
@@ -205,6 +211,8 @@
 		85DC68D11F40FA34004AFAAC /* TableCells */ = {
 			isa = PBXGroup;
 			children = (
+				85BE07E5200A79E0008991AF /* IconCell.swift */,
+				85BE07E6200A79E0008991AF /* IconCell.xib */,
 				853328851FD317E1000F4C87 /* TresorDocumentCell.swift */,
 				853328861FD317E1000F4C87 /* TresorDocumentCell.xib */,
 				853328831FD312F8000F4C87 /* TresorDocumentItemCell0.swift */,
@@ -249,6 +257,7 @@
 				85D95E451F530A740044DFA0 /* UserDeviceViewController.swift */,
 				85F908121F12D9E30062BD63 /* TresorViewController.swift */,
 				85FBDD4A1F42E0F0006B4271 /* EditTresorViewController.swift */,
+				85BE07DF200A755E008991AF /* SelectIconViewController.swift */,
 				850B80F21F35DFF10078F042 /* TresorDocumentViewController.swift */,
 				85F908141F12D9E30062BD63 /* TresorDocumentItemViewController.swift */,
 				85EE8DA11F497D3600F6409D /* EditTresorDocumentItemViewController.swift */,
@@ -429,6 +438,7 @@
 				85A08A8D200103E0001DC299 /* emailaccount.ctpl in Resources */,
 				85F9081A1F12D9E30062BD63 /* Assets.xcassets in Resources */,
 				85BE07DA20029A3C008991AF /* iconcatalog.ictl in Resources */,
+				85BE07E8200A79E0008991AF /* IconCell.xib in Resources */,
 				85DC68CF1F40FA26004AFAAC /* TresorCell.xib in Resources */,
 				853328821FD311AE000F4C87 /* TresorDocumentItemCell0.xib in Resources */,
 				85A08A8C200103E0001DC299 /* website.ctpl in Resources */,
@@ -454,6 +464,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				85F9080E1F12D9E30062BD63 /* AppDelegate.swift in Sources */,
+				85BE07E7200A79E0008991AF /* IconCell.swift in Sources */,
 				852C26641F37CD850041273F /* TresorConstants.swift in Sources */,
 				85BE07DC20029E16008991AF /* IconCatalog.swift in Sources */,
 				85F908131F12D9E30062BD63 /* TresorViewController.swift in Sources */,
@@ -470,6 +481,7 @@
 				853328871FD317E1000F4C87 /* TresorDocumentCell.swift in Sources */,
 				85BE07D820027B01008991AF /* TresorTemplateInfo.swift in Sources */,
 				850B80F31F35DFF10078F042 /* TresorDocumentViewController.swift in Sources */,
+				85BE07E0200A755E008991AF /* SelectIconViewController.swift in Sources */,
 				852C26611F37CCDB0041273F /* TresorAppModel.swift in Sources */,
 				85810E211FADBA940012B06C /* TresorDocumentItemCell.swift in Sources */,
 				85BE07DE200A1FF5008991AF /* IconCatalogInfo.swift in Sources */,

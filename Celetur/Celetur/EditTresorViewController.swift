@@ -46,13 +46,26 @@ class EditTresorViewController: UITableViewController, UITextFieldDelegate {
     }
   }
   
-  @IBAction
-  func iconImageTappedAction(_ sender: Any) {
-    celeturLogger.debug("iconTapped")
+  
+  // MARK: - Navigation
+  
+  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     
-    if let t  = self.tresor?.tempTresor {
-      t.iconname = "icloud"
-      self.iconImageView.image = UIImage(named: t.iconname ?? "shield")
+    if segue.identifier == "showSelectIconSegue" {
+      let controller = (segue.destination as! UINavigationController).topViewController as! SelectIconViewController
+      
+      controller.tresorAppState = self.tresorAppState
+    }
+  }
+  
+  @IBAction
+  func unwindToEditTresor(segue: UIStoryboardSegue) {
+    if segue.identifier == "saveUnwindFromSelectIconSegue" {
+      if let controller = segue.source as? SelectIconViewController {
+        self.tresor?.tempTresor.iconname = controller.selectedIcon?.name
+      
+        self.iconImageView.image = UIImage(named: self.tresor?.tempTresor.iconname ?? "shield")
+      }
     }
   }
   

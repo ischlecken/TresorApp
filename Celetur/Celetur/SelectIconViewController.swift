@@ -5,6 +5,7 @@
 import UIKit
 import CeleturKit
 
+private let headerReuseIdentifier = "iconHeader"
 private let reuseIdentifier = "IconCell"
 
 class SelectIconViewController: UICollectionViewController {
@@ -18,6 +19,12 @@ class SelectIconViewController: UICollectionViewController {
     super.viewDidLoad()
     
     self.collectionView!.register(UINib(nibName:"IconCell",bundle:nil), forCellWithReuseIdentifier: reuseIdentifier)
+    
+    let headerNib = UINib(nibName:"CollectionViewHeader",bundle:nil)
+    
+    self.collectionView!.register(headerNib,
+                                  forSupplementaryViewOfKind: UICollectionElementKindSectionHeader,
+                                  withReuseIdentifier: headerReuseIdentifier)
     
     self.iconCatalog = tresorAppState?.iconCatalogInfo.iconCatalog
   }
@@ -35,16 +42,42 @@ class SelectIconViewController: UICollectionViewController {
     return self.iconCatalog?.sections[section].icons.count ?? 0
   }
   
+  override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+    var view : UICollectionReusableView
+    
+    switch kind {
+    case UICollectionElementKindSectionHeader:
+      let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind,
+                                                                       withReuseIdentifier: headerReuseIdentifier,
+                                                                       for: indexPath) as! CollectionViewHeader
+      
+      headerView.headerLabel.text = self.iconCatalog?.sections[indexPath.section].name
+      
+      view = headerView
+      
+    default:
+      view = UICollectionReusableView()
+    }
+    
+    return view
+  }
+  
   override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     self.selectedIcon = self.iconCatalog?.sections[indexPath.section].icons[indexPath.row]
     
     let cell = collectionView.cellForItem(at: indexPath)
-    cell?.contentView.backgroundColor = UIColor.celeturPrimary
+    cell?.contentView.backgroundColor = UIColor.celeturPrimary1
+    cell?.contentView.layer.borderColor = UIColor.lightGray.cgColor
+    cell?.contentView.layer.borderWidth = 1.0
+    
   }
   
   override func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
     let cell = collectionView.cellForItem(at: indexPath)
     cell?.contentView.backgroundColor = UIColor.clear
+    
+    cell?.contentView.layer.borderColor = UIColor.clear.cgColor
+    cell?.contentView.layer.borderWidth = 0.0
   }
   
   override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

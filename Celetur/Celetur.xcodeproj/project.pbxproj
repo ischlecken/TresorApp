@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		850B80F31F35DFF10078F042 /* TresorDocumentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 850B80F21F35DFF10078F042 /* TresorDocumentViewController.swift */; };
+		8514C18A200B6EC800E3BD9C /* CollectionViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8514C188200B6EC800E3BD9C /* CollectionViewHeader.swift */; };
+		8514C18B200B6EC800E3BD9C /* CollectionViewHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8514C189200B6EC800E3BD9C /* CollectionViewHeader.xib */; };
 		852C26611F37CCDB0041273F /* TresorAppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 852C26601F37CCDB0041273F /* TresorAppModel.swift */; };
 		852C26641F37CD850041273F /* TresorConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 852C26631F37CD850041273F /* TresorConstants.swift */; };
 		853328821FD311AE000F4C87 /* TresorDocumentItemCell0.xib in Resources */ = {isa = PBXBuildFile; fileRef = 853328801FD311AE000F4C87 /* TresorDocumentItemCell0.xib */; };
@@ -101,6 +103,8 @@
 
 /* Begin PBXFileReference section */
 		850B80F21F35DFF10078F042 /* TresorDocumentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TresorDocumentViewController.swift; sourceTree = "<group>"; };
+		8514C188200B6EC800E3BD9C /* CollectionViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewHeader.swift; sourceTree = "<group>"; };
+		8514C189200B6EC800E3BD9C /* CollectionViewHeader.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CollectionViewHeader.xib; sourceTree = "<group>"; };
 		852C26601F37CCDB0041273F /* TresorAppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TresorAppModel.swift; sourceTree = "<group>"; };
 		852C26631F37CD850041273F /* TresorConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TresorConstants.swift; sourceTree = "<group>"; };
 		853328801FD311AE000F4C87 /* TresorDocumentItemCell0.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TresorDocumentItemCell0.xib; sourceTree = "<group>"; };
@@ -223,6 +227,8 @@
 				85810E1C1FADB8720012B06C /* TresorDocumentItemCell.xib */,
 				85C867E71FAE1E2400CAAEFD /* EditTresorDocumentItemCell.swift */,
 				85C867E41FAE1CFD00CAAEFD /* EditTresorDocumentItemCell.xib */,
+				8514C188200B6EC800E3BD9C /* CollectionViewHeader.swift */,
+				8514C189200B6EC800E3BD9C /* CollectionViewHeader.xib */,
 			);
 			path = TableCells;
 			sourceTree = "<group>";
@@ -442,6 +448,7 @@
 				85DC68CF1F40FA26004AFAAC /* TresorCell.xib in Resources */,
 				853328821FD311AE000F4C87 /* TresorDocumentItemCell0.xib in Resources */,
 				85A08A8C200103E0001DC299 /* website.ctpl in Resources */,
+				8514C18B200B6EC800E3BD9C /* CollectionViewHeader.xib in Resources */,
 				85F908181F12D9E30062BD63 /* Main.storyboard in Resources */,
 				85810E151FADB5D50012B06C /* Settings.storyboard in Resources */,
 				85810E1D1FADB8720012B06C /* TresorDocumentItemCell.xib in Resources */,
@@ -474,6 +481,7 @@
 				85C8AE4C1FA8CFF3002B7613 /* UIColor+Extension.swift in Sources */,
 				85F1DD601FBCCCC900CB1418 /* GradientView.swift in Sources */,
 				85D95E461F530A740044DFA0 /* UserDeviceViewController.swift in Sources */,
+				8514C18A200B6EC800E3BD9C /* CollectionViewHeader.swift in Sources */,
 				85D95E411F5305720044DFA0 /* SettingsViewController.swift in Sources */,
 				85C867E81FAE1E2400CAAEFD /* EditTresorDocumentItemCell.swift in Sources */,
 				85EE8DA21F497D3600F6409D /* EditTresorDocumentItemViewController.swift in Sources */,

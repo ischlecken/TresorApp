@@ -334,6 +334,10 @@ public struct Payload : JSONSerializable {
     return self.list[0].sections[section].items.removeAll()
   }
   
+  public mutating func removeItemFromActualSection(forPath indexPath: IndexPath) -> PayloadItem {
+    return self.list[0].sections[indexPath.section].items.remove(at: indexPath.row)
+  }
+  
   public mutating func setActualItem(forPath indexPath:IndexPath, payloadItem:PayloadItem) {
     return self.list[0].sections[indexPath.section].items[indexPath.row] = payloadItem
   }

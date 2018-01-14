@@ -9,9 +9,7 @@
 import UIKit
 import CeleturKit
 
-class TresorDocumentItemViewController: UITableViewController {
-  
-  @IBOutlet weak var activityViewLeadingContraint: NSLayoutConstraint!
+class TresorDocumentItemViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
   
   var tresorAppState: TresorAppModel?
   var tresorDocumentItem: TresorDocumentItem? {
@@ -20,9 +18,22 @@ class TresorDocumentItemViewController: UITableViewController {
     }
   }
   
+  @IBOutlet weak var headerView: UIView!
+  @IBOutlet weak var tableView: UITableView!
+  @IBOutlet weak var headerViewHeightConstraint: NSLayoutConstraint!
+  
+  @IBOutlet weak var iconView: UIImageView!
+  @IBOutlet weak var titleView: UILabel!
+  @IBOutlet weak var descriptionView: UILabel!
+  
   @IBOutlet weak var activityView: UIActivityIndicatorView!
   @IBOutlet weak var dataLabel: UILabel!
   @IBOutlet weak var createtsLabel: UILabel!
+  
+  fileprivate let maxHeaderHeight: CGFloat = 160;
+  fileprivate let minHeaderHeight: CGFloat = 40;
+  fileprivate let iconMinHeight: CGFloat = 0.5;
+  fileprivate var previousScrollOffset : CGFloat = 0.0
   
   let dateFormatter = DateFormatter()
   var model : Payload?
@@ -35,9 +46,10 @@ class TresorDocumentItemViewController: UITableViewController {
     self.dateFormatter.timeStyle = DateFormatter.Style.short
     
     self.navigationItem.rightBarButtonItem?.isEnabled = false
-    self.activityViewLeadingContraint.constant = -40
     
     self.tableView.register(UINib(nibName:"TresorDocumentItemCell",bundle:nil),forCellReuseIdentifier:"tresorDocumentItemCell")
+    
+    self.headerViewHeightConstraint.constant = self.maxHeaderHeight
     
     configureView()
     
@@ -78,6 +90,20 @@ class TresorDocumentItemViewController: UITableViewController {
       
       if let label = createtsLabel {
         label.text = self.dateFormatter.string(from: item.modifyts)
+      }
+      
+      if let tdi = self.tresorDocumentItem,
+        let m = tdi.document?.getMetaInfo(),
+        let tv = self.titleView,
+        let dv = self.descriptionView,
+        let iv = self.iconView {
+        
+        tv.text = m["title"]
+        dv.text = m["description"]
+        
+        if let i = m["iconname"] {
+          iv.image = UIImage(named: i)
+        }
       }
       
       if let label = dataLabel {
@@ -131,7 +157,6 @@ class TresorDocumentItemViewController: UITableViewController {
     
     self.activityView.startAnimating()
     
-    self.activityViewLeadingContraint.constant = 8
     UIView.animate(withDuration: 1.0) {
       self.activityView.superview?.layoutIfNeeded()
     }
@@ -140,7 +165,6 @@ class TresorDocumentItemViewController: UITableViewController {
   fileprivate func stopAnimation() {
     celeturLogger.debug("stopAnimation")
     
-    self.activityViewLeadingContraint.constant = -40
     UIView.animate(withDuration: 2, animations: {
       self.activityView.superview?.layoutIfNeeded()
     }) { complete in
@@ -176,6 +200,8 @@ class TresorDocumentItemViewController: UITableViewController {
       let m = (segue.source as? EditTresorDocumentItemViewController)?.getModel(),
       let tdi = self.tresorDocumentItem {
       
+      self.expandHeader()
+      
       self.tresorAppState?.getMasterKey() { (tresorKey, error) in
         if let key = tresorKey {
           self.saveChangedItem(tdi: tdi, k: key, m: m)
@@ -207,15 +233,15 @@ class TresorDocumentItemViewController: UITableViewController {
   
   // MARK: - Table View
   
-  override func numberOfSections(in tableView: UITableView) -> Int {
+  func numberOfSections(in tableView: UITableView) -> Int {
     return self.model?.getActualSectionCount() ?? 0
   }
   
-  override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+  func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     return self.model?.getActualRowCount(forSection: section) ?? 0
   }
   
-  override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+  func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "tresorDocumentItemCell", for: indexPath) as! TresorDocumentItemCell
     
     configureCell(cell, forPath: indexPath)
@@ -223,15 +249,15 @@ class TresorDocumentItemViewController: UITableViewController {
     return cell
   }
   
-  override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+  func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     
   }
   
-  override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+  func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
     return true
   }
   
-  override func tableView(_ tableView: UITableView, editActionsForRowAt: IndexPath) -> [UITableViewRowAction]? {
+  func tableView(_ tableView: UITableView, editActionsForRowAt: IndexPath) -> [UITableViewRowAction]? {
     var result = [UITableViewRowAction]()
     
     if let payloadItem = self.model?.getActualItem(forPath: editActionsForRowAt),
@@ -261,7 +287,7 @@ class TresorDocumentItemViewController: UITableViewController {
     return result
   }
   
-  override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+  func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
     if editingStyle == .delete {
       
     }
@@ -301,6 +327,68 @@ class TresorDocumentItemViewController: UITableViewController {
     if let metainfoName = self.model?.metainfo {
       self.revealInfo["\(metainfoName).\(indexPath.section).\(payloadItem.name)"] = true
     }
+  }
+  
+  
+  func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    let scrollDiff = scrollView.contentOffset.y - self.previousScrollOffset
+    
+    //celeturLogger.debug("scrollViewDidScroll(): scrollDiff=\(scrollDiff)")
+    
+    let absoluteTop: CGFloat = 0;
+    let absoluteBottom: CGFloat = scrollView.contentSize.height - scrollView.frame.size.height;
+    
+    let isScrollingDown = scrollDiff > 0 && scrollView.contentOffset.y > absoluteTop
+    let isScrollingUp = scrollDiff < 0 && scrollView.contentOffset.y < absoluteBottom
+    
+    if canAnimateHeader(scrollView) {
+      var newHeight = self.headerViewHeightConstraint.constant
+      if isScrollingDown {
+        newHeight = max(self.minHeaderHeight, self.headerViewHeightConstraint.constant - abs(scrollDiff))
+      } else if isScrollingUp {
+        newHeight = min(self.maxHeaderHeight, self.headerViewHeightConstraint.constant + abs(scrollDiff))
+      }
+      
+      if newHeight != self.headerViewHeightConstraint.constant {
+        //celeturLogger.debug("scrollViewDidScroll(): newHeight=\(newHeight)")
+        self.headerViewHeightConstraint.constant = newHeight
+        self.setScrollPosition(position: self.previousScrollOffset)
+      }
+    }
+    
+    self.previousScrollOffset = scrollView.contentOffset.y
+  }
+  
+  func canAnimateHeader(_ scrollView: UIScrollView) -> Bool {
+    // Calculate the size of the scrollView when header is collapsed
+    let scrollViewMaxHeight = scrollView.frame.height + self.headerViewHeightConstraint.constant - minHeaderHeight
+    
+    // Make sure that when header is collapsed, there is still room to scroll
+    let result = scrollView.contentSize.height > scrollViewMaxHeight
+    
+    //celeturLogger.debug("canAnimateHeader(): scrollViewMaxHeight=\(scrollViewMaxHeight) --> \(result)")
+    
+    return result
+  }
+  
+  func collapseHeader() {
+    self.view.layoutIfNeeded()
+    UIView.animate(withDuration: 1.2, animations: {
+      self.headerViewHeightConstraint.constant = self.minHeaderHeight
+      self.view.layoutIfNeeded()
+    })
+  }
+  
+  func expandHeader() {
+    self.view.layoutIfNeeded()
+    UIView.animate(withDuration: 1.2, animations: {
+      self.headerViewHeightConstraint.constant = self.maxHeaderHeight
+      self.view.layoutIfNeeded()
+    })
+  }
+  
+  func setScrollPosition(position: CGFloat) {
+    self.tableView.contentOffset = CGPoint(x: self.tableView.contentOffset.x, y: position)
   }
 }
 

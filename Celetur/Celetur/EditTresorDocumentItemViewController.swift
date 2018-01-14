@@ -7,20 +7,12 @@ import UIKit
 import CeleturKit
 
 
-class EditTresorDocumentItemViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
-  
-  @IBOutlet weak var headerView: UIView!
-  @IBOutlet weak var tableView: UITableView!
-  @IBOutlet weak var headerViewHeightConstraint: NSLayoutConstraint!
+class EditTresorDocumentItemViewController: UITableViewController {
   
   @IBOutlet weak var iconView: UIImageView!
-  @IBOutlet weak var titleView: UILabel!
-  @IBOutlet weak var descriptionView: UILabel!
   
-  fileprivate let maxHeaderHeight: CGFloat = 160;
-  fileprivate let minHeaderHeight: CGFloat = 40;
-  fileprivate let iconMinHeight: CGFloat = 0.5;
-  fileprivate var previousScrollOffset : CGFloat = 0.0
+  @IBOutlet weak var titleTextField: UITextField!
+  @IBOutlet weak var descriptionTextField: UITextField!
   
   var tresorAppState: TresorAppModel?
   
@@ -57,14 +49,13 @@ class EditTresorDocumentItemViewController: UIViewController, UITableViewDataSou
     
     self.tableView.register(UINib(nibName:"EditTresorDocumentItemCell",bundle:nil),forCellReuseIdentifier:"editTresorDocumentItemCell")
     
-    self.headerViewHeightConstraint.constant = self.maxHeaderHeight
     if let tdi = self.tresorDocumentItem, let m = tdi.document?.getMetaInfo() {
       if let t = m["title"] {
-        self.titleView.text = t
+        self.titleTextField.text = t
       }
       
       if let d = m["description"] {
-        self.descriptionView.text = d
+        self.descriptionTextField.text = d
       }
       
       if let i = m["iconname"] {
@@ -172,11 +163,11 @@ class EditTresorDocumentItemViewController: UIViewController, UITableViewDataSou
   
   // MARK: - Table view data source
   
-  func numberOfSections(in tableView: UITableView) -> Int {
+  override func numberOfSections(in tableView: UITableView) -> Int {
     return 2
   }
   
-  func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+  override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     var result = 0
     
     switch section {
@@ -191,7 +182,7 @@ class EditTresorDocumentItemViewController: UIViewController, UITableViewDataSou
   }
   
   
-  func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+  override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     var cell : UITableViewCell
     
     switch indexPath.section {
@@ -210,18 +201,15 @@ class EditTresorDocumentItemViewController: UIViewController, UITableViewDataSou
     return cell
   }
   
-  func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+  override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
     return true
   }
   
-  func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+  override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
     if editingStyle == .delete {
-      if var items = self.model?.getActualSectionItems(forSection: indexPath.section) {
-        items.remove(at: indexPath.row)
-        
-        tableView.deleteRows(at: [indexPath], with: .fade)
-      }
+      let _ = self.model?.removeItemFromActualSection(forPath: indexPath)
       
+      tableView.deleteRows(at: [indexPath], with: .fade)
     } else if editingStyle == .insert {
       // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
     }
@@ -240,65 +228,4 @@ class EditTresorDocumentItemViewController: UIViewController, UITableViewDataSou
     }
   }
   
-  
-  func scrollViewDidScroll(_ scrollView: UIScrollView) {
-    let scrollDiff = scrollView.contentOffset.y - self.previousScrollOffset
-    
-    //celeturLogger.debug("scrollViewDidScroll(): scrollDiff=\(scrollDiff)")
-    
-    let absoluteTop: CGFloat = 0;
-    let absoluteBottom: CGFloat = scrollView.contentSize.height - scrollView.frame.size.height;
-    
-    let isScrollingDown = scrollDiff > 0 && scrollView.contentOffset.y > absoluteTop
-    let isScrollingUp = scrollDiff < 0 && scrollView.contentOffset.y < absoluteBottom
-    
-    if canAnimateHeader(scrollView) {
-      var newHeight = self.headerViewHeightConstraint.constant
-      if isScrollingDown {
-        newHeight = max(self.minHeaderHeight, self.headerViewHeightConstraint.constant - abs(scrollDiff))
-      } else if isScrollingUp {
-        newHeight = min(self.maxHeaderHeight, self.headerViewHeightConstraint.constant + abs(scrollDiff))
-      }
-      
-      if newHeight != self.headerViewHeightConstraint.constant {
-        //celeturLogger.debug("scrollViewDidScroll(): newHeight=\(newHeight)")
-        self.headerViewHeightConstraint.constant = newHeight
-        self.setScrollPosition(position: self.previousScrollOffset)
-      }
-    }
-    
-    self.previousScrollOffset = scrollView.contentOffset.y
-  }
-  
-  func canAnimateHeader(_ scrollView: UIScrollView) -> Bool {
-    // Calculate the size of the scrollView when header is collapsed
-    let scrollViewMaxHeight = scrollView.frame.height + self.headerViewHeightConstraint.constant - minHeaderHeight
-    
-    // Make sure that when header is collapsed, there is still room to scroll
-    let result = scrollView.contentSize.height > scrollViewMaxHeight
-    
-    //celeturLogger.debug("canAnimateHeader(): scrollViewMaxHeight=\(scrollViewMaxHeight) --> \(result)")
-    
-    return result
-  }
-  
-  func collapseHeader() {
-    self.view.layoutIfNeeded()
-    UIView.animate(withDuration: 0.2, animations: {
-      self.headerViewHeightConstraint.constant = self.minHeaderHeight
-      self.view.layoutIfNeeded()
-    })
-  }
-  
-  func expandHeader() {
-    self.view.layoutIfNeeded()
-    UIView.animate(withDuration: 0.2, animations: {
-      self.headerViewHeightConstraint.constant = self.maxHeaderHeight
-      self.view.layoutIfNeeded()
-    })
-  }
-  
-  func setScrollPosition(position: CGFloat) {
-    self.tableView.contentOffset = CGPoint(x: self.tableView.contentOffset.x, y: position)
-  }
 }

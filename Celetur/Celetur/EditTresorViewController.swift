@@ -59,7 +59,7 @@ class EditTresorViewController: UITableViewController, UITextFieldDelegate {
   }
   
   @IBAction
-  func unwindToEditTresor(segue: UIStoryboardSegue) {
+  func unwindFromSelectIcon(segue: UIStoryboardSegue) {
     if segue.identifier == "saveUnwindFromSelectIconSegue" {
       if let controller = segue.source as? SelectIconViewController {
         self.tresor?.tempTresor.iconname = controller.selectedIcon?.name

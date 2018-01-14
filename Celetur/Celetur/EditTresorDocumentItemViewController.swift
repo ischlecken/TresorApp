@@ -7,7 +7,7 @@ import UIKit
 import CeleturKit
 
 
-class EditTresorDocumentItemViewController: UITableViewController {
+class EditTresorDocumentItemViewController: UITableViewController, UITextFieldDelegate {
   
   @IBOutlet weak var iconView: UIImageView!
   
@@ -15,9 +15,9 @@ class EditTresorDocumentItemViewController: UITableViewController {
   @IBOutlet weak var descriptionTextField: UITextField!
   
   var tresorAppState: TresorAppModel?
+  var tresorDocumentMetaInfo : TresorDocumentMetaInfo?
   
   fileprivate let dateFormatter = DateFormatter()
-  fileprivate var tresorDocumentMetaInfo : TresorDocumentMetaInfo?
   fileprivate var model : Payload?
   fileprivate var tresorDocumentItem : TresorDocumentItem?
   
@@ -49,7 +49,7 @@ class EditTresorDocumentItemViewController: UITableViewController {
     
     self.tableView.register(UINib(nibName:"EditTresorDocumentItemCell",bundle:nil),forCellReuseIdentifier:"editTresorDocumentItemCell")
     
-    if let tdi = self.tresorDocumentItem, let m = tdi.document?.getMetaInfo() {
+    if let m = self.tresorDocumentMetaInfo {
       if let t = m["title"] {
         self.titleTextField.text = t
       }
@@ -62,9 +62,82 @@ class EditTresorDocumentItemViewController: UITableViewController {
         self.iconView.image = UIImage(named: i)
       }
     }
+    
+    self.titleTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
+    self.descriptionTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
   }
   
+  
+  // MARK: - Navigation
+  
+  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    if "showItemNameSelectionSegue" == segue.identifier {
+      if let s = (segue.destination as? UINavigationController)?.topViewController as? SelectItemNameTableViewController,
+        let selectedItem = self.clickedItemNameIndexPath?.row {
+        s.itemNames = (self.model?.getActualSectionItems(forSection: 0).map() { payloadItem in
+          return payloadItem.name
+          })!
+        s.selectedItem = selectedItem
+      }
+    }
+    else if segue.identifier == "showSelectIconSegue" {
+      let controller = (segue.destination as! UINavigationController).topViewController as! SelectIconViewController
+      
+      controller.tresorAppState = self.tresorAppState
+    }
+  }
+  
+  @IBAction
+  func unwindToEditTresorDocumentItemView(segue: UIStoryboardSegue) {
+    if "saveItemNameSegue" == segue.identifier {
+      if let s = segue.source as? SelectItemNameTableViewController,
+        let selectedItem = self.clickedItemNameIndexPath?.row {
+        
+        var newItemName = s.customItemName
+        
+        if newItemName == nil {
+          newItemName = s.itemNames[s.selectedItem]
+        }
+        
+        celeturLogger.debug("selected new itemname:\(newItemName ?? "-")")
+        
+        if let newItemName = newItemName, var item = self.model?.getActualItem(forPath: self.clickedItemNameIndexPath!) {
+          item.name = newItemName
+          
+          self.model?.setActualItem(forPath: self.clickedItemNameIndexPath!, payloadItem: item)
+          
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            self.tableView.reloadRows(at: [IndexPath(row:selectedItem,section:0)], with: .fade)
+          }
+        }
+        
+        self.clickedItemNameIndexPath = nil
+      }
+    }
+  }
+  
+  @IBAction
+  func unwindFromSelectIcon(segue: UIStoryboardSegue) {
+    guard segue.identifier == "saveUnwindFromSelectIconSegue",
+      let controller = segue.source as? SelectIconViewController,
+      self.tresorDocumentMetaInfo != nil
+    else { return }
+    
+    self.tresorDocumentMetaInfo!["iconname"] = controller.selectedIcon?.name
+    self.iconView.image = UIImage(named: controller.selectedIcon?.name ?? "shield")
+  }
+ 
   // MARK: - Actions
+  
+  @objc func textFieldDidChange(_ textField: UITextField) {
+    if self.tresorDocumentMetaInfo != nil {
+      if textField == self.titleTextField {
+        self.tresorDocumentMetaInfo!["title"] = textField.text
+      } else if textField == self.descriptionTextField {
+        self.tresorDocumentMetaInfo!["description"] = textField.text
+      }
+    }
+  }
   
   @IBAction
   func itemNameAction(_ sender: Any) {
@@ -84,6 +157,7 @@ class EditTresorDocumentItemViewController: UITableViewController {
       self.actualEditingItemValueIndexPath = self.tableView.indexPath(for: c)
     }
   }
+  
   
   @IBAction
   func itemValueEndEditingAction(_ sender: Any) {
@@ -117,49 +191,6 @@ class EditTresorDocumentItemViewController: UITableViewController {
     }
   }
   
-  // MARK: - Segue
-  
-  override
-  func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-    if "showItemNameSelectionSegue" == segue.identifier {
-      if let s = (segue.destination as? UINavigationController)?.topViewController as? SelectItemNameTableViewController,
-        let selectedItem = self.clickedItemNameIndexPath?.row {
-        s.itemNames = (self.model?.getActualSectionItems(forSection: 0).map() { payloadItem in
-          return payloadItem.name
-          })!
-        s.selectedItem = selectedItem
-      }
-    }
-  }
-  
-  @IBAction
-  func unwindToEditTresorDocumentItemView(segue: UIStoryboardSegue) {
-    if "saveItemNameSegue" == segue.identifier {
-      if let s = segue.source as? SelectItemNameTableViewController,
-        let selectedItem = self.clickedItemNameIndexPath?.row {
-        
-        var newItemName = s.customItemName
-        
-        if newItemName == nil {
-          newItemName = s.itemNames[s.selectedItem]
-        }
-        
-        celeturLogger.debug("selected new itemname:\(newItemName ?? "-")")
-        
-        if let newItemName = newItemName, var item = self.model?.getActualItem(forPath: self.clickedItemNameIndexPath!) {
-          item.name = newItemName
-          
-          self.model?.setActualItem(forPath: self.clickedItemNameIndexPath!, payloadItem: item)
-          
-          DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            self.tableView.reloadRows(at: [IndexPath(row:selectedItem,section:0)], with: .fade)
-          }
-        }
-        
-        self.clickedItemNameIndexPath = nil
-      }
-    }
-  }
   
   // MARK: - Table view data source
   
@@ -227,5 +258,4 @@ class EditTresorDocumentItemViewController: UITableViewController {
       
     }
   }
-  
 }

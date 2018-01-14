@@ -68,6 +68,53 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   }
   
   
+  // MARK: - Navigation
+  
+  override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+    var result = true
+    
+    if identifier == "showTresorDocumentItemDetail", let indexPath = tableView.indexPathForSelectedRow {
+      result = indexPath.row-1>=0
+    }
+    
+    return result
+  }
+  
+  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    if segue.identifier == "showTresorDocumentItemDetail" {
+      if let indexPath = tableView.indexPathForSelectedRow {
+        let newIndexPath = IndexPath(row: indexPath.row-1, section: indexPath.section)
+        
+        if newIndexPath.row<0 {
+          return
+        }
+        
+        let object = fetchedResultsController.object(at: newIndexPath)
+        let controller = (segue.destination as! UINavigationController).topViewController as! TresorDocumentItemViewController
+        controller.tresorAppState = self.tresorAppState
+        controller.tresorDocumentItem = object
+        controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
+        controller.navigationItem.leftItemsSupplementBackButton = true
+      }
+    } else if segue.identifier == "editNewTresorDocument" {
+      
+      let controller = (segue.destination as! UINavigationController).topViewController as! EditTresorDocumentItemViewController
+      controller.tresorAppState = self.tresorAppState
+      
+    }
+  }
+  
+  @IBAction
+  func unwindFromEditTresorDocumentItem(segue: UIStoryboardSegue) {
+    if "saveEditTresorDocumentItem" == segue.identifier,
+      let m = (segue.source as? EditTresorDocumentItemViewController)?.getModel(),
+      let mi = (segue.source as? EditTresorDocumentItemViewController)?.tresorDocumentMetaInfo {
+      
+    }
+  }
+  
+  // MARK: - Data handling
+  
   @IBAction
   func insertNewObject(_ sender: Any) {
     if let templates = self.tresorAppState?.templates.templatenames, templates.count > 0 {
@@ -77,6 +124,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
         actionSheet.addAction(UIAlertAction(title: t, style: .default, handler: { [weak self] alertAction in
           let payloadMetainfo = self!.tresorAppState?.templates.payloadMetainfo(name: t)
           
+          //self!.performSegue(withIdentifier: "editNewTresorDocument", sender: payloadMetainfo)
           self?.createNewDocument(modelMetaInfo: payloadMetainfo)
         }))
       }
@@ -138,36 +186,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     self.navigationItem.rightBarButtonItem?.isEnabled = true
   }
   
-  // MARK: - Segues
   
-  override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
-    var result = true
-    
-    if identifier == "showTresorDocumentItemDetail", let indexPath = tableView.indexPathForSelectedRow {
-      result = indexPath.row-1>=0
-    }
-    
-    return result
-  }
-  
-  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-    if segue.identifier == "showTresorDocumentItemDetail" {
-      if let indexPath = tableView.indexPathForSelectedRow {
-        let newIndexPath = IndexPath(row: indexPath.row-1, section: indexPath.section)
-        
-        if newIndexPath.row<0 {
-          return
-        }
-        
-        let object = fetchedResultsController.object(at: newIndexPath)
-        let controller = (segue.destination as! UINavigationController).topViewController as! TresorDocumentItemViewController
-        controller.tresorAppState = self.tresorAppState
-        controller.tresorDocumentItem = object
-        controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
-        controller.navigationItem.leftItemsSupplementBackButton = true
-      }
-    }
-  }
   
   // MARK: - Table View
   

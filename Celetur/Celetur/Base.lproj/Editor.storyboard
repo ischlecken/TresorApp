@@ -74,6 +74,9 @@
                                         <constraint firstAttribute="height" constant="64" id="Rqj-5x-6Cu"/>
                                         <constraint firstAttribute="width" constant="64" id="oRp-wV-IKa"/>
                                     </constraints>
+                                    <connections>
+                                        <outletCollection property="gestureRecognizers" destination="m7W-jk-RKE" appends="YES" id="GuD-GP-fAL"/>
+                                    </connections>
                                 </imageView>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Edit" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LD5-z8-cYd">
                                     <rect key="frame" x="20" y="108.5" width="64" height="21"/>
@@ -200,23 +203,30 @@
                     <navigationItem key="navigationItem" id="GB2-jA-eQ8">
                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="dhA-wz-0Ph">
                             <connections>
-                                <segue destination="D97-dF-ejx" kind="unwind" unwindAction="unwindToTresorDocumentItemWithSegue:" id="kr5-0h-XU4"/>
+                                <segue destination="D97-dF-ejx" kind="unwind" identifier="cancelEditTresorDocumentItem" unwindAction="unwindFromEditTresorDocumentItemWithSegue:" id="kr5-0h-XU4"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="save" id="Icp-fP-0s3">
                             <connections>
-                                <segue destination="D97-dF-ejx" kind="unwind" identifier="saveEditTresorDocumentItem" unwindAction="unwindToTresorDocumentItemWithSegue:" id="B5r-kJ-MxM"/>
+                                <segue destination="D97-dF-ejx" kind="unwind" identifier="saveEditTresorDocumentItem" unwindAction="unwindFromEditTresorDocumentItemWithSegue:" id="B5r-kJ-MxM"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="descriptionTextField" destination="C08-PH-vMf" id="Yes-zW-NQ9"/>
+                        <outlet property="descriptionTextField" destination="xrr-kI-CZl" id="RWc-9V-6gb"/>
                         <outlet property="iconView" destination="jWD-ku-sl4" id="tMJ-4U-B2i"/>
-                        <outlet property="titleTextField" destination="xrr-kI-CZl" id="N1a-Ks-Mwi"/>
+                        <outlet property="titleTextField" destination="C08-PH-vMf" id="aqc-wV-THr"/>
                         <segue destination="m1K-fC-GCw" kind="presentation" identifier="showItemNameSelectionSegue" modalPresentationStyle="formSheet" id="2lX-bq-dCW"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="O9I-Bg-2jr" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="m7W-jk-RKE">
+                    <connections>
+                        <segue destination="XtA-tw-d7b" kind="popoverPresentation" identifier="showSelectIconSegue" popoverAnchorView="jWD-ku-sl4" id="rXJ-zv-INr">
+                            <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                        </segue>
+                    </connections>
+                </tapGestureRecognizer>
                 <exit id="D97-dF-ejx" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="3084" y="152"/>
@@ -476,7 +486,7 @@
                     <navigationItem key="navigationItem" title="Select Item Key" id="cTs-Ur-BqS">
                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="e3A-Nt-0Vf">
                             <connections>
-                                <segue destination="4Ng-ak-jqY" kind="unwind" identifier="cancelItemNameSegue" unwindAction="unwindToEditTresorDocumentItemViewWithSegue:" id="n6O-Z6-5DQ"/>
+                                <segue destination="4Ng-ak-jqY" kind="unwind" identifier="cancelItemNameSegue" unwindAction="unwindFromSelectIconWithSegue:" id="n6O-Z6-5DQ"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="save" id="F9q-hD-JTC">
@@ -507,21 +517,20 @@
             </objects>
             <point key="canvasLocation" x="3924" y="152"/>
         </scene>
+        <!--SelectIconController-->
+        <scene sceneID="H60-pf-G2M">
+            <objects>
+                <viewControllerPlaceholder storyboardName="Main" referencedIdentifier="SelectIconController" id="XtA-tw-d7b" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="sRs-UC-Nw2" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3084" y="619"/>
+        </scene>
     </scenes>
     <resources>
         <image name="3d-view" width="32" height="32"/>
         <image name="apple-os" width="32" height="32"/>
         <namedColor name="celeturBackground">
             <color red="1" green="1" blue="1" alpha="0.80000001190000003" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="celeturBackground">
-            <color red="1" green="1" blue="1" alpha="0.80000001190000003" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="celeturBackground">
-            <color red="1" green="1" blue="1" alpha="0.80000001192092896" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="celeturPrimary">
-            <color red="1" green="0.18039215689999999" blue="0.33725490200000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="celeturPrimary">
             <color red="1" green="0.18039215689999999" blue="0.33725490200000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

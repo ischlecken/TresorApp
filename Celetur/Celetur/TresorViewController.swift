@@ -157,6 +157,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
         let controller = (segue.destination as! UINavigationController).topViewController as! SettingsViewController
         controller.tresorAppState = self.tresorAppState
         
+        
       default: break
       }
     }

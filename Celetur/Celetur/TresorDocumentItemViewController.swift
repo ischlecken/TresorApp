@@ -194,29 +194,32 @@ class TresorDocumentItemViewController: UIViewController, UITableViewDataSource,
     }
   }
   
+  
+  
   @IBAction
-  func unwindToTresorDocumentItem(segue: UIStoryboardSegue) {
+  func unwindFromEditTresorDocumentItem(segue: UIStoryboardSegue) {
     if "saveEditTresorDocumentItem" == segue.identifier,
       let m = (segue.source as? EditTresorDocumentItemViewController)?.getModel(),
+      let mi = (segue.source as? EditTresorDocumentItemViewController)?.tresorDocumentMetaInfo,
       let tdi = self.tresorDocumentItem {
       
       self.expandHeader()
       
       self.tresorAppState?.getMasterKey() { (tresorKey, error) in
         if let key = tresorKey {
-          self.saveChangedItem(tdi: tdi, k: key, m: m)
+          self.saveChangedItem(tdi: tdi, k: key, metaInfo: mi, m: m)
         }
       }
     }
   }
   
-  fileprivate func saveChangedItem(tdi: TresorDocumentItem,k: TresorKey, m:Payload) {
+  fileprivate func saveChangedItem(tdi: TresorDocumentItem,k: TresorKey, metaInfo: TresorDocumentMetaInfo, m:Payload) {
     if let context = self.tresorAppState?.tresorModel.getCoreDataManager()?.privateChildManagedObjectContext() {
       self.setModel(payload: nil)
       self.startAnimation()
       
       context.perform {
-        tdi.saveDocumentItemModelData(context: context, model : m, masterKey: k)
+        tdi.saveDocumentItemModelData(context: context, model : m, metaInfo: metaInfo, masterKey: k)
         
         do {
           let _ = try context.save()

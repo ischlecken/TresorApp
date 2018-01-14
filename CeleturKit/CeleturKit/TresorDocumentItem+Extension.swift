@@ -173,6 +173,7 @@ extension TresorDocumentItem {
   
   public func saveDocumentItemModelData(context:NSManagedObjectContext,
                                         model : Payload,
+                                        metaInfo: TresorDocumentMetaInfo,
                                         masterKey: TresorKey) {
     
     if let tresorDocument = self.document,
@@ -195,6 +196,7 @@ extension TresorDocumentItem {
         }
       }
     
+      tempTresorDocument.setMetaInfo(metaInfo: metaInfo)
       tempTresorDocument.changets = Date()
     
       celeturKitLogger.debug("saveDocumentItemModelData(): encryption completed")

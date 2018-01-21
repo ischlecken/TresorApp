@@ -70,6 +70,8 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     if self.tresorAppModel?.tresorModel.icloudAvailable() ?? false {
       let actionSheet = UIAlertController(title: "Add new tresor", message: "Select store where the new tresor should be added", preferredStyle: .actionSheet)
       
+      actionSheet.popoverPresentationController?.barButtonItem = sender as? UIBarButtonItem 
+      
       actionSheet.addAction(UIAlertAction(title: "iCloud", style: .default, handler: { alertAction in
         let tempTresor = self.tresorAppModel?.tresorModel.createScratchpadICloudTresorObject()
         

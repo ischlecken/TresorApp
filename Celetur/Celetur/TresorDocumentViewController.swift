@@ -125,6 +125,8 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     if let templates = self.tresorAppModel?.templates.templatenames, templates.count > 0 {
       let actionSheet = UIAlertController(title: "Add new Document", message: "Select template for new document", preferredStyle: .actionSheet)
       
+      actionSheet.popoverPresentationController?.barButtonItem = sender as? UIBarButtonItem
+      
       for t in templates {
         actionSheet.addAction(UIAlertAction(title: t, style: .default, handler: { [weak self] alertAction in
           let payloadMetainfo = self!.tresorAppModel?.templates.payloadMetainfo(name: t)

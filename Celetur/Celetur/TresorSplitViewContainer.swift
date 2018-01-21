@@ -14,6 +14,12 @@ class TresorSplitViewContainer: UISplitViewController {
   
   var tresorAppModel : TresorAppModel?
   
+  override func awakeFromNib() {
+    celeturLogger.debug("TresorSplitViewContainer.awakeFromNib()")
+    
+    self.delegate = self
+  }
+  
   func completeSetup() {
     UNUserNotificationCenter.current().delegate = self
     UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
@@ -38,8 +44,6 @@ class TresorSplitViewContainer: UISplitViewController {
     
     self.createGradientView()
     self.createProgressView()
-    
-    self.delegate = self
     
     self.completeSetup()
   }
@@ -175,6 +179,7 @@ extension TresorSplitViewContainer: UNUserNotificationCenterDelegate {
 // MARK: - UISplitViewControllerDelegate
 //
 extension TresorSplitViewContainer: UISplitViewControllerDelegate {
+  
   func splitViewController(_ splitViewController: UISplitViewController,
                            collapseSecondary secondaryViewController: UIViewController,
                            onto primaryViewController: UIViewController) -> Bool {
@@ -189,7 +194,7 @@ extension TresorSplitViewContainer: UISplitViewControllerDelegate {
       }
     }
     
-    celeturLogger.debug("splitViewController onto primary:\(result)")
+    celeturLogger.debug("TresorSplitViewContainer.splitViewController onto primary:\(result)")
     
     return result
   }

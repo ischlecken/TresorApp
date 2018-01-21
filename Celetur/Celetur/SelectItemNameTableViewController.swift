@@ -104,7 +104,7 @@ class SelectItemNameTableViewController: UITableViewController,UITextFieldDelega
   
   func textFieldShouldReturn(_ textField: UITextField) -> Bool {
     textField.resignFirstResponder()
-    self.performSegue(withIdentifier: "saveItemNameSegue", sender: self)
+    self.performSegue(withIdentifier: "saveItemName", sender: self)
     
     return true
   }

@@ -176,15 +176,19 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   }
   
   @IBAction
-  func unwindToTresor(segue: UIStoryboardSegue) {
-    if segue.identifier == "saveUnwindToTresor" {
+  func unwindFromEditTresor(segue: UIStoryboardSegue) {
+    if segue.identifier == "saveEditTresor" {
       if let controller = segue.source as? EditTresorViewController, let tt = controller.tresor, !tt.tempTresor.isreadonly {
         controller.updateTempTresor()
         
         self.saveTempTresor(tempTresor: tt)
       }
-    } else if segue.identifier == "settingsUnwindToTresor" {
     }
+  }
+  
+  @IBAction
+  func unwindFromSettings(segue: UIStoryboardSegue) {
+    
   }
   
   fileprivate func saveTempTresor(tempTresor:TempTresorObject) {

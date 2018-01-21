@@ -96,7 +96,7 @@
                     <navigationItem key="navigationItem" title="Settings" id="2aR-Ah-CSY">
                         <barButtonItem key="rightBarButtonItem" systemItem="done" id="dO0-aj-1zB">
                             <connections>
-                                <segue destination="6uu-y7-sf4" kind="unwind" unwindAction="unwindToTresorWithSegue:" id="T6d-Wr-j3B"/>
+                                <segue destination="6uu-y7-sf4" kind="unwind" unwindAction="unwindFromSettingsWithSegue:" id="T6d-Wr-j3B"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>

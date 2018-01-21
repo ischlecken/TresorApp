@@ -51,7 +51,7 @@ class EditTresorViewController: UITableViewController, UITextFieldDelegate {
   
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     
-    if segue.identifier == "showSelectIconSegue" {
+    if segue.identifier == "showSelectIcon" {
       let controller = (segue.destination as! UINavigationController).topViewController as! SelectIconViewController
       
       controller.tresorAppState = self.tresorAppState
@@ -60,7 +60,7 @@ class EditTresorViewController: UITableViewController, UITextFieldDelegate {
   
   @IBAction
   func unwindFromSelectIcon(segue: UIStoryboardSegue) {
-    if segue.identifier == "saveUnwindFromSelectIconSegue" {
+    if segue.identifier == "saveSelectIcon" {
       if let controller = segue.source as? SelectIconViewController {
         self.tresor?.tempTresor.iconname = controller.selectedIcon?.name
       

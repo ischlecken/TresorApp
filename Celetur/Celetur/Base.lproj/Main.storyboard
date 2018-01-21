@@ -251,12 +251,12 @@
                     <navigationItem key="navigationItem" id="zgw-VB-CEX">
                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="qHT-rJ-GQZ">
                             <connections>
-                                <segue destination="gQ6-kV-3Uu" kind="unwind" identifier="cancelUnwindToTresor" unwindAction="unwindToTresorWithSegue:" id="zS6-sx-H7A"/>
+                                <segue destination="gQ6-kV-3Uu" kind="unwind" identifier="cancelEditTresor" unwindAction="unwindFromEditTresorWithSegue:" id="zS6-sx-H7A"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="Save" id="6ZG-9v-yEF">
                             <connections>
-                                <segue destination="gQ6-kV-3Uu" kind="unwind" identifier="saveUnwindToTresor" unwindAction="unwindToTresorWithSegue:" id="zET-t1-CPG"/>
+                                <segue destination="gQ6-kV-3Uu" kind="unwind" identifier="saveEditTresor" unwindAction="unwindFromEditTresorWithSegue:" id="zET-t1-CPG"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -271,7 +271,7 @@
                 <exit id="gQ6-kV-3Uu" userLabel="Exit" sceneMemberID="exit"/>
                 <tapGestureRecognizer id="H2P-Ke-T6P">
                     <connections>
-                        <segue destination="MJ1-e2-W3b" kind="popoverPresentation" identifier="showSelectIconSegue" popoverAnchorView="7iL-gP-PTh" id="RKO-dj-bnR">
+                        <segue destination="MJ1-e2-W3b" kind="popoverPresentation" identifier="showSelectIcon" popoverAnchorView="7iL-gP-PTh" id="RKO-dj-bnR">
                             <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
                         </segue>
                     </connections>
@@ -331,12 +331,12 @@
                     <navigationItem key="navigationItem" id="cKg-fy-gLE">
                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="Eyh-dw-TKb">
                             <connections>
-                                <segue destination="V28-y7-eBR" kind="unwind" identifier="cancelUnwindFromSelectIconSegue" unwindAction="unwindFromSelectIconWithSegue:" id="V6f-e6-qwT"/>
+                                <segue destination="V28-y7-eBR" kind="unwind" identifier="cancelSelectIcon" unwindAction="unwindFromSelectIconWithSegue:" id="V6f-e6-qwT"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="save" id="A83-Zb-Esf">
                             <connections>
-                                <segue destination="V28-y7-eBR" kind="unwind" identifier="saveUnwindFromSelectIconSegue" unwindAction="unwindFromSelectIconWithSegue:" id="dK5-iI-Tkv"/>
+                                <segue destination="V28-y7-eBR" kind="unwind" identifier="saveSelectIcon" unwindAction="unwindFromSelectIconWithSegue:" id="dK5-iI-Tkv"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>

@@ -71,7 +71,7 @@ class EditTresorDocumentItemViewController: UITableViewController, UITextFieldDe
   // MARK: - Navigation
   
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-    if "showItemNameSelectionSegue" == segue.identifier {
+    if "showItemNameSelection" == segue.identifier {
       if let s = (segue.destination as? UINavigationController)?.topViewController as? SelectItemNameTableViewController,
         let selectedItem = self.clickedItemNameIndexPath?.row {
         s.itemNames = (self.model?.getActualSectionItems(forSection: 0).map() { payloadItem in
@@ -80,7 +80,7 @@ class EditTresorDocumentItemViewController: UITableViewController, UITextFieldDe
         s.selectedItem = selectedItem
       }
     }
-    else if segue.identifier == "showSelectIconSegue" {
+    else if segue.identifier == "showSelectIcon" {
       let controller = (segue.destination as! UINavigationController).topViewController as! SelectIconViewController
       
       controller.tresorAppState = self.tresorAppState
@@ -88,8 +88,8 @@ class EditTresorDocumentItemViewController: UITableViewController, UITextFieldDe
   }
   
   @IBAction
-  func unwindToEditTresorDocumentItemView(segue: UIStoryboardSegue) {
-    if "saveItemNameSegue" == segue.identifier {
+  func unwindFromSelectItem(segue: UIStoryboardSegue) {
+    if "saveItemName" == segue.identifier {
       if let s = segue.source as? SelectItemNameTableViewController,
         let selectedItem = self.clickedItemNameIndexPath?.row {
         
@@ -118,7 +118,7 @@ class EditTresorDocumentItemViewController: UITableViewController, UITextFieldDe
   
   @IBAction
   func unwindFromSelectIcon(segue: UIStoryboardSegue) {
-    guard segue.identifier == "saveUnwindFromSelectIconSegue",
+    guard segue.identifier == "saveSelectIcon",
       let controller = segue.source as? SelectIconViewController,
       self.tresorDocumentMetaInfo != nil
     else { return }
@@ -146,7 +146,7 @@ class EditTresorDocumentItemViewController: UITableViewController, UITextFieldDe
       
       celeturLogger.debug("item name clicked:\(String(describing: clickedItemNameIndexPath))")
       
-      self.performSegue(withIdentifier: "showItemNameSelectionSegue", sender: self)
+      self.performSegue(withIdentifier: "showItemNameSelection", sender: self)
     }
     
   }

@@ -216,13 +216,13 @@
                         <outlet property="descriptionTextField" destination="xrr-kI-CZl" id="RWc-9V-6gb"/>
                         <outlet property="iconView" destination="jWD-ku-sl4" id="tMJ-4U-B2i"/>
                         <outlet property="titleTextField" destination="C08-PH-vMf" id="aqc-wV-THr"/>
-                        <segue destination="m1K-fC-GCw" kind="presentation" identifier="showItemNameSelectionSegue" modalPresentationStyle="formSheet" id="2lX-bq-dCW"/>
+                        <segue destination="m1K-fC-GCw" kind="presentation" identifier="showItemNameSelection" modalPresentationStyle="formSheet" id="2lX-bq-dCW"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="O9I-Bg-2jr" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <tapGestureRecognizer id="m7W-jk-RKE">
                     <connections>
-                        <segue destination="XtA-tw-d7b" kind="popoverPresentation" identifier="showSelectIconSegue" popoverAnchorView="jWD-ku-sl4" id="rXJ-zv-INr">
+                        <segue destination="XtA-tw-d7b" kind="popoverPresentation" identifier="showSelectIcon" popoverAnchorView="jWD-ku-sl4" id="rXJ-zv-INr">
                             <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
                         </segue>
                     </connections>
@@ -486,12 +486,12 @@
                     <navigationItem key="navigationItem" title="Select Item Key" id="cTs-Ur-BqS">
                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="e3A-Nt-0Vf">
                             <connections>
-                                <segue destination="4Ng-ak-jqY" kind="unwind" identifier="cancelItemNameSegue" unwindAction="unwindFromSelectIconWithSegue:" id="n6O-Z6-5DQ"/>
+                                <segue destination="4Ng-ak-jqY" kind="unwind" identifier="cancelItemName" unwindAction="unwindFromSelectItemWithSegue:" id="n6O-Z6-5DQ"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="save" id="F9q-hD-JTC">
                             <connections>
-                                <segue destination="4Ng-ak-jqY" kind="unwind" identifier="saveItemNameSegue" unwindAction="unwindToEditTresorDocumentItemViewWithSegue:" id="n8O-55-fJQ"/>
+                                <segue destination="4Ng-ak-jqY" kind="unwind" identifier="saveItemName" unwindAction="unwindFromSelectItemWithSegue:" id="n8O-55-fJQ"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>

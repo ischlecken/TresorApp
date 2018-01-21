@@ -132,7 +132,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   }
   
   
-  // MARK: - Segues
+  // MARK: - Navigation
   
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     if let ident = segue.identifier {

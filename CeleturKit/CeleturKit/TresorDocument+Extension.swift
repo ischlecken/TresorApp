@@ -19,7 +19,7 @@ extension TresorDocument {
     }
   }
   
-  convenience init(context:NSManagedObjectContext, tresor:Tresor) throws {
+  public convenience init(context:NSManagedObjectContext, tresor:Tresor) throws {
     self.init(context: context)
     
     self.createts = Date()

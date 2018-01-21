@@ -97,10 +97,14 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
         controller.navigationItem.leftItemsSupplementBackButton = true
       }
     } else if segue.identifier == "editNewTresorDocument" {
+      let payloadMetaInfo = sender as! PayloadMetainfo
       
       let controller = (segue.destination as! UINavigationController).topViewController as! EditTresorDocumentItemViewController
       controller.tresorAppState = self.tresorAppState
       
+      controller.setModel(payload: payloadMetaInfo.toModel(), metaInfo: payloadMetaInfo.toTresorDocumentMetaInfo())
+      
+      controller.navigationItem.title = "New Tresor Document"
     }
   }
   
@@ -110,10 +114,11 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
       let m = (segue.source as? EditTresorDocumentItemViewController)?.getModel(),
       let mi = (segue.source as? EditTresorDocumentItemViewController)?.tresorDocumentMetaInfo {
       
+      self.createNewTresorDocument(tresorDocumentMetaInfo: mi, model: m)
     }
   }
   
-  // MARK: - Data handling
+  
   
   @IBAction
   func insertNewObject(_ sender: Any) {
@@ -124,8 +129,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
         actionSheet.addAction(UIAlertAction(title: t, style: .default, handler: { [weak self] alertAction in
           let payloadMetainfo = self!.tresorAppState?.templates.payloadMetainfo(name: t)
           
-          //self!.performSegue(withIdentifier: "editNewTresorDocument", sender: payloadMetainfo)
-          self?.createNewDocument(modelMetaInfo: payloadMetainfo)
+          self!.performSegue(withIdentifier: "editNewTresorDocument", sender: payloadMetainfo)
         }))
       }
       
@@ -135,43 +139,35 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     }
   }
   
+  // MARK: - Data handling
   
-  fileprivate func createNewDocument(modelMetaInfo:PayloadMetainfo?) {
-    if let mmi = modelMetaInfo {
-      self.tresorAppState?.getMasterKey() { (tresorKey, error) in
-        if let key = tresorKey, let t = self.tresor {
-          self.insertNewTresorDocument(t: t, modelMetainfo: mmi, key: key)
-        }
-      }
-    }
-  }
-  
-  
-  fileprivate func insertNewTresorDocument(t: Tresor, modelMetainfo: PayloadMetainfo, key: TresorKey) {
-    if let context = self.tresorAppState?.tresorModel.getCoreDataManager()?.privateChildManagedObjectContext() {
-      self.beginInsertNewObject()
-      context.perform {
-        do {
-          let _ = try TresorDocument(context: context,
-                                     masterKey: key,
-                                     tresor: t,
-                                     metaInfo: modelMetainfo.toTresorDocumentMetaInfo(),
-                                     model: modelMetainfo.toModel())
-          
-          let _ = try context.save()
-          
-          DispatchQueue.main.async {
-            self.tresorAppState?.tresorModel.saveChanges()
-            self.endInsertNewObject()
-          }
-          
-        } catch {
-          celeturLogger.error("Error while creating new tresor document...",error:error)
-          
-          DispatchQueue.main.async {
-            self.endInsertNewObject()
+  fileprivate func createNewTresorDocument(tresorDocumentMetaInfo : TresorDocumentMetaInfo, model:Payload) {
+    self.tresorAppState?.getMasterKey() { (tresorKey, error) in
+      if let key = tresorKey,
+        let t = self.tresor,
+        let context = self.tresorAppState?.tresorModel.getCoreDataManager()?.privateChildManagedObjectContext() {
+        
+        self.beginInsertNewObject()
+        context.perform {
+          do {
+            let _ = try TresorDocument(context: context, masterKey: key, tresor: t, metaInfo: tresorDocumentMetaInfo, model: model)
+            
+            let _ = try context.save()
+            
+            DispatchQueue.main.async {
+              self.tresorAppState?.tresorModel.saveChanges()
+              self.endInsertNewObject()
+            }
+            
+          } catch {
+            celeturLogger.error("Error while creating new tresor document...",error:error)
+            
+            DispatchQueue.main.async {
+              self.endInsertNewObject()
+            }
           }
         }
+        
       }
     }
   }
@@ -266,7 +262,15 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   }
   
   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    self.performSegue(withIdentifier: "showTresorDocumentItemDetail", sender: self)
+    if self.shouldPerformSegue(withIdentifier: "showTresorDocumentItemDetail", sender: self) {
+      self.performSegue(withIdentifier: "showTresorDocumentItemDetail", sender: self)
+    } else {
+      self.tableView.deselectRow(at: indexPath, animated: false)
+    }
+  }
+  
+  override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+    return indexPath.row-1>=0 ? indexPath : nil
   }
   
   func configureCellForTresorDocument(_ cell: TresorDocumentCell, withTresorDocument tresorDocument: TresorDocument?) {

@@ -114,7 +114,7 @@
             </objects>
             <point key="canvasLocation" x="1448" y="-1525"/>
         </scene>
-        <!--Documents-->
+        <!--Tresor Documents-->
         <scene sceneID="PA6-K3-lDo">
             <objects>
                 <tableViewController id="lap-lW-FmK" customClass="TresorDocumentViewController" customModule="Celetur" customModuleProvider="target" sceneMemberID="viewController">
@@ -127,14 +127,23 @@
                             <outlet property="delegate" destination="lap-lW-FmK" id="uKL-sZ-K45"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Documents" id="2AP-hn-RXV"/>
+                    <navigationItem key="navigationItem" title="Tresor Documents" id="2AP-hn-RXV"/>
                     <connections>
                         <segue destination="DG1-Xh-Iq7" kind="show" identifier="showTresorDocumentItemDetail" id="Iij-ct-xZw"/>
+                        <segue destination="aT7-Xd-qlb" kind="presentation" identifier="editNewTresorDocument" id="lxH-ll-9VI"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jOg-tF-UOd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1448" y="-805"/>
+        </scene>
+        <!--EditTresorDocumentItemController-->
+        <scene sceneID="AEm-NL-I1t">
+            <objects>
+                <viewControllerPlaceholder storyboardIdentifier="e" storyboardName="Editor" referencedIdentifier="EditTresorDocumentItemController" id="aT7-Xd-qlb" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ip8-Rw-mBW" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1631" y="-273"/>
         </scene>
         <!--Edit Tresor View Controller-->
         <scene sceneID="zko-AA-JtC">
@@ -179,7 +188,7 @@
                                     </connections>
                                 </textField>
                                 <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="3d-view" translatesAutoresizingMaskIntoConstraints="NO" id="7iL-gP-PTh">
-                                    <rect key="frame" x="20" y="44.333333333333336" width="64" height="64.333333333333314"/>
+                                    <rect key="frame" x="20" y="44.333333333333343" width="64" height="64.666666666666657"/>
                                     <constraints>
                                         <constraint firstAttribute="width" constant="64" id="FVV-V0-Zlc"/>
                                         <constraint firstAttribute="height" constant="64" id="Uy9-AY-9E6"/>
@@ -189,7 +198,7 @@
                                     </connections>
                                 </imageView>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Edit" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7PN-ry-hun">
-                                    <rect key="frame" x="20" y="108.66666666666667" width="64" height="21.000000000000014"/>
+                                    <rect key="frame" x="20" y="109" width="64" height="21"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <color key="textColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <nil key="highlightedColor"/>
@@ -371,6 +380,6 @@
         </namedColor>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Iij-ct-xZw"/>
+        <segue reference="Tll-UG-LXB"/>
     </inferredMetricsTieBreakers>
 </document>

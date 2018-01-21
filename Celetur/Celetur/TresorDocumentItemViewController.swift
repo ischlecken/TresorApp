@@ -184,7 +184,7 @@ class TresorDocumentItemViewController: UIViewController, UITableViewDataSource,
         
         let tresorDocumentMetaInfo = self.tresorDocumentItem?.document?.getMetaInfo()
         
-        controller.setModel(tresorDocumentItem: self.tresorDocumentItem!, payload: self.model, metaInfo: tresorDocumentMetaInfo)
+        controller.setModel(payload: self.model, metaInfo: tresorDocumentMetaInfo)
         
         controller.navigationItem.title = tresorDocumentMetaInfo?["title"]
         

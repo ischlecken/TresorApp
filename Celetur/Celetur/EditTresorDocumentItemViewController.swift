@@ -19,13 +19,11 @@ class EditTresorDocumentItemViewController: UITableViewController, UITextFieldDe
   
   fileprivate let dateFormatter = DateFormatter()
   fileprivate var model : Payload?
-  fileprivate var tresorDocumentItem : TresorDocumentItem?
   
   fileprivate var actualEditingItemValueIndexPath : IndexPath?
   fileprivate var clickedItemNameIndexPath : IndexPath?
   
-  func setModel(tresorDocumentItem:TresorDocumentItem, payload:Payload?, metaInfo: TresorDocumentMetaInfo?) {
-    self.tresorDocumentItem = tresorDocumentItem
+  func setModel(payload:Payload?, metaInfo: TresorDocumentMetaInfo?) {
     self.model = payload
     self.tresorDocumentMetaInfo = metaInfo
   }

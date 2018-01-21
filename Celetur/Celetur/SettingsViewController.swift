@@ -7,7 +7,7 @@ import UIKit
 
 class SettingsViewController: UITableViewController {
   
-  var tresorAppState: TresorAppModel?
+  var tresorAppModel: TresorAppModel?
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -26,22 +26,22 @@ class SettingsViewController: UITableViewController {
   
   @IBAction
   func resetChangeTokensAction(_ sender: Any) {
-    self.tresorAppState?.tresorModel.resetChangeTokens()
+    self.tresorAppModel?.tresorModel.resetChangeTokens()
   }
   
   @IBAction
   func removeAllCloudKitDataAction(_ sender: Any) {
-    self.tresorAppState?.tresorModel.removeAllCloudKitData()
+    self.tresorAppModel?.tresorModel.removeAllCloudKitData()
   }
   
   @IBAction
   func removeAllCoreDataAction(_ sender: Any) {
-    self.tresorAppState?.tresorModel.removeAllCoreData()
+    self.tresorAppModel?.tresorModel.removeAllCoreData()
   }
   
   @IBAction
   func resetAllAction(_ sender: Any) {
-    self.tresorAppState?.tresorModel.resetAll()
+    self.tresorAppModel?.tresorModel.resetAll()
   }
   
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -116,7 +116,7 @@ class SettingsViewController: UITableViewController {
     if segue.identifier == "showUserdeviceList" {
       let controller = segue.destination as! UserDeviceViewController
       
-      controller.tresorAppState = self.tresorAppState
+      controller.tresorAppModel = self.tresorAppModel
     }
   }
   

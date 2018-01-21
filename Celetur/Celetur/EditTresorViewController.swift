@@ -8,7 +8,7 @@ import CeleturKit
 
 class EditTresorViewController: UITableViewController, UITextFieldDelegate {
   
-  var tresorAppState: TresorAppModel?
+  var tresorAppModel: TresorAppModel?
   var tresor: TempTresorObject?
   
   @IBOutlet weak var nameTextfield: UITextField!
@@ -20,7 +20,7 @@ class EditTresorViewController: UITableViewController, UITextFieldDelegate {
     super.viewDidLoad()
 
 
-    if let currentUserDevice = self.tresorAppState?.tresorModel.currentTresorUserDevice(ckUserId: self.tresor?.tempTresor.ckuserid),
+    if let currentUserDevice = self.tresorAppModel?.tresorModel.currentTresorUserDevice(ckUserId: self.tresor?.tempTresor.ckuserid),
       self.tresor?.tempTresor.userdevices?.count==0,
       let udnew = self.tresor?.tempManagedObjectContext.object(with: currentUserDevice.objectID) as? TresorUserDevice {
       
@@ -54,7 +54,7 @@ class EditTresorViewController: UITableViewController, UITextFieldDelegate {
     if segue.identifier == "showSelectIcon" {
       let controller = (segue.destination as! UINavigationController).topViewController as! SelectIconViewController
       
-      controller.tresorAppState = self.tresorAppState
+      controller.tresorAppModel = self.tresorAppModel
     }
   }
   

@@ -11,7 +11,7 @@ import CeleturKit
 
 class TresorDocumentItemViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
   
-  var tresorAppState: TresorAppModel?
+  var tresorAppModel: TresorAppModel?
   var tresorDocumentItem: TresorDocumentItem? {
     didSet {
       configureView()
@@ -69,7 +69,7 @@ class TresorDocumentItemViewController: UIViewController, UITableViewDataSource,
   
   override func motionEnded(_ motion: UIEventSubtype, with event: UIEvent?) {
     if(event?.subtype == UIEventSubtype.motionShake) {
-      self.tresorAppState?.makeMasterKeyUnavailable()
+      self.tresorAppModel?.makeMasterKeyUnavailable()
     }
   }
   
@@ -112,7 +112,7 @@ class TresorDocumentItemViewController: UIViewController, UITableViewDataSource,
         if let payload = item.payload {
           label.text = payload.hexEncodedString()
           
-          self.tresorAppState?.getMasterKey(){ (tresorKey, error) in
+          self.tresorAppModel?.getMasterKey(){ (tresorKey, error) in
             if let key = tresorKey {
               self.startAnimation()
               DispatchQueue.global().async {
@@ -180,7 +180,7 @@ class TresorDocumentItemViewController: UIViewController, UITableViewDataSource,
       case "showEditTresorDocumentItem":
         let controller = (segue.destination as! UINavigationController).topViewController as! EditTresorDocumentItemViewController
         
-        controller.tresorAppState = self.tresorAppState
+        controller.tresorAppModel = self.tresorAppModel
         
         let tresorDocumentMetaInfo = self.tresorDocumentItem?.document?.getMetaInfo()
         
@@ -205,7 +205,7 @@ class TresorDocumentItemViewController: UIViewController, UITableViewDataSource,
       
       self.expandHeader()
       
-      self.tresorAppState?.getMasterKey() { (tresorKey, error) in
+      self.tresorAppModel?.getMasterKey() { (tresorKey, error) in
         if let key = tresorKey {
           self.saveChangedItem(tdi: tdi, k: key, metaInfo: mi, m: m)
         }
@@ -214,7 +214,7 @@ class TresorDocumentItemViewController: UIViewController, UITableViewDataSource,
   }
   
   fileprivate func saveChangedItem(tdi: TresorDocumentItem,k: TresorKey, metaInfo: TresorDocumentMetaInfo, m:Payload) {
-    if let context = self.tresorAppState?.tresorModel.getCoreDataManager()?.privateChildManagedObjectContext() {
+    if let context = self.tresorAppModel?.tresorModel.getCoreDataManager()?.privateChildManagedObjectContext() {
       self.setModel(payload: nil)
       self.startAnimation()
       
@@ -225,7 +225,7 @@ class TresorDocumentItemViewController: UIViewController, UITableViewDataSource,
           let _ = try context.save()
           
           DispatchQueue.main.async {
-            self.tresorAppState?.tresorModel.saveChanges()
+            self.tresorAppModel?.tresorModel.saveChanges()
           }
         } catch {
           celeturLogger.error("Error while saving changed tresor document items...",error:error)
@@ -265,7 +265,7 @@ class TresorDocumentItemViewController: UIViewController, UITableViewDataSource,
     
     if let payloadItem = self.model?.getActualItem(forPath: editActionsForRowAt),
       let metainfoName = self.model?.metainfo,
-      let payloadMetainfoItem = self.tresorAppState?.templates.payloadMetainfoItem(name: metainfoName, indexPath: editActionsForRowAt) {
+      let payloadMetainfoItem = self.tresorAppModel?.templates.payloadMetainfoItem(name: metainfoName, indexPath: editActionsForRowAt) {
       
       let editAction = UITableViewRowAction(style: .normal, title: "Copy") { action, index in
         UIPasteboard.general.string = self.model?.getActualItem(forPath: editActionsForRowAt).value.toString()
@@ -299,7 +299,7 @@ class TresorDocumentItemViewController: UIViewController, UITableViewDataSource,
   func configureCell(_ cell: TresorDocumentItemCell, forPath indexPath:IndexPath) {
     guard let payloadItem = self.model?.getActualItem(forPath: indexPath), let metainfoName = self.model?.metainfo else { return }
     
-    let payloadMetainfoItem = self.tresorAppState?.templates.payloadMetainfoItem(name: metainfoName, indexPath: indexPath)
+    let payloadMetainfoItem = self.tresorAppModel?.templates.payloadMetainfoItem(name: metainfoName, indexPath: indexPath)
     
     cell.itemKeyLabel?.text = payloadItem.name
     cell.itemValueLabel?.text = nil

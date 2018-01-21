@@ -12,11 +12,11 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   var tresor: Tresor? {
     didSet {
       if let t = tresor {
-        self.tresorAppState?.encryptAllDocumentItemsThatShouldBeEncryptedByDevice(tresor: t)
+        self.tresorAppModel?.encryptAllDocumentItemsThatShouldBeEncryptedByDevice(tresor: t)
       }
     }
   }
-  var tresorAppState: TresorAppModel?
+  var tresorAppModel: TresorAppModel?
   let dateFormatter = DateFormatter()
   
   override func viewDidLoad() {
@@ -42,7 +42,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   
   @objc
   private func refreshTable(_ sender: Any) {
-    self.tresorAppState?.fetchCloudKitChanges(in: .private, completion: {
+    self.tresorAppModel?.fetchCloudKitChanges(in: .private, completion: {
       DispatchQueue.main.async {
         self.refreshControl?.endRefreshing()
       }
@@ -63,7 +63,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   
   override func motionEnded(_ motion: UIEventSubtype, with event: UIEvent?) {
     if(event?.subtype == UIEventSubtype.motionShake) {
-      self.tresorAppState?.makeMasterKeyUnavailable()
+      self.tresorAppModel?.makeMasterKeyUnavailable()
     }
   }
   
@@ -91,7 +91,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
         
         let object = fetchedResultsController.object(at: newIndexPath)
         let controller = (segue.destination as! UINavigationController).topViewController as! TresorDocumentItemViewController
-        controller.tresorAppState = self.tresorAppState
+        controller.tresorAppModel = self.tresorAppModel
         controller.tresorDocumentItem = object
         controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
         controller.navigationItem.leftItemsSupplementBackButton = true
@@ -100,7 +100,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
       let payloadMetaInfo = sender as! PayloadMetainfo
       
       let controller = (segue.destination as! UINavigationController).topViewController as! EditTresorDocumentItemViewController
-      controller.tresorAppState = self.tresorAppState
+      controller.tresorAppModel = self.tresorAppModel
       
       controller.setModel(payload: payloadMetaInfo.toModel(), metaInfo: payloadMetaInfo.toTresorDocumentMetaInfo())
       
@@ -122,12 +122,12 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   
   @IBAction
   func insertNewObject(_ sender: Any) {
-    if let templates = self.tresorAppState?.templates.templatenames, templates.count > 0 {
+    if let templates = self.tresorAppModel?.templates.templatenames, templates.count > 0 {
       let actionSheet = UIAlertController(title: "Add new Document", message: "Select template for new document", preferredStyle: .actionSheet)
       
       for t in templates {
         actionSheet.addAction(UIAlertAction(title: t, style: .default, handler: { [weak self] alertAction in
-          let payloadMetainfo = self!.tresorAppState?.templates.payloadMetainfo(name: t)
+          let payloadMetainfo = self!.tresorAppModel?.templates.payloadMetainfo(name: t)
           
           self!.performSegue(withIdentifier: "editNewTresorDocument", sender: payloadMetainfo)
         }))
@@ -142,10 +142,10 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   // MARK: - Data handling
   
   fileprivate func createNewTresorDocument(tresorDocumentMetaInfo : TresorDocumentMetaInfo, model:Payload) {
-    self.tresorAppState?.getMasterKey() { (tresorKey, error) in
+    self.tresorAppModel?.getMasterKey() { (tresorKey, error) in
       if let key = tresorKey,
         let t = self.tresor,
-        let context = self.tresorAppState?.tresorModel.getCoreDataManager()?.privateChildManagedObjectContext() {
+        let context = self.tresorAppModel?.tresorModel.getCoreDataManager()?.privateChildManagedObjectContext() {
         
         self.beginInsertNewObject()
         context.perform {
@@ -155,7 +155,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
             let _ = try context.save()
             
             DispatchQueue.main.async {
-              self.tresorAppState?.tresorModel.saveChanges()
+              self.tresorAppModel?.tresorModel.saveChanges()
               self.endInsertNewObject()
             }
             
@@ -255,7 +255,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
       
       if let context = context {
         context.performSave(contextInfo: "deleting tresor object", completion: {
-          self.tresorAppState?.tresorModel.saveChanges()
+          self.tresorAppModel?.tresorModel.saveChanges()
         })
       }
     }
@@ -326,7 +326,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     }
     
     do {
-      try _fetchedResultsController = self.tresorAppState?.tresorModel.createAndFetchTresorDocumentItemFetchedResultsController(tresor: tresor)
+      try _fetchedResultsController = self.tresorAppModel?.tresorModel.createAndFetchTresorDocumentItemFetchedResultsController(tresor: tresor)
       
       _fetchedResultsController?.delegate = self
     } catch {

@@ -14,7 +14,7 @@ class EditTresorDocumentItemViewController: UITableViewController, UITextFieldDe
   @IBOutlet weak var titleTextField: UITextField!
   @IBOutlet weak var descriptionTextField: UITextField!
   
-  var tresorAppState: TresorAppModel?
+  var tresorAppModel: TresorAppModel?
   var tresorDocumentMetaInfo : TresorDocumentMetaInfo?
   
   fileprivate let dateFormatter = DateFormatter()
@@ -81,7 +81,7 @@ class EditTresorDocumentItemViewController: UITableViewController, UITextFieldDe
     else if segue.identifier == "showSelectIcon" {
       let controller = (segue.destination as! UINavigationController).topViewController as! SelectIconViewController
       
-      controller.tresorAppState = self.tresorAppState
+      controller.tresorAppModel = self.tresorAppModel
     }
   }
   
@@ -250,7 +250,7 @@ class EditTresorDocumentItemViewController: UITableViewController, UITextFieldDe
       cell.itemNameButton?.setTitle(payloadItem.name, for: .normal)
       cell.itemValueTextfield?.text = payloadItem.value.toString()
       
-      if let payloadMetainfoItem = self.tresorAppState?.templates.payloadMetainfoItem(name: metainfoName, indexPath: indexPath) {
+      if let payloadMetainfoItem = self.tresorAppModel?.templates.payloadMetainfoItem(name: metainfoName, indexPath: indexPath) {
         cell.itemValueTextfield.placeholder = payloadMetainfoItem.placeholder
       }
       

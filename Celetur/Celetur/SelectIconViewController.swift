@@ -10,7 +10,7 @@ private let reuseIdentifier = "IconCell"
 
 class SelectIconViewController: UICollectionViewController {
   
-  var tresorAppState: TresorAppModel?
+  var tresorAppModel: TresorAppModel?
   var selectedIcon : IconCatalogItem?
   
   fileprivate var iconCatalog : IconCatalog?
@@ -26,7 +26,7 @@ class SelectIconViewController: UICollectionViewController {
                                   forSupplementaryViewOfKind: UICollectionElementKindSectionHeader,
                                   withReuseIdentifier: headerReuseIdentifier)
     
-    self.iconCatalog = tresorAppState?.iconCatalogInfo.iconCatalog
+    self.iconCatalog = tresorAppModel?.iconCatalogInfo.iconCatalog
   }
   
   

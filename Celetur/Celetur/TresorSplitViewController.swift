@@ -5,8 +5,9 @@
 import UIKit
 import CloudKit
 import UserNotifications
+import CeleturKit
 
-class TresorSplitViewContainer: UISplitViewController {
+class TresorSplitViewController: UISplitViewController {
 
   fileprivate var gradientView : GradientView?
   fileprivate var progressView : UIProgressView?
@@ -14,10 +15,12 @@ class TresorSplitViewContainer: UISplitViewController {
   
   var tresorAppModel : TresorAppModel?
   
+  
+  
   override func awakeFromNib() {
     celeturLogger.debug("TresorSplitViewContainer.awakeFromNib()")
-    
-    self.delegate = self
+   
+    self.delegate = self.tresorViewController
   }
   
   func completeSetup() {
@@ -39,8 +42,7 @@ class TresorSplitViewContainer: UISplitViewController {
     super.viewDidLoad()
     
     self.view.backgroundColor = UIColor.clear
-    self.tresorViewController().tresorAppModel = self.tresorAppModel
-    self.tresorDocumentItemViewController().navigationItem.leftBarButtonItem = self.displayModeButtonItem
+    self.tresorViewController.tresorAppModel = self.tresorAppModel
     
     self.createGradientView()
     self.createProgressView()
@@ -57,17 +59,40 @@ class TresorSplitViewContainer: UISplitViewController {
     
   }
   
-  func tresorViewController() -> TresorViewController {
-    let navigationController = self.viewControllers[0] as! UINavigationController
-    
-    return navigationController.topViewController as! TresorViewController
+  var tresorViewController: TresorViewController {
+    get {
+      let navigationController = self.viewControllers.first as! UINavigationController
+      
+      return navigationController.topViewController as! TresorViewController
+    }
   }
   
-  func tresorDocumentItemViewController() -> TresorDocumentItemViewController {
-    let navigationController = self.viewControllers[self.viewControllers.count-1] as! UINavigationController
-    
-    return navigationController.topViewController as! TresorDocumentItemViewController
+  var masterViewController: UIViewController {
+    get {
+      return self.viewControllers.first!
+    }
   }
+  
+  var detailViewController: UIViewController? {
+    get {
+      return self.viewControllers.count>1 ? self.viewControllers.last : nil
+    }
+  }
+  
+  
+  var tresorDocumentItemViewController: TresorDocumentItemViewController? {
+    get {
+      let navigationController = self.viewControllers.count>1 ? self.viewControllers.last as? UINavigationController : nil
+      
+      return navigationController?.topViewController as? TresorDocumentItemViewController
+    }
+  }
+  
+  lazy var tdivc : TresorDocumentItemViewController = {
+    let vc = UIStoryboard(name: "Editor", bundle: nil).instantiateInitialViewController()
+    
+    return ((vc as! UINavigationController).topViewController as? TresorDocumentItemViewController)!
+  }()
   
   fileprivate func createGradientView() {
     let window = (UIApplication.shared.delegate?.window!)!
@@ -81,7 +106,7 @@ class TresorSplitViewContainer: UISplitViewController {
   }
   
   fileprivate func createProgressView() {
-    if let navigationBar = self.tresorViewController().navigationController?.navigationBar {
+    if let navigationBar = self.tresorViewController.navigationController?.navigationBar {
       let progressView = UIProgressView(progressViewStyle: .bar)
       
       progressView.progress = 1.0
@@ -158,7 +183,7 @@ class TresorSplitViewContainer: UISplitViewController {
 //
 // MARK: - UNUserNotificationCenterDelegate
 //
-extension TresorSplitViewContainer: UNUserNotificationCenterDelegate {
+extension TresorSplitViewController: UNUserNotificationCenterDelegate {
   
   func userNotificationCenter(_ center: UNUserNotificationCenter,
                                        didReceive response: UNNotificationResponse,
@@ -176,26 +201,31 @@ extension TresorSplitViewContainer: UNUserNotificationCenterDelegate {
 }
 
 //
-// MARK: - UISplitViewControllerDelegate
+// MARK: - UIViewController+Extension
 //
-extension TresorSplitViewContainer: UISplitViewControllerDelegate {
-  
-  func splitViewController(_ splitViewController: UISplitViewController,
-                           collapseSecondary secondaryViewController: UIViewController,
-                           onto primaryViewController: UIViewController) -> Bool {
-    var result = false
-    
-    if let secondaryAsNavController = secondaryViewController as? UINavigationController,
-      let topAsDetailController = secondaryAsNavController.topViewController as? TresorDocumentItemViewController {
-      
-      if topAsDetailController.tresorDocumentItem == nil {
-        // Return true to indicate that we have handled the collapse by doing nothing; the secondary controller will be discarded.
-        result = true
-      }
+extension UIViewController {
+  var tresorSplitViewController : TresorSplitViewController {
+    get {
+      return self.splitViewController as! TresorSplitViewController
     }
-    
-    celeturLogger.debug("TresorSplitViewContainer.splitViewController onto primary:\(result)")
-    
-    return result
   }
+}
+
+
+//
+// MARK: - TresorDocumentViewControllerDelegate
+//
+extension TresorSplitViewController: TresorDocumentViewControllerDelegate {
+  
+  func documentItemSelected(documentItem: TresorDocumentItem) {
+    celeturLogger.debug("documentItemSelected")
+    
+    let vc = self.tdivc
+    
+    vc.tresorAppModel = self.tresorAppModel
+    vc.tresorDocumentItem = documentItem
+    
+    self.showDetailViewController(vc.navigationController!, sender: self)
+  }
+  
 }

@@ -7,7 +7,14 @@ import UIKit
 import CoreData
 import CeleturKit
 
+protocol TresorDocumentViewControllerDelegate: class {
+  func documentItemSelected(documentItem:TresorDocumentItem)
+}
+
+
 class TresorDocumentViewController: UITableViewController, NSFetchedResultsControllerDelegate {
+  
+  weak var delegate : TresorDocumentViewControllerDelegate?
   
   var tresor: Tresor? {
     didSet {
@@ -70,33 +77,8 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   
   // MARK: - Navigation
   
-  override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
-    var result = true
-    
-    if identifier == "showTresorDocumentItemDetail", let indexPath = tableView.indexPathForSelectedRow {
-      result = indexPath.row-1>=0
-    }
-    
-    return result
-  }
-  
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-    if segue.identifier == "showTresorDocumentItemDetail" {
-      if let indexPath = tableView.indexPathForSelectedRow {
-        let newIndexPath = IndexPath(row: indexPath.row-1, section: indexPath.section)
-        
-        if newIndexPath.row<0 {
-          return
-        }
-        
-        let object = fetchedResultsController.object(at: newIndexPath)
-        let controller = (segue.destination as! UINavigationController).topViewController as! TresorDocumentItemViewController
-        controller.tresorAppModel = self.tresorAppModel
-        controller.tresorDocumentItem = object
-        controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
-        controller.navigationItem.leftItemsSupplementBackButton = true
-      }
-    } else if segue.identifier == "editNewTresorDocument" {
+    if segue.identifier == "editNewTresorDocument" {
       let payloadMetaInfo = sender as! PayloadMetainfo
       
       let controller = (segue.destination as! UINavigationController).topViewController as! EditTresorDocumentItemViewController
@@ -226,7 +208,6 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   }
   
   override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-    
     return true
   }
   
@@ -264,11 +245,14 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   }
   
   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    if self.shouldPerformSegue(withIdentifier: "showTresorDocumentItemDetail", sender: self) {
-      self.performSegue(withIdentifier: "showTresorDocumentItemDetail", sender: self)
-    } else {
-      self.tableView.deselectRow(at: indexPath, animated: false)
+    if indexPath.row-1>=0 {
+      let newIndexPath = IndexPath(row: indexPath.row-1, section: indexPath.section)
+      let selectedTresorDocumentItem = self.fetchedResultsController.object(at: newIndexPath)
+      
+      self.delegate?.documentItemSelected(documentItem: selectedTresorDocumentItem)
     }
+    
+    self.tableView.deselectRow(at: indexPath, animated: true)
   }
   
   override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {

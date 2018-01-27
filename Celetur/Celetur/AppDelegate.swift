@@ -17,12 +17,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   var window: UIWindow?
   var tresorAppModel = TresorAppModel()
-  var tresorSplitViewContainer : TresorSplitViewContainer?
+  var tresorSplitViewContainer : TresorSplitViewController?
   
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
     self.celeturUIAppearance()
     
-    self.tresorSplitViewContainer = self.window!.rootViewController as? TresorSplitViewContainer
+    self.tresorSplitViewContainer = self.window!.rootViewController as? TresorSplitViewController
     self.tresorSplitViewContainer?.tresorAppModel = self.tresorAppModel
     
     return true

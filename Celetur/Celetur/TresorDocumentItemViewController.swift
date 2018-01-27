@@ -46,6 +46,8 @@ class TresorDocumentItemViewController: UIViewController, UITableViewDataSource,
     self.dateFormatter.timeStyle = DateFormatter.Style.short
     
     self.navigationItem.rightBarButtonItem?.isEnabled = false
+    self.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
+    self.navigationItem.leftItemsSupplementBackButton = true
     
     self.tableView.register(UINib(nibName:"TresorDocumentItemCell",bundle:nil),forCellReuseIdentifier:"tresorDocumentItemCell")
     

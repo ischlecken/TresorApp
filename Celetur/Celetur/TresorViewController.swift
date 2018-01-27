@@ -8,7 +8,6 @@ import CoreData
 import CeleturKit
 
 class TresorViewController: UITableViewController, NSFetchedResultsControllerDelegate {
-  
   var tresorAppModel : TresorAppModel?
   
   fileprivate let dateFormatter = DateFormatter()
@@ -146,8 +145,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
           
           controller.tresorAppModel = self.tresorAppModel
           controller.tresor = object
-          controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
-          controller.navigationItem.leftItemsSupplementBackButton = true
+          controller.delegate = self.tresorSplitViewController
         }
         
       case "showEditTresor":
@@ -348,5 +346,32 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
     tableView.endUpdates()
   }
+  
+  
 }
 
+
+//
+// MARK: - UISplitViewControllerDelegate
+//
+extension TresorViewController: UISplitViewControllerDelegate {
+  
+  func splitViewController(_ splitViewController: UISplitViewController,
+                           collapseSecondary secondaryViewController: UIViewController,
+                           onto primaryViewController: UIViewController) -> Bool {
+    var result = false
+    
+    if let secondaryAsNavController = secondaryViewController as? UINavigationController,
+      let topAsDetailController = secondaryAsNavController.topViewController as? TresorDocumentItemViewController {
+      
+      if topAsDetailController.tresorDocumentItem == nil {
+        // Return true to indicate that we have handled the collapse by doing nothing; the secondary controller will be discarded.
+        result = true
+      }
+    }
+    
+    celeturLogger.debug("TresorViewController.splitViewController onto primary:\(result)")
+    
+    return result
+  }
+}

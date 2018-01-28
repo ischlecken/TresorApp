@@ -213,30 +213,37 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   
   override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
     if editingStyle == .delete {
-      var context : NSManagedObjectContext?
+      var ctx : NSManagedObjectContext?
       
       if indexPath.row == 0 {
-        if let tresorDocument = fetchedResultsController.object(at: indexPath).document {
-          context = tresorDocument.managedObjectContext
+        if let tresorDocument = fetchedResultsController.object(at: indexPath).document,
+          let context = tresorDocument.managedObjectContext {
           
           tresorDocument.deleteTresorDocument()
+          ctx = context
         }
       } else {
         let newIndexPath = IndexPath(row: indexPath.row-1, section: indexPath.section)
         let tresorDocumentItem = fetchedResultsController.object(at: newIndexPath)
         
-        if let tresorDoc = tresorDocumentItem.document {
-          context = tresorDoc.managedObjectContext
+        if let tresorDoc = tresorDocumentItem.document,
+          let context = tresorDoc.managedObjectContext {
           
           if tresorDoc.documentitems?.count == 1 {
             tresorDoc.deleteTresorDocument()
           } else {
-            context?.delete(tresorDocumentItem)
+            var logEntries = [TresorLogInfo]()
+            logEntries.append(TresorLogInfo(messageIndentLevel: 0, messageName: .deleteObject, objectType: .TresorDocumentItem, objectId: tresorDocumentItem.id!))
+            TresorLog.createLogEntries(context: context, ckUserId: tresorDocumentItem.ckuserid, entries: logEntries)
+            
+            context.delete(tresorDocumentItem)
+            
+            ctx = context
           }
         }
       }
       
-      if let context = context {
+      if let context = ctx {
         context.performSave(contextInfo: "deleting tresor object", completion: {
           self.tresorAppModel?.tresorModel.saveChanges()
         })

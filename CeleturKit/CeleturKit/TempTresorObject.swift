@@ -26,6 +26,10 @@ public class TempTresorObject {
     
     tempTresor?.isreadonly = tresor.isreadonly
     
+    var logEntries = [TresorLogInfo]()
+    logEntries.append(TresorLogInfo(messageIndentLevel: 0, messageName: .modifyObject, objectType: .Tresor, objectId: (tempTresor?.id!)!))
+    TresorLog.createLogEntries(context: scratchpadContext, ckUserId: tempTresor?.ckuserid, entries: logEntries)
+    
     if let t = tempTresor {
       self.init(context:scratchpadContext, tresor:t, userDevices:TresorUserDevice.loadUserDevices(context: cdm.mainManagedObjectContext, ckUserId: tresor.ckuserid))
     } else {
@@ -43,6 +47,11 @@ public class TempTresorObject {
       tempTresor = try Tresor.createTempTresor(context: scratchpadContext, ckUserId: ckUserId)
       tempTresor?.ckuserid = ckUserId
       tempTresor?.isreadonly = isReadOnly
+      
+      var logEntries = [TresorLogInfo]()
+      logEntries.append(TresorLogInfo(messageIndentLevel: 0, messageName: .createObject, objectType: .Tresor, objectId: (tempTresor?.id!)!))
+      
+      TresorLog.createLogEntries(context: scratchpadContext, ckUserId: ckUserId, entries: logEntries)
     } catch {
       celeturKitLogger.error("Error creating temp tresor object",error:error)
     }

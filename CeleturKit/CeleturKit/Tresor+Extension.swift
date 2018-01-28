@@ -73,15 +73,21 @@ public extension Tresor {
   }
   
   public func deleteTresor() {
+    var logEntries = [TresorLogInfo]()
+    
+    logEntries.append(TresorLogInfo(messageIndentLevel: 0, messageName: .deleteObject, objectType: .Tresor, objectId: self.id!))
+    
     if let docs = self.documents {
       for doc in docs {
         if let o = doc as? TresorDocument {
-          o.deleteTresorDocument()
+          o.deleteTresorDocument(logEntries: &logEntries, intentLevelOffset: 1)
         }
       }
     }
     
-    self.managedObjectContext?.delete(self)
+    TresorLog.createLogEntries(context: self.managedObjectContext!, ckUserId: self.ckuserid, entries: logEntries)
+    
+    self.managedObjectContext!.delete(self)
   }
   
   public func shouldEncryptAllDocumentItemsThatShouldBeEncryptedByDevice() -> Bool {

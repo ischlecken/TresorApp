@@ -180,6 +180,13 @@ extension TresorDocumentItem {
       let tempTresorDocument = context.object(with: tresorDocument.objectID) as? TresorDocument,
       let payload = PayloadSerializer.jsonData(model: model) {
       
+      var logEntries = [TresorLogInfo]()
+      
+      logEntries.append(TresorLogInfo(messageIndentLevel: 0,
+                                      messageName: .modifyObject,
+                                      objectType: .TresorDocument,
+                                      objectId: tempTresorDocument.id!))
+      
       for case let it as TresorDocumentItem in (tempTresorDocument.documentitems)! {
         if let ud = it.userdevice {
           let isUserDeviceCurrentDevice = currentDeviceInfo?.isCurrentDevice(tresorUserDevice: ud) ?? false
@@ -193,10 +200,10 @@ extension TresorDocumentItem {
             
             celeturKitLogger.debug("item after encryption:\(it)")
             
-            let _ = TresorLog(context: context, ckUserId: it.ckuserid,
-                              messageName: TresorLogMessageName.encryptObject,
-                              objectType: TresorLogObjectType.TresorDocumentItem, objectId: it.id)
-            
+            logEntries.append(TresorLogInfo(messageIndentLevel: 1,
+                                            messageName: .encryptPayload,
+                                            objectType: .TresorDocumentItem,
+                                            objectId: it.id!))
           }
         }
       }
@@ -204,9 +211,7 @@ extension TresorDocumentItem {
       tempTresorDocument.setMetaInfo(metaInfo: metaInfo)
       tempTresorDocument.changets = Date()
       
-      let _ = TresorLog(context: context, ckUserId: tempTresorDocument.ckuserid,
-                        messageName: TresorLogMessageName.modifyObject,
-                        objectType: TresorLogObjectType.TresorDocument, objectId: tempTresorDocument.id)
+      TresorLog.createLogEntries(context: context, ckUserId: tempTresorDocument.ckuserid, entries: logEntries)
     
       celeturKitLogger.debug("saveDocumentItemModelData(): encryption completed")
     }

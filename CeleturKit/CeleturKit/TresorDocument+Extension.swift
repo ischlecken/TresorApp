@@ -36,7 +36,11 @@ extension TresorDocument {
                           metaInfo: TresorDocumentMetaInfo,
                           model: Payload) throws {
     
+    var logEntries = [TresorLogInfo]()
+    
     try self.init(context: context, tresor: tresor)
+    
+    logEntries.append(TresorLogInfo(messageIndentLevel: 0, messageName: .createObject, objectType: .TresorDocument, objectId: self.id!))
     
     if let payload = PayloadSerializer.jsonData(model: model),
       let currentDeviceKey = masterKey.accessToken {
@@ -49,11 +53,17 @@ extension TresorDocument {
         if let key = isUserDeviceCurrentDevice ? currentDeviceKey : userDevice.messagekey {
           let tdi = TresorDocumentItem(context: context, tresorDocument: self, userDevice: userDevice)
           
+          logEntries.append(TresorLogInfo(messageIndentLevel: 1, messageName: .createObject, objectType: .TresorDocumentItem, objectId: tdi.id!))
+          
           let _ = tdi.encryptPayload(key: key, payload: payload, status: isUserDeviceCurrentDevice ? .encrypted : .shouldBeEncryptedByDevice)
+    
+          logEntries.append(TresorLogInfo(messageIndentLevel: 2, messageName: .encryptPayload, objectType: .TresorDocumentItem, objectId: tdi.id!))
           
           celeturKitLogger.debug(" tdi:\(tdi)")
         }
       }
+      
+      TresorLog.createLogEntries(context: context, ckUserId: tresor.ckuserid, entries: logEntries)
       
       celeturKitLogger.debug("create of complete tresordocument finished")
     }
@@ -83,10 +93,25 @@ extension TresorDocument {
   
   public func deleteTresorDocument() {
     if let context = self.managedObjectContext {
+      var logEntries = [TresorLogInfo]()
+      let ckuserid = self.ckuserid
+      
+      self.deleteTresorDocument(logEntries: &logEntries, intentLevelOffset: 0)
+      
+      TresorLog.createLogEntries(context: context, ckUserId: ckuserid, entries: logEntries)
+    }
+  }
+  
+  public func deleteTresorDocument(logEntries: inout [TresorLogInfo],intentLevelOffset:Int8) {
+    if let context = self.managedObjectContext {
+      
+      logEntries.append(TresorLogInfo(messageIndentLevel: intentLevelOffset+0, messageName: .deleteObject, objectType: .TresorDocument, objectId: self.id!))
     
       if let docItems = self.documentitems {
         for item in docItems {
-          if let o = item as? NSManagedObject {
+          if let o = item as? TresorDocumentItem {
+            logEntries.append(TresorLogInfo(messageIndentLevel: intentLevelOffset+1, messageName: .deleteObject, objectType: .TresorDocumentItem, objectId: o.id!))
+            
             context.delete(o)
           }
         }

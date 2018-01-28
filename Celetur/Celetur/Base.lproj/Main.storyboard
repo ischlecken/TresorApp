@@ -48,17 +48,26 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" name="celeturBackground"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="templateCell" id="rQA-Li-nuf">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="templateCell" textLabel="K2A-pw-toA" style="IBUITableViewCellStyleDefault" id="rQA-Li-nuf">
                                 <rect key="frame" x="0.0" y="55.333333333333336" width="414" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="rQA-Li-nuf" id="Y2L-jB-GmI">
-                                    <rect key="frame" x="0.0" y="0.0" width="414" height="43.666666666666664"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="376" height="43.666666666666664"/>
                                     <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="K2A-pw-toA">
+                                            <rect key="frame" x="20" y="0.0" width="356" height="43.666666666666664"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </tableViewCellContentView>
                                 <color key="backgroundColor" red="0.99999600649999998" green="1" blue="1" alpha="0.7939453125" colorSpace="custom" customColorSpace="sRGB"/>
                                 <connections>
-                                    <segue destination="lap-lW-FmK" kind="showDetail" identifier="showTresorDocument" action="showViewController:sender:" id="5qk-yz-W6W"/>
+                                    <segue destination="9bD-mh-Z4Q" kind="showDetail" identifier="showTresorLog" id="d5P-sb-9af"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -91,6 +100,7 @@
                         <segue destination="bU5-Rq-6eJ" kind="popoverPresentation" identifier="showEditTresor" popoverAnchorBarButtonItem="jey-Ak-XPv" id="p7i-Xw-PEd">
                             <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
                         </segue>
+                        <segue destination="lap-lW-FmK" kind="showDetail" identifier="showTresorDocument" id="xWu-Q6-0NO"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rux-fX-hf1" sceneMemberID="firstResponder"/>
@@ -134,6 +144,50 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jOg-tF-UOd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1448" y="-805"/>
+        </scene>
+        <!--Tresor Log View Controller-->
+        <scene sceneID="PkW-3z-Qeq">
+            <objects>
+                <tableViewController id="9bD-mh-Z4Q" customClass="TresorLogViewController" customModule="Celetur" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" id="C4Y-ee-dr4">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="logCell" textLabel="OC6-bQ-icx" detailTextLabel="UO7-nZ-ka3" style="IBUITableViewCellStyleSubtitle" id="adt-G6-HJy">
+                                <rect key="frame" x="0.0" y="55.333333333333336" width="414" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="adt-G6-HJy" id="ufe-TF-Nn8">
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="43.666666666666664"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="OC6-bQ-icx">
+                                            <rect key="frame" x="20.000000000000004" y="5" width="33.333333333333336" height="20.333333333333332"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Subtitle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="UO7-nZ-ka3">
+                                            <rect key="frame" x="19.999999999999996" y="25.333333333333332" width="43.666666666666664" height="14.333333333333334"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="9bD-mh-Z4Q" id="P76-kY-2DP"/>
+                            <outlet property="delegate" destination="9bD-mh-Z4Q" id="AKN-sE-K5Y"/>
+                        </connections>
+                    </tableView>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="7fO-zm-x3U" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="603" y="-255"/>
         </scene>
         <!--EditTresorDocumentItemController-->
         <scene sceneID="AEm-NL-I1t">

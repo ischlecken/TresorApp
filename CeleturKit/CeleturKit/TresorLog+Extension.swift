@@ -98,4 +98,32 @@ public extension TresorLog {
     self.devicesystemversion = UIDevice.current.systemVersion
     self.deviceuitype = Int16(UIDevice.current.userInterfaceIdiom.rawValue)
   }
+  
+  
+  class func createAndFetchTresorLogFetchedResultsController(context: NSManagedObjectContext) throws -> NSFetchedResultsController<TresorLog> {
+    let fetchRequest: NSFetchRequest<TresorLog> = TresorLog.fetchRequest()
+    
+    // Set the batch size to a suitable number.
+    fetchRequest.fetchBatchSize = 20
+    
+    // Edit the sort key as appropriate.
+    let sortDescriptor0 = NSSortDescriptor(key: "ckuserid", ascending: false)
+    let sortDescriptor2 = NSSortDescriptor(key: "messagegroupid", ascending: true)
+    let sortDescriptor3 = NSSortDescriptor(key: "messagegrouporder", ascending: true)
+    
+    fetchRequest.sortDescriptors = [sortDescriptor0,sortDescriptor2,sortDescriptor3]
+    
+    let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
+                                                               managedObjectContext: context,
+                                                               sectionNameKeyPath: "ckuserid",
+                                                               cacheName: nil)
+    
+    do {
+      try aFetchedResultsController.performFetch()
+    } catch {
+      throw CeleturKitError.creationOfFetchResultsControllerFailed(coreDataError: error as NSError)
+    }
+    
+    return aFetchedResultsController
+  }
 }

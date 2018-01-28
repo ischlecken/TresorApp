@@ -8,6 +8,7 @@ import CoreData
 import CeleturKit
 
 class TresorViewController: UITableViewController, NSFetchedResultsControllerDelegate {
+  
   var tresorAppModel : TresorAppModel?
   
   fileprivate let dateFormatter = DateFormatter()
@@ -140,13 +141,17 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
       switch ident {
       case "showTresorDocument":
         if let indexPath = tableView.indexPathForSelectedRow {
-          let object = self.getObject(indexPath: indexPath)
           let controller = segue.destination as! TresorDocumentViewController
           
           controller.tresorAppModel = self.tresorAppModel
-          controller.tresor = object
+          controller.tresor = self.getObject(indexPath: indexPath)
           controller.delegate = self.tresorSplitViewController
         }
+        
+      case "showTresorLog":
+        let controller = segue.destination as! TresorLogViewController
+          
+        controller.tresorAppModel = self.tresorAppModel
         
       case "showEditTresor":
         let controller = (segue.destination as! UINavigationController).topViewController as! EditTresorViewController
@@ -202,44 +207,62 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   // MARK: - Table View
   
   override func numberOfSections(in tableView: UITableView) -> Int {
-    return self.fetchedResultsController?.sections?.count ?? 0
+    let sections = self.fetchedResultsController?.sections
+    
+    return sections != nil ? sections!.count + 1 : 1
   }
   
   override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return self.fetchedResultsController?.sections![section].numberOfObjects ?? 0
+    let sections = self.fetchedResultsController?.sections
+    
+    return sections != nil && section>0 ? sections![section-1].numberOfObjects : 1
   }
   
-  fileprivate func getObject(indexPath:IndexPath) -> Tresor {
-    return self.fetchedResultsController!.object(at: indexPath)
+  fileprivate func getObject(indexPath:IndexPath) -> Tresor? {
+    return indexPath.section>0 ? self.fetchedResultsController!.object(at: IndexPath(row: indexPath.row, section: indexPath.section-1)) : nil
   }
   
   override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-    let t = self.getObject(indexPath: IndexPath(row:0,section:section))
+    if let t = self.getObject(indexPath: IndexPath(row:0,section:section)) {
+      return self.tresorAppModel?.tresorModel.displayInfoForCkUserId(ckUserId: t.ckuserid)
+    }
     
-    return self.tresorAppModel?.tresorModel.displayInfoForCkUserId(ckUserId: t.ckuserid)
+    return "Tresor Log"
   }
   
   
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCell(withIdentifier: "tresorCell", for: indexPath) as? TresorCell
-    let tresor = self.getObject(indexPath: indexPath)
+    if indexPath.section>0 {
+      let cell = tableView.dequeueReusableCell(withIdentifier: "tresorCell", for: indexPath) as? TresorCell
+      let tresor = self.getObject(indexPath: indexPath)
+      
+      configureCell(cell!, withTresor: tresor!)
+      
+      return cell!
+    }
     
-    configureCell(cell!, withTresor: tresor)
+    let cell = tableView.dequeueReusableCell(withIdentifier: "templateCell", for: indexPath)
     
-    return cell!
+    cell.textLabel?.text = "Log"
+    
+    return cell
   }
   
   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    self.performSegue(withIdentifier: "showTresorDocument", sender: self)
+    if indexPath.section>0 {
+      self.performSegue(withIdentifier: "showTresorDocument", sender: self)
+    } else {
+      self.tableView.deselectRow(at: indexPath, animated: true)
+    }
   }
   
   override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-    // Return false if you do not want the specified item to be editable.
-    return true
+    return indexPath.section > 0
   }
   
   override func tableView(_ tableView: UITableView, editActionsForRowAt: IndexPath) -> [UITableViewRowAction]? {
-    let tresor = self.getObject(indexPath: editActionsForRowAt)
+    guard let tresor = self.getObject(indexPath: editActionsForRowAt) else { return nil }
+    
     let editActionTitle = tresor.isreadonly ? "Show" : "Edit"
     
     let editAction = UITableViewRowAction(style: .normal, title: editActionTitle) { action, index in
@@ -261,8 +284,6 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
       actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler:nil))
       
       self.present(actionSheet, animated: true, completion: nil)
-      
-      
     }
     
     let testAction = UITableViewRowAction(style: .normal, title: "Test") { action, index in
@@ -313,9 +334,9 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange sectionInfo: NSFetchedResultsSectionInfo, atSectionIndex sectionIndex: Int, for type: NSFetchedResultsChangeType) {
     switch type {
     case .insert:
-      tableView.insertSections(IndexSet(integer: sectionIndex), with: .fade)
+      tableView.insertSections(IndexSet(integer: sectionIndex+1), with: .fade)
     case .delete:
-      tableView.deleteSections(IndexSet(integer: sectionIndex), with: .fade)
+      tableView.deleteSections(IndexSet(integer: sectionIndex+1), with: .fade)
     default:
       return
     }
@@ -324,21 +345,22 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
     switch type {
     case .insert:
-      tableView.insertRows(at: [newIndexPath!], with: .fade)
+      tableView.insertRows(at: [IndexPath(row:newIndexPath!.row,section:newIndexPath!.section+1)], with: .fade)
     case .delete:
-      tableView.deleteRows(at: [indexPath!], with: .fade)
+      tableView.deleteRows(at: [IndexPath(row:indexPath!.row,section:indexPath!.section+1)], with: .fade)
     case .update:
-      let cell = tableView.cellForRow(at: indexPath!) as? TresorCell
+      let cell = tableView.cellForRow(at: IndexPath(row:indexPath!.row,section:indexPath!.section+1)) as? TresorCell
       
       if let c = cell {
         configureCell(c, withTresor: anObject as! Tresor)
       }
     case .move:
-      let cell = tableView.cellForRow(at: indexPath!) as? TresorCell
+      let cell = tableView.cellForRow(at: IndexPath(row:indexPath!.row,section:indexPath!.section+1)) as? TresorCell
       
       if let c = cell {
         configureCell(c, withTresor: anObject as! Tresor)
-        tableView.moveRow(at: indexPath!, to: newIndexPath!)
+        
+        tableView.moveRow(at: IndexPath(row:indexPath!.row,section:indexPath!.section+1), to: IndexPath(row:newIndexPath!.row,section:newIndexPath!.section+1))
       }
     }
   }

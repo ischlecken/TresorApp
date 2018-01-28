@@ -24,6 +24,7 @@
 		85810E1D1FADB8720012B06C /* TresorDocumentItemCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 85810E1C1FADB8720012B06C /* TresorDocumentItemCell.xib */; };
 		85810E201FADBA940012B06C /* TresorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85810E1E1FADBA940012B06C /* TresorCell.swift */; };
 		85810E211FADBA940012B06C /* TresorDocumentItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85810E1F1FADBA940012B06C /* TresorDocumentItemCell.swift */; };
+		858FF132201E86B2008310D6 /* TresorLogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 858FF131201E86B2008310D6 /* TresorLogViewController.swift */; };
 		859739111FAA88E8003196B2 /* UIRefreshControl+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 859739101FAA88E8003196B2 /* UIRefreshControl+Extension.swift */; };
 		85A08A8C200103E0001DC299 /* website.ctpl in Resources */ = {isa = PBXBuildFile; fileRef = 85A08A8A200103E0001DC299 /* website.ctpl */; };
 		85A08A8D200103E0001DC299 /* emailaccount.ctpl in Resources */ = {isa = PBXBuildFile; fileRef = 85A08A8B200103E0001DC299 /* emailaccount.ctpl */; };
@@ -119,6 +120,7 @@
 		85810E1C1FADB8720012B06C /* TresorDocumentItemCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TresorDocumentItemCell.xib; sourceTree = "<group>"; };
 		85810E1E1FADBA940012B06C /* TresorCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TresorCell.swift; sourceTree = "<group>"; };
 		85810E1F1FADBA940012B06C /* TresorDocumentItemCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TresorDocumentItemCell.swift; sourceTree = "<group>"; };
+		858FF131201E86B2008310D6 /* TresorLogViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TresorLogViewController.swift; sourceTree = "<group>"; };
 		859739101FAA88E8003196B2 /* UIRefreshControl+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIRefreshControl+Extension.swift"; sourceTree = "<group>"; };
 		85A08A8A200103E0001DC299 /* website.ctpl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = website.ctpl; path = Templates/website.ctpl; sourceTree = "<group>"; };
 		85A08A8B200103E0001DC299 /* emailaccount.ctpl */ = {isa = PBXFileReference; explicitFileType = text.json; fileEncoding = 4; name = emailaccount.ctpl; path = Templates/emailaccount.ctpl; sourceTree = "<group>"; };
@@ -262,6 +264,7 @@
 				85F9080D1F12D9E30062BD63 /* AppDelegate.swift */,
 				851A437D201CA75700FE8B81 /* TresorSplitViewController.swift */,
 				85F908121F12D9E30062BD63 /* TresorViewController.swift */,
+				858FF131201E86B2008310D6 /* TresorLogViewController.swift */,
 				85C8AE4B1FA8CFF3002B7613 /* UIColor+Extension.swift */,
 				85D95E401F5305720044DFA0 /* SettingsViewController.swift */,
 				85D95E451F530A740044DFA0 /* UserDeviceViewController.swift */,
@@ -491,6 +494,7 @@
 				85EE8DA21F497D3600F6409D /* EditTresorDocumentItemViewController.swift in Sources */,
 				85F35D3C1FAF01D800349BF0 /* SelectItemNameTableViewController.swift in Sources */,
 				853328871FD317E1000F4C87 /* TresorDocumentCell.swift in Sources */,
+				858FF132201E86B2008310D6 /* TresorLogViewController.swift in Sources */,
 				85BE07D820027B01008991AF /* TresorTemplateInfo.swift in Sources */,
 				850B80F31F35DFF10078F042 /* TresorDocumentViewController.swift in Sources */,
 				85BE07E0200A755E008991AF /* SelectIconViewController.swift in Sources */,

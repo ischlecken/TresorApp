@@ -197,6 +197,18 @@ public class TresorModel {
     return result
   }
   
+  public func createAndFetchTresorLogFetchedResultsController(delegate: NSFetchedResultsControllerDelegate?) throws -> NSFetchedResultsController<TresorLog>? {
+    var result : NSFetchedResultsController<TresorLog>?
+    
+    if let moc = self.coreDataManager?.mainManagedObjectContext {
+      result = try TresorLog.createAndFetchTresorLogFetchedResultsController(context: moc)
+      
+      result?.delegate = delegate
+    }
+    
+    return result
+  }
+  
   public func createAndFetchUserdeviceFetchedResultsController() throws -> NSFetchedResultsController<TresorUserDevice>? {
     var result : NSFetchedResultsController<TresorUserDevice>?
     

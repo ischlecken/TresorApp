@@ -192,12 +192,21 @@ extension TresorDocumentItem {
             let _ = it.encryptPayload(key: key, payload: payload, status: status)
             
             celeturKitLogger.debug("item after encryption:\(it)")
+            
+            let _ = TresorLog(context: context, ckUserId: it.ckuserid,
+                              messageName: TresorLogMessageName.encryptObject,
+                              objectType: TresorLogObjectType.TresorDocumentItem, objectId: it.id)
+            
           }
         }
       }
     
       tempTresorDocument.setMetaInfo(metaInfo: metaInfo)
       tempTresorDocument.changets = Date()
+      
+      let _ = TresorLog(context: context, ckUserId: tempTresorDocument.ckuserid,
+                        messageName: TresorLogMessageName.modifyObject,
+                        objectType: TresorLogObjectType.TresorDocument, objectId: tempTresorDocument.id)
     
       celeturKitLogger.debug("saveDocumentItemModelData(): encryption completed")
     }

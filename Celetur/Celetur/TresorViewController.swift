@@ -234,8 +234,17 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     }
     
     let cell = tableView.dequeueReusableCell(withIdentifier: "templateCell", for: indexPath)
-    
     cell.textLabel?.text = "Log"
+    cell.detailTextLabel?.text = nil
+    
+    do {
+      if let lastLogEvents = try self.tresorAppModel?.tresorModel.lastLogEvents(), lastLogEvents.count>0 {
+        cell.textLabel?.text = TresorLogDescriptor.localizededDescription(lastLogEvents[0])
+        cell.detailTextLabel?.text = TresorLogDescriptor.subtitle(lastLogEvents[0])
+      }
+    } catch {
+      celeturLogger.error("Error while retrieving last log events...",error:error)
+    }
     
     return cell
   }

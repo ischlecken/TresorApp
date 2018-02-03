@@ -1,0 +1,15 @@
+/* 
+  Copyright © 2018 prisnoc. All rights reserved.
+*/
+
+"logMessage.createObject" = "%@ wurde erzeugt";
+"logMessage.createObject.param1" = "%@ '%@' wurde erzeugt";
+
+"logMessage.modifyObject" = "%@ wurde geändert";
+"logMessage.modifyObject.param1" = "%@ '%@' wurde geändert";
+
+"logMessage.deleteObject" = "%@ wurde gelöscht";
+"logMessage.deleteObject.param1" = "%@ '%@' wurde gelöscht";
+
+"logMessage.encryptPayload" = "%@ wurde verschlüsselt";
+"logMessage.decryptPayload" = "%@ wurde entschlüsselt";

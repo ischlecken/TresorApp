@@ -134,4 +134,49 @@ public extension TresorLog {
     
     return aFetchedResultsController
   }
+  
+  class func lastLogEvents(context: NSManagedObjectContext) throws -> [TresorLog] {
+    let fetchRequest: NSFetchRequest<TresorLog> = TresorLog.fetchRequest()
+    
+    // Set the batch size to a suitable number.
+    fetchRequest.fetchBatchSize = 3
+  
+    fetchRequest.predicate = NSPredicate(format: "messagegrouporder = 0")
+    
+    let sortDescriptor0 = NSSortDescriptor(key: "messagegroupts", ascending: false)
+    fetchRequest.sortDescriptors = [sortDescriptor0]
+    
+    let result = try fetchRequest.execute()
+    
+    return result
+  }
+}
+
+public class TresorLogDescriptor {
+  fileprivate static let myBundle = Bundle(for:TresorLogDescriptor.self)
+  fileprivate static let dateFormatter = DateFormatter()
+  
+  public class func localizededDescription(_ tresorLog:TresorLog) -> String {
+    guard let messagename = tresorLog.messagename
+      else { return "\(tresorLog.messagename ?? "-") \(tresorLog.objecttype ?? "-"):\(tresorLog.messageparameter1 ?? "-")" }
+    
+    var stringKey = "logMessage.\(messagename)"
+    if tresorLog.messageparameter1 != nil {
+      stringKey = "logMessage.\(messagename).param1"
+    }
+    
+    let logTextTemplate = myBundle.localizedString(forKey:stringKey, value: nil, table: "LogMessages")
+    if tresorLog.messageparameter1 != nil {
+      return String(format: logTextTemplate, tresorLog.objecttype!, tresorLog.messageparameter1!)
+    } else {
+      return String(format: logTextTemplate, tresorLog.objecttype!)
+    }
+  }
+  
+  public class func subtitle(_ tresorLog:TresorLog) -> String {
+    self.dateFormatter.dateStyle = DateFormatter.Style.short
+    self.dateFormatter.timeStyle = DateFormatter.Style.short
+    
+    return "\(self.dateFormatter.string(from: tresorLog.createts!)) \(tresorLog.objectid ?? "-")"
+  }
 }

@@ -2,11 +2,15 @@
  Copyright © 2018 prisnoc. All rights reserved.
  */
 
-"logMessage.default" = "undefined";
-
 "logMessage.createObject" = "%@ created";
+"logMessage.createObject.param1" = "%@ '%@' created";
+
 "logMessage.modifyObject" = "%@ modified";
+"logMessage.modifyObject.param1" = "%@ '%@' modified";
+
 "logMessage.deleteObject" = "%@ deleted";
+"logMessage.deleteObject.param1" = "%@ '%@' deleted";
+
 "logMessage.encryptPayload" = "%@ encrypted";
 "logMessage.decryptPayload" = "%@ decrypted";
 

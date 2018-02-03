@@ -230,6 +230,15 @@ public class TresorModel {
     return result
   }
   
+  
+  public func lastLogEvents() throws -> [TresorLog] {
+    guard let context = self.getCoreDataManager()?.mainManagedObjectContext else { return [] }
+    
+    let result = try TresorLog.lastLogEvents(context: context )
+    
+    return result
+  }
+  
   // MARK: - Reset Data
   
   public func resetChangeTokens() {

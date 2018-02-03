@@ -9,16 +9,12 @@ import CeleturKit
 class TresorLogViewController: UITableViewController, NSFetchedResultsControllerDelegate {
   var tresorAppModel : TresorAppModel?
   
-  fileprivate let dateFormatter = DateFormatter()
   fileprivate var fetchedResultsController : NSFetchedResultsController<TresorLog>?
   
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    self.dateFormatter.dateStyle = DateFormatter.Style.short
-    self.dateFormatter.timeStyle = DateFormatter.Style.short
     self.title = "Tresor Log"
-    
     self.updateFetchedResultsController()
   }
   
@@ -55,20 +51,8 @@ class TresorLogViewController: UITableViewController, NSFetchedResultsController
   
   fileprivate func configureCell(_ cell: UITableViewCell, with tresorLog:TresorLog) {
     cell.indentationLevel = Int(tresorLog.messageindentlevel)
-    
-    let defaultText = "\(tresorLog.messagename ?? "-") \(tresorLog.objecttype ?? "-"):\(tresorLog.messageparameter1 ?? "-")"
-    let stringKey = "logMessage.\(tresorLog.messagename ?? ".default")"
-    let logTextTemplate = Bundle.main.localizedString(forKey:stringKey, value: defaultText, table: "LogMessages")
-    
-    let param1 = tresorLog.messageparameter1 ?? tresorLog.objecttype
-    
-    if param1 != nil {
-      cell.textLabel!.text = String(format: logTextTemplate, param1!)
-    } else {
-      cell.textLabel!.text = logTextTemplate
-    }
-    
-    cell.detailTextLabel!.text = "\(self.dateFormatter.string(from: tresorLog.createts!)) \(tresorLog.objectid ?? "-")"
+    cell.textLabel!.text = TresorLogDescriptor.localizededDescription(tresorLog)
+    cell.detailTextLabel!.text = TresorLogDescriptor.subtitle(tresorLog)
   }
   
   override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {

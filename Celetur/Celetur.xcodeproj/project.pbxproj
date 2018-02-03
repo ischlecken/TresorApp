@@ -28,6 +28,8 @@
 		859739111FAA88E8003196B2 /* UIRefreshControl+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 859739101FAA88E8003196B2 /* UIRefreshControl+Extension.swift */; };
 		85A08A8C200103E0001DC299 /* website.ctpl in Resources */ = {isa = PBXBuildFile; fileRef = 85A08A8A200103E0001DC299 /* website.ctpl */; };
 		85A08A8D200103E0001DC299 /* emailaccount.ctpl in Resources */ = {isa = PBXBuildFile; fileRef = 85A08A8B200103E0001DC299 /* emailaccount.ctpl */; };
+		85A97FCA2025DD5E0004A8F0 /* LogMessages.strings in Resources */ = {isa = PBXBuildFile; fileRef = 85A97FCC2025DD5E0004A8F0 /* LogMessages.strings */; };
+		85A97FD32025DEB00004A8F0 /* LogMessages.strings in Resources */ = {isa = PBXBuildFile; fileRef = 85A97FD12025DEB00004A8F0 /* LogMessages.strings */; };
 		85BE07D820027B01008991AF /* TresorTemplateInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BE07D620027B01008991AF /* TresorTemplateInfo.swift */; };
 		85BE07DA20029A3C008991AF /* iconcatalog.ictl in Resources */ = {isa = PBXBuildFile; fileRef = 85BE07D920029A3C008991AF /* iconcatalog.ictl */; };
 		85BE07DC20029E16008991AF /* IconCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85BE07DB20029E16008991AF /* IconCatalog.swift */; };
@@ -124,6 +126,9 @@
 		859739101FAA88E8003196B2 /* UIRefreshControl+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIRefreshControl+Extension.swift"; sourceTree = "<group>"; };
 		85A08A8A200103E0001DC299 /* website.ctpl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = website.ctpl; path = Templates/website.ctpl; sourceTree = "<group>"; };
 		85A08A8B200103E0001DC299 /* emailaccount.ctpl */ = {isa = PBXFileReference; explicitFileType = text.json; fileEncoding = 4; name = emailaccount.ctpl; path = Templates/emailaccount.ctpl; sourceTree = "<group>"; };
+		85A97FD22025DEB00004A8F0 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = LogMessages.strings; sourceTree = "<group>"; };
+		85A97FD42025DEE40004A8F0 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/LogMessages.strings; sourceTree = "<group>"; };
+		85A97FD52025DEF30004A8F0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/LogMessages.strings; sourceTree = "<group>"; };
 		85BE07D620027B01008991AF /* TresorTemplateInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TresorTemplateInfo.swift; sourceTree = "<group>"; };
 		85BE07D920029A3C008991AF /* iconcatalog.ictl */ = {isa = PBXFileReference; explicitFileType = text.json; fileEncoding = 4; name = iconcatalog.ictl; path = Templates/iconcatalog.ictl; sourceTree = "<group>"; };
 		85BE07DB20029E16008991AF /* IconCatalog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IconCatalog.swift; sourceTree = "<group>"; };
@@ -212,8 +217,18 @@
 				85BE07D920029A3C008991AF /* iconcatalog.ictl */,
 				85A08A8B200103E0001DC299 /* emailaccount.ctpl */,
 				85A08A8A200103E0001DC299 /* website.ctpl */,
+				85A97FCC2025DD5E0004A8F0 /* LogMessages.strings */,
+				85A97FD02025DEB00004A8F0 /* de.lproj */,
 			);
 			name = Templates;
+			sourceTree = "<group>";
+		};
+		85A97FD02025DEB00004A8F0 /* de.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				85A97FD12025DEB00004A8F0 /* LogMessages.strings */,
+			);
+			path = de.lproj;
 			sourceTree = "<group>";
 		};
 		85DC68D11F40FA34004AFAAC /* TableCells */ = {
@@ -404,6 +419,7 @@
 			knownRegions = (
 				en,
 				Base,
+				de,
 			);
 			mainGroup = 85F908011F12D9E30062BD63;
 			productRefGroup = 85F9080B1F12D9E30062BD63 /* Products */;
@@ -449,8 +465,10 @@
 				85C867E51FAE1CFD00CAAEFD /* EditTresorDocumentItemCell.xib in Resources */,
 				85A08A8D200103E0001DC299 /* emailaccount.ctpl in Resources */,
 				85F9081A1F12D9E30062BD63 /* Assets.xcassets in Resources */,
+				85A97FCA2025DD5E0004A8F0 /* LogMessages.strings in Resources */,
 				85BE07DA20029A3C008991AF /* iconcatalog.ictl in Resources */,
 				85BE07E8200A79E0008991AF /* IconCell.xib in Resources */,
+				85A97FD32025DEB00004A8F0 /* LogMessages.strings in Resources */,
 				85DC68CF1F40FA26004AFAAC /* TresorCell.xib in Resources */,
 				853328821FD311AE000F4C87 /* TresorDocumentItemCell0.xib in Resources */,
 				85A08A8C200103E0001DC299 /* website.ctpl in Resources */,
@@ -545,6 +563,23 @@
 				85810E1A1FADB7300012B06C /* Base */,
 			);
 			name = Editor.storyboard;
+			sourceTree = "<group>";
+		};
+		85A97FCC2025DD5E0004A8F0 /* LogMessages.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				85A97FD42025DEE40004A8F0 /* de */,
+				85A97FD52025DEF30004A8F0 /* Base */,
+			);
+			name = LogMessages.strings;
+			sourceTree = "<group>";
+		};
+		85A97FD12025DEB00004A8F0 /* LogMessages.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				85A97FD22025DEB00004A8F0 /* de */,
+			);
+			name = LogMessages.strings;
 			sourceTree = "<group>";
 		};
 		85F908161F12D9E30062BD63 /* Main.storyboard */ = {

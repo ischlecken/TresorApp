@@ -1,0 +1,12 @@
+/*
+ Copyright © 2018 prisnoc. All rights reserved.
+ */
+
+"logMessage.default" = "undefined";
+
+"logMessage.createObject" = "%@ created";
+"logMessage.modifyObject" = "%@ modified";
+"logMessage.deleteObject" = "%@ deleted";
+"logMessage.encryptPayload" = "%@ encrypted";
+"logMessage.decryptPayload" = "%@ decrypted";
+

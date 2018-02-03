@@ -8,17 +8,21 @@
 
 
 public class TempTresorObject {
-  public var tempManagedObjectContext : NSManagedObjectContext
-  public var tempTresor : Tresor
-  public var userDevices : [TresorUserDevice]?
+  public var tresorModel: TresorModel
+  public var tempManagedObjectContext: NSManagedObjectContext
+  public var tempTresor: Tresor
+  public var userDevices: [TresorUserDevice]?
+  public var isNewTresor: Bool
   
-  init(context:NSManagedObjectContext, tresor:Tresor, userDevices: [TresorUserDevice]?) {
+  init(tresorModel: TresorModel, context:NSManagedObjectContext, tresor:Tresor, userDevices: [TresorUserDevice]?, isNewTresor:Bool) {
+    self.tresorModel = tresorModel
     self.tempManagedObjectContext = context
     self.tempTresor = tresor
     self.userDevices = userDevices
+    self.isNewTresor = isNewTresor
   }
   
-  convenience init?(tresorCoreDataManager:CoreDataManager?, tresor:Tresor) {
+  convenience init?(tresorModel: TresorModel, tresorCoreDataManager:CoreDataManager?, tresor:Tresor) {
     guard let cdm = tresorCoreDataManager else { return nil }
     
     let scratchpadContext = cdm.privateChildManagedObjectContext()
@@ -26,18 +30,18 @@ public class TempTresorObject {
     
     tempTresor?.isreadonly = tresor.isreadonly
     
-    var logEntries = [TresorLogInfo]()
-    logEntries.append(TresorLogInfo(messageIndentLevel: 0, messageName: .modifyObject, objectType: .Tresor, objectId: (tempTresor?.id!)!))
-    TresorLog.createLogEntries(context: scratchpadContext, ckUserId: tempTresor?.ckuserid, entries: logEntries)
-    
     if let t = tempTresor {
-      self.init(context:scratchpadContext, tresor:t, userDevices:TresorUserDevice.loadUserDevices(context: cdm.mainManagedObjectContext, ckUserId: tresor.ckuserid))
+      self.init(tresorModel: tresorModel,
+                context:scratchpadContext,
+                tresor:t,
+                userDevices:TresorUserDevice.loadUserDevices(context: cdm.mainManagedObjectContext, ckUserId: tresor.ckuserid),
+                isNewTresor:false)
     } else {
       return nil
     }
   }
   
-  convenience init?(tresorCoreDataManager:CoreDataManager?, ckUserId: String?, isReadOnly: Bool) {
+  convenience init?(tresorModel: TresorModel, tresorCoreDataManager:CoreDataManager?, ckUserId: String?, isReadOnly: Bool) {
     guard let cdm = tresorCoreDataManager else { return nil }
     
     let scratchpadContext = cdm.privateChildManagedObjectContext()
@@ -47,20 +51,34 @@ public class TempTresorObject {
       tempTresor = try Tresor.createTempTresor(context: scratchpadContext, ckUserId: ckUserId)
       tempTresor?.ckuserid = ckUserId
       tempTresor?.isreadonly = isReadOnly
-      
-      var logEntries = [TresorLogInfo]()
-      logEntries.append(TresorLogInfo(messageIndentLevel: 0, messageName: .createObject, objectType: .Tresor, objectId: (tempTresor?.id!)!))
-      
-      TresorLog.createLogEntries(context: scratchpadContext, ckUserId: ckUserId, entries: logEntries)
     } catch {
       celeturKitLogger.error("Error creating temp tresor object",error:error)
     }
     
     if let t = tempTresor {
-      self.init(context:scratchpadContext, tresor:t, userDevices:TresorUserDevice.loadUserDevices(context: cdm.mainManagedObjectContext, ckUserId: ckUserId))
+      self.init(tresorModel: tresorModel,
+                context:scratchpadContext,
+                tresor:t,
+                userDevices:TresorUserDevice.loadUserDevices(context: cdm.mainManagedObjectContext, ckUserId: ckUserId),
+                isNewTresor:true)
     } else {
       return nil
     }
+  }
+  
+  fileprivate func logTresorChange(messageName:TresorLogMessageName) {
+    var logEntries = [TresorLogInfo]()
+    logEntries.append(TresorLogInfo(messageIndentLevel: 0, messageName: messageName, messageParameter1:self.tempTresor.name,
+                                    objectType: .Tresor, objectId: self.tempTresor.id!))
     
+    TresorLog.createLogEntries(context: self.tempManagedObjectContext, ckUserId: self.tempTresor.ckuserid, entries: logEntries)
+  }
+  
+  public func saveTresor() {
+    self.logTresorChange(messageName: self.isNewTresor ? .createObject: .modifyObject)
+    
+    self.tempManagedObjectContext.performSave(contextInfo: "tresor object", completion: {
+      self.tresorModel.saveChanges()
+    })
   }
 }

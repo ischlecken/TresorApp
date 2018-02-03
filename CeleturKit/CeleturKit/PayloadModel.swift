@@ -425,11 +425,11 @@ public struct PayloadMetainfo : JSONSerializable {
   public func toTresorDocumentMetaInfo() -> TresorDocumentMetaInfo {
     var result : TresorDocumentMetaInfo = [:]
     
-    result["title"] = self.name
-    result["iconname"] = self.iconname
+    result[TresorDocumentMetaInfoKey.title.rawValue] = self.name
+    result[TresorDocumentMetaInfoKey.iconname.rawValue] = self.iconname
     
     if let d = self.description {
-      result["description"] = d
+      result[TresorDocumentMetaInfoKey.description.rawValue] = d
     }
     
     return result

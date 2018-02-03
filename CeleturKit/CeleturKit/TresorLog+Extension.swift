@@ -20,12 +20,15 @@ public enum TresorLogObjectType: String {
 public struct TresorLogInfo {
   public let messageIndentLevel: Int8
   public let messageName:TresorLogMessageName
+  public let messageParameter1:String?
   public let objectType:TresorLogObjectType
   public let objectId:String
   
-  public init(messageIndentLevel: Int8,messageName:TresorLogMessageName,objectType:TresorLogObjectType,objectId:String) {
+  public init(messageIndentLevel: Int8,messageName:TresorLogMessageName,messageParameter1:String?,
+              objectType:TresorLogObjectType,objectId:String) {
     self.messageIndentLevel = messageIndentLevel
     self.messageName = messageName
+    self.messageParameter1 = messageParameter1
     self.objectType = objectType
     self.objectId = objectId
   }
@@ -38,14 +41,17 @@ public extension TresorLog {
                                      entries:[TresorLogInfo]) {
     var messageGroupOrder: Int16 = 0
     let messageGroupId = String.uuid()
+    let messageGroupTs = Date()
+    
     for e in entries {
       let _ = TresorLog(context:context,
                         ckUserId: ckUserId,
+                        messageGroupTs:messageGroupTs,
                         messageGroupId:messageGroupId,
                         messageGroupOrder: messageGroupOrder,
                         messageIndentLevel: e.messageIndentLevel,
                         messageName: e.messageName,
-                        messageParameter1: nil, messageParameter2: nil, messageParameter3: nil,
+                        messageParameter1: e.messageParameter1, messageParameter2: nil, messageParameter3: nil,
                         objectType: e.objectType,objectId: e.objectId)
       
       messageGroupOrder += 1
@@ -54,20 +60,21 @@ public extension TresorLog {
 
   public convenience init(context: NSManagedObjectContext,
                           ckUserId: String?,
-                          messageName:TresorLogMessageName,
+                          messageName:TresorLogMessageName, messageParameter1:String?,
                           objectType:TresorLogObjectType?,
                           objectId:String?
                           ) {
     
     self.init(context:context,
               ckUserId:ckUserId,
-              messageGroupId: String.uuid(), messageGroupOrder: 0, messageIndentLevel: 0,
-              messageName:messageName, messageParameter1: nil,messageParameter2: nil, messageParameter3: nil,
+              messageGroupTs:Date(), messageGroupId: String.uuid(), messageGroupOrder: 0, messageIndentLevel: 0,
+              messageName:messageName, messageParameter1: messageParameter1, messageParameter2: nil, messageParameter3: nil,
               objectType:objectType, objectId: objectId)
   }
   
   public convenience init(context: NSManagedObjectContext,
                           ckUserId: String?,
+                          messageGroupTs: Date,
                           messageGroupId: String,
                           messageGroupOrder: Int16,
                           messageIndentLevel: Int8,
@@ -80,7 +87,8 @@ public extension TresorLog {
     self.createts = Date()
     self.ckuserid = ckUserId
     
-    self.messageid = String.uuid()
+    self.id = String.uuid()
+    self.messagegroupts = messageGroupTs
     self.messagegroupid = messageGroupId
     self.messagegrouporder = messageGroupOrder
     self.messageindentlevel = Int16(messageIndentLevel)
@@ -108,7 +116,7 @@ public extension TresorLog {
     
     // Edit the sort key as appropriate.
     let sortDescriptor0 = NSSortDescriptor(key: "ckuserid", ascending: false)
-    let sortDescriptor2 = NSSortDescriptor(key: "messagegroupid", ascending: true)
+    let sortDescriptor2 = NSSortDescriptor(key: "messagegroupts", ascending: false)
     let sortDescriptor3 = NSSortDescriptor(key: "messagegrouporder", ascending: true)
     
     fetchRequest.sortDescriptors = [sortDescriptor0,sortDescriptor2,sortDescriptor3]

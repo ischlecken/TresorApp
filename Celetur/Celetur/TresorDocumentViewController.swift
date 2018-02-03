@@ -233,7 +233,8 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
             tresorDoc.deleteTresorDocument()
           } else {
             var logEntries = [TresorLogInfo]()
-            logEntries.append(TresorLogInfo(messageIndentLevel: 0, messageName: .deleteObject, objectType: .TresorDocumentItem, objectId: tresorDocumentItem.id!))
+            logEntries.append(TresorLogInfo(messageIndentLevel: 0, messageName: .deleteObject, messageParameter1:nil, 
+                                            objectType: .TresorDocumentItem, objectId: tresorDocumentItem.id!))
             TresorLog.createLogEntries(context: context, ckUserId: tresorDocumentItem.ckuserid, entries: logEntries)
             
             context.delete(tresorDocumentItem)
@@ -274,14 +275,14 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     cell.indentationLevel = 0
     
     if let doc = tresorDocument {
-      if let docMetaInfo = doc.getMetaInfo(), let title = docMetaInfo["title"] {
+      if let docMetaInfo = doc.getMetaInfo(), let title = docMetaInfo[TresorDocumentMetaInfoKey.title.rawValue] {
         cell.nameLabel?.text = title
         
-        if let description = docMetaInfo["description"] {
+        if let description = docMetaInfo[TresorDocumentMetaInfoKey.description.rawValue] {
           cell.descriptionLabel?.text = description
         }
         
-        if let iconname = docMetaInfo["iconname"] {
+        if let iconname = docMetaInfo[TresorDocumentMetaInfoKey.iconname.rawValue] {
           cell.documentImage.image = UIImage(named: iconname)
         }
         

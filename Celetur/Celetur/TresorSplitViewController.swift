@@ -224,6 +224,8 @@ extension TresorSplitViewController: TresorDocumentViewControllerDelegate {
     
     vc.tresorAppModel = self.tresorAppModel
     vc.tresorDocumentItem = documentItem
+    vc.navigationItem.leftBarButtonItem = self.displayModeButtonItem
+    vc.navigationItem.leftItemsSupplementBackButton = true
     
     self.showDetailViewController(vc.navigationController!, sender: self)
   }

@@ -67,7 +67,7 @@
                                 </tableViewCellContentView>
                                 <color key="backgroundColor" red="0.99999600649999998" green="1" blue="1" alpha="0.7939453125" colorSpace="custom" customColorSpace="sRGB"/>
                                 <connections>
-                                    <segue destination="9bD-mh-Z4Q" kind="showDetail" identifier="showTresorLog" id="d5P-sb-9af"/>
+                                    <segue destination="9bD-mh-Z4Q" kind="showDetail" identifier="showTresorLog" id="5bl-bb-02n"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -100,7 +100,7 @@
                         <segue destination="bU5-Rq-6eJ" kind="popoverPresentation" identifier="showEditTresor" popoverAnchorBarButtonItem="jey-Ak-XPv" id="p7i-Xw-PEd">
                             <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
                         </segue>
-                        <segue destination="lap-lW-FmK" kind="showDetail" identifier="showTresorDocument" id="xWu-Q6-0NO"/>
+                        <segue destination="lap-lW-FmK" kind="show" identifier="showTresorDocument" action="showDetailViewController:sender:" id="xWu-Q6-0NO"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rux-fX-hf1" sceneMemberID="firstResponder"/>
@@ -152,7 +152,7 @@
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" id="C4Y-ee-dr4">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <color key="backgroundColor" name="celeturBackground"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="logCell" textLabel="OC6-bQ-icx" detailTextLabel="UO7-nZ-ka3" style="IBUITableViewCellStyleSubtitle" id="adt-G6-HJy">
                                 <rect key="frame" x="0.0" y="55.333333333333336" width="414" height="44"/>
@@ -195,7 +195,7 @@
                 <viewControllerPlaceholder storyboardIdentifier="e" storyboardName="Editor" referencedIdentifier="EditTresorDocumentItemController" id="aT7-Xd-qlb" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ip8-Rw-mBW" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1631" y="-273"/>
+            <point key="canvasLocation" x="2196" y="-805"/>
         </scene>
         <!--Edit Tresor View Controller-->
         <scene sceneID="zko-AA-JtC">
@@ -225,7 +225,7 @@
                                     <rect key="frame" x="104" y="104" width="290" height="30"/>
                                     <nil key="textColor"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                    <textInputTraits key="textInputTraits"/>
+                                    <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                     <connections>
                                         <outlet property="delegate" destination="gL4-ee-YwX" id="3Sc-ZM-INa"/>
                                     </connections>
@@ -234,7 +234,7 @@
                                     <rect key="frame" x="104" y="33" width="290" height="30"/>
                                     <nil key="textColor"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                    <textInputTraits key="textInputTraits"/>
+                                    <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                     <connections>
                                         <outlet property="delegate" destination="gL4-ee-YwX" id="CYZ-MQ-wzI"/>
                                     </connections>
@@ -419,6 +419,9 @@
     <resources>
         <image name="3d-view" width="32" height="32"/>
         <image name="setting" width="24" height="24"/>
+        <namedColor name="celeturBackground">
+            <color red="1" green="1" blue="1" alpha="0.80000001192092896" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <namedColor name="celeturBackground">
             <color red="1" green="1" blue="1" alpha="0.80000001192092896" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

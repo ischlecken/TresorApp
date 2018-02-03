@@ -75,7 +75,8 @@ public extension Tresor {
   public func deleteTresor() {
     var logEntries = [TresorLogInfo]()
     
-    logEntries.append(TresorLogInfo(messageIndentLevel: 0, messageName: .deleteObject, objectType: .Tresor, objectId: self.id!))
+    logEntries.append(TresorLogInfo(messageIndentLevel: 0, messageName: .deleteObject, messageParameter1:self.name,
+                                    objectType: .Tresor, objectId: self.id!))
     
     if let docs = self.documents {
       for doc in docs {

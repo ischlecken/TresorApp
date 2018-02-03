@@ -186,7 +186,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
       if let controller = segue.source as? EditTresorViewController, let tt = controller.tresor, !tt.tempTresor.isreadonly {
         controller.updateTempTresor()
         
-        self.saveTempTresor(tempTresor: tt)
+        tt.saveTresor()
       }
     }
   }
@@ -194,14 +194,6 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   @IBAction
   func unwindFromSettings(segue: UIStoryboardSegue) {
     
-  }
-  
-  fileprivate func saveTempTresor(tempTresor:TempTresorObject) {
-    let moc = tempTresor.tempManagedObjectContext
-    
-    moc.performSave(contextInfo: "tresor object", completion: {
-      self.tresorAppModel?.tresorModel.saveChanges()
-    })
   }
   
   // MARK: - Table View

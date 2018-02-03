@@ -48,15 +48,15 @@ class EditTresorDocumentItemViewController: UITableViewController, UITextFieldDe
     self.tableView.register(UINib(nibName:"EditTresorDocumentItemCell",bundle:nil),forCellReuseIdentifier:"editTresorDocumentItemCell")
     
     if let m = self.tresorDocumentMetaInfo {
-      if let t = m["title"] {
+      if let t = m[TresorDocumentMetaInfoKey.title.rawValue] {
         self.titleTextField.text = t
       }
       
-      if let d = m["description"] {
+      if let d = m[TresorDocumentMetaInfoKey.description.rawValue] {
         self.descriptionTextField.text = d
       }
       
-      if let i = m["iconname"] {
+      if let i = m[TresorDocumentMetaInfoKey.iconname.rawValue] {
         self.iconView.image = UIImage(named: i)
       }
     }
@@ -121,7 +121,7 @@ class EditTresorDocumentItemViewController: UITableViewController, UITextFieldDe
       self.tresorDocumentMetaInfo != nil
     else { return }
     
-    self.tresorDocumentMetaInfo!["iconname"] = controller.selectedIcon?.name
+    self.tresorDocumentMetaInfo![TresorDocumentMetaInfoKey.iconname.rawValue] = controller.selectedIcon?.name
     self.iconView.image = UIImage(named: controller.selectedIcon?.name ?? "shield")
   }
  
@@ -130,9 +130,9 @@ class EditTresorDocumentItemViewController: UITableViewController, UITextFieldDe
   @objc func textFieldDidChange(_ textField: UITextField) {
     if self.tresorDocumentMetaInfo != nil {
       if textField == self.titleTextField {
-        self.tresorDocumentMetaInfo!["title"] = textField.text
+        self.tresorDocumentMetaInfo![TresorDocumentMetaInfoKey.title.rawValue] = textField.text
       } else if textField == self.descriptionTextField {
-        self.tresorDocumentMetaInfo!["description"] = textField.text
+        self.tresorDocumentMetaInfo![TresorDocumentMetaInfoKey.description.rawValue] = textField.text
       }
     }
   }

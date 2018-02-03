@@ -184,6 +184,7 @@ extension TresorDocumentItem {
       
       logEntries.append(TresorLogInfo(messageIndentLevel: 0,
                                       messageName: .modifyObject,
+                                      messageParameter1: metaInfo[TresorDocumentMetaInfoKey.title.rawValue],
                                       objectType: .TresorDocument,
                                       objectId: tempTresorDocument.id!))
       
@@ -202,6 +203,7 @@ extension TresorDocumentItem {
             
             logEntries.append(TresorLogInfo(messageIndentLevel: 1,
                                             messageName: .encryptPayload,
+                                            messageParameter1: nil,
                                             objectType: .TresorDocumentItem,
                                             objectId: it.id!))
           }

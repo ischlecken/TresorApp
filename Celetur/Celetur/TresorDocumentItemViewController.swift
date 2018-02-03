@@ -42,13 +42,11 @@ class TresorDocumentItemViewController: UIViewController, UITableViewDataSource,
   override func viewDidLoad() {
     super.viewDidLoad()
     
+    self.navigationItem.rightBarButtonItem?.isEnabled = false
+    
     self.dateFormatter.dateStyle = DateFormatter.Style.short
     self.dateFormatter.timeStyle = DateFormatter.Style.short
-    
-    self.navigationItem.rightBarButtonItem?.isEnabled = false
-    self.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
-    self.navigationItem.leftItemsSupplementBackButton = true
-    
+   
     self.tableView.register(UINib(nibName:"TresorDocumentItemCell",bundle:nil),forCellReuseIdentifier:"tresorDocumentItemCell")
     
     self.headerViewHeightConstraint.constant = self.maxHeaderHeight
@@ -87,7 +85,7 @@ class TresorDocumentItemViewController: UIViewController, UITableViewDataSource,
     if let item = tresorDocumentItem {
       
       if let metaInfo = item.document?.getMetaInfo() {
-        self.navigationItem.title = metaInfo["title"]
+        self.navigationItem.title = metaInfo[TresorDocumentMetaInfoKey.title.rawValue]
       }
       
       if let label = createtsLabel {
@@ -100,10 +98,10 @@ class TresorDocumentItemViewController: UIViewController, UITableViewDataSource,
         let dv = self.descriptionView,
         let iv = self.iconView {
         
-        tv.text = m["title"]
-        dv.text = m["description"]
+        tv.text = m[TresorDocumentMetaInfoKey.title.rawValue]
+        dv.text = m[TresorDocumentMetaInfoKey.description.rawValue]
         
-        if let i = m["iconname"] {
+        if let i = m[TresorDocumentMetaInfoKey.iconname.rawValue] {
           iv.image = UIImage(named: i)
         }
       }
@@ -188,7 +186,7 @@ class TresorDocumentItemViewController: UIViewController, UITableViewDataSource,
         
         controller.setModel(payload: self.model, metaInfo: tresorDocumentMetaInfo)
         
-        controller.navigationItem.title = tresorDocumentMetaInfo?["title"]
+        controller.navigationItem.title = tresorDocumentMetaInfo?[TresorDocumentMetaInfoKey.title.rawValue]
         
       default:
         break

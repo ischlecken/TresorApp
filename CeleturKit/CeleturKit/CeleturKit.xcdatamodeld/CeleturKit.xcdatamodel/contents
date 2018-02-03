@@ -50,9 +50,10 @@
         <attribute name="devicesystemversion" attributeType="String" syncable="YES"/>
         <attribute name="deviceuitype" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="devicevendorid" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="id" attributeType="String" syncable="YES"/>
         <attribute name="messagegroupid" attributeType="String" syncable="YES"/>
         <attribute name="messagegrouporder" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
-        <attribute name="messageid" attributeType="String" syncable="YES"/>
+        <attribute name="messagegroupts" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="messageindentlevel" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="messagename" attributeType="String" syncable="YES"/>
         <attribute name="messageparameter1" optional="YES" attributeType="String" syncable="YES"/>
@@ -80,9 +81,9 @@
     </entity>
     <elements>
         <element name="Tresor" positionX="-1386" positionY="-67" width="128" height="225"/>
-        <element name="TresorLog" positionX="-792" positionY="-54" width="128" height="328"/>
         <element name="TresorDocument" positionX="-1206" positionY="-207" width="128" height="178"/>
         <element name="TresorDocumentItem" positionX="-1017" positionY="-63" width="126" height="240"/>
+        <element name="TresorLog" positionX="-792" positionY="-54" width="128" height="345"/>
         <element name="TresorUserDevice" positionX="-1197" positionY="198" width="128" height="270"/>
     </elements>
 </model>

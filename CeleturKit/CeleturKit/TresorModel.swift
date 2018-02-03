@@ -136,18 +136,18 @@ public class TresorModel {
   }
   
   public func createScratchpadTresorObject(tresor: Tresor) -> TempTresorObject? {
-    return TempTresorObject(tresorCoreDataManager: self.getCoreDataManager(), tresor: tresor)
+    return TempTresorObject(tresorModel:self, tresorCoreDataManager: self.getCoreDataManager(), tresor: tresor)
   }
   
   
   public func createScratchpadLocalDeviceTresorObject() -> TempTresorObject? {
-    return TempTresorObject(tresorCoreDataManager: self.getCoreDataManager(), ckUserId: nil, isReadOnly: false)
+    return TempTresorObject(tresorModel:self, tresorCoreDataManager: self.getCoreDataManager(), ckUserId: nil, isReadOnly: false)
   }
   
   public func createScratchpadICloudTresorObject() -> TempTresorObject? {
     guard let ckuserid = self.ckUserId  else { return nil }
     
-    return TempTresorObject(tresorCoreDataManager: self.getCoreDataManager(), ckUserId: ckuserid, isReadOnly: false)
+    return TempTresorObject(tresorModel:self, tresorCoreDataManager: self.getCoreDataManager(), ckUserId: ckuserid, isReadOnly: false)
   }
   
   

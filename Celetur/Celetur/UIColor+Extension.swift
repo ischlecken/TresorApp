@@ -16,6 +16,8 @@ extension UIColor {
   
   static let celeturSecondary = UIColor(named: "celeturSecondary")!
 
+  static let celeturBackground = UIColor(named: "celeturBackground")!
+
   static let celeturGradient0  = UIColor(named: "celeturGradient0")!
   static let celeturGradient1  = UIColor(named: "celeturGradient1")!
 

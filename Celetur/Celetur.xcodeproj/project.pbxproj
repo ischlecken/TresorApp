@@ -13,6 +13,7 @@
 		851A437E201CA75700FE8B81 /* TresorSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 851A437D201CA75700FE8B81 /* TresorSplitViewController.swift */; };
 		852C26611F37CCDB0041273F /* TresorAppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 852C26601F37CCDB0041273F /* TresorAppModel.swift */; };
 		852C26641F37CD850041273F /* TresorConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 852C26631F37CD850041273F /* TresorConstants.swift */; };
+		853137E320385FDD00E96E78 /* SVGKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 853137E020385FC100E96E78 /* SVGKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		853328821FD311AE000F4C87 /* TresorDocumentItemCell0.xib in Resources */ = {isa = PBXBuildFile; fileRef = 853328801FD311AE000F4C87 /* TresorDocumentItemCell0.xib */; };
 		853328841FD312F8000F4C87 /* TresorDocumentItemCell0.swift in Sources */ = {isa = PBXBuildFile; fileRef = 853328831FD312F8000F4C87 /* TresorDocumentItemCell0.swift */; };
 		853328871FD317E1000F4C87 /* TresorDocumentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 853328851FD317E1000F4C87 /* TresorDocumentCell.swift */; };
@@ -59,6 +60,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		853137DF20385FC100E96E78 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 853137D920385FC100E96E78 /* SVGKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 85F50BE720385F8900037AB4;
+			remoteInfo = SVGKit;
+		};
+		853137E120385FC100E96E78 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 853137D920385FC100E96E78 /* SVGKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 85F50BF020385F8900037AB4;
+			remoteInfo = SVGKitTests;
+		};
 		855587B61FA8E682003E43E6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 855587B11FA8E682003E43E6 /* CeleturKit.xcodeproj */;
@@ -96,6 +111,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				853137E320385FDD00E96E78 /* SVGKit.framework in Embed Frameworks */,
 				855587C01FA8E713003E43E6 /* CeleturKit.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -110,6 +126,7 @@
 		851A437D201CA75700FE8B81 /* TresorSplitViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TresorSplitViewController.swift; sourceTree = "<group>"; };
 		852C26601F37CCDB0041273F /* TresorAppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TresorAppModel.swift; sourceTree = "<group>"; };
 		852C26631F37CD850041273F /* TresorConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TresorConstants.swift; sourceTree = "<group>"; };
+		853137D920385FC100E96E78 /* SVGKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SVGKit.xcodeproj; path = ../SVGKit/SVGKit.xcodeproj; sourceTree = "<group>"; };
 		853328801FD311AE000F4C87 /* TresorDocumentItemCell0.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TresorDocumentItemCell0.xib; sourceTree = "<group>"; };
 		853328831FD312F8000F4C87 /* TresorDocumentItemCell0.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TresorDocumentItemCell0.swift; sourceTree = "<group>"; };
 		853328851FD317E1000F4C87 /* TresorDocumentCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TresorDocumentCell.swift; sourceTree = "<group>"; };
@@ -195,6 +212,15 @@
 				85EB5DC31FC35A0800217119 /* InfoViewController.swift */,
 			);
 			name = UI;
+			sourceTree = "<group>";
+		};
+		853137DA20385FC100E96E78 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				853137E020385FC100E96E78 /* SVGKit.framework */,
+				853137E220385FC100E96E78 /* SVGKitTests.xctest */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		855587B21FA8E682003E43E6 /* Products */ = {
@@ -297,6 +323,7 @@
 		85F908321F12DAD00062BD63 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				853137D920385FC100E96E78 /* SVGKit.xcodeproj */,
 				855587B11FA8E682003E43E6 /* CeleturKit.xcodeproj */,
 				85EEE2021F1A68EF002CE85E /* MapKit.framework */,
 				85EEE2001F1A68E1002CE85E /* StoreKit.framework */,
@@ -414,6 +441,10 @@
 					ProductGroup = 855587B21FA8E682003E43E6 /* Products */;
 					ProjectRef = 855587B11FA8E682003E43E6 /* CeleturKit.xcodeproj */;
 				},
+				{
+					ProductGroup = 853137DA20385FC100E96E78 /* Products */;
+					ProjectRef = 853137D920385FC100E96E78 /* SVGKit.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -424,6 +455,20 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		853137E020385FC100E96E78 /* SVGKit.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = SVGKit.framework;
+			remoteRef = 853137DF20385FC100E96E78 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		853137E220385FC100E96E78 /* SVGKitTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = SVGKitTests.xctest;
+			remoteRef = 853137E120385FC100E96E78 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		855587B71FA8E682003E43E6 /* CeleturKit.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;

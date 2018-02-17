@@ -28,14 +28,14 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" image="launch" translatesAutoresizingMaskIntoConstraints="NO" id="sqo-ne-zL9">
-                                <rect key="frame" x="79" y="210" width="256" height="256"/>
+                                <rect key="frame" x="57" y="188" width="300" height="300"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="256" id="4r0-Ru-JYB"/>
-                                    <constraint firstAttribute="height" constant="256" id="YSV-oZ-4BN"/>
+                                    <constraint firstAttribute="width" constant="300" id="4r0-Ru-JYB"/>
+                                    <constraint firstAttribute="height" constant="300" id="YSV-oZ-4BN"/>
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Celetur" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ogt-8N-xdH">
-                                <rect key="frame" x="20" y="436" width="374" height="68"/>
+                                <rect key="frame" x="20" y="458" width="374" height="68"/>
                                 <fontDescription key="fontDescription" name="CourierNewPS-BoldMT" family="Courier New" pointSize="60"/>
                                 <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>

@@ -4,7 +4,7 @@
 //
 
 import UIKit
-
+import SVGKit
 
 class GradientView : UIView
 {
@@ -19,6 +19,7 @@ class GradientView : UIView
   var runningAnimation       : String?
   
   var shapeLayer : CAShapeLayer?
+  var shieldLayer: SVGLayer?
   
   override init(frame: CGRect)
   { super.init(frame: frame)
@@ -33,6 +34,8 @@ class GradientView : UIView
       let newShapeFrame = CGRect(origin: CGPoint.zero, size: self.frame.size)
       self.shapeLayer?.frame = newShapeFrame
       self.shapeLayer?.path  = self.updatePath(rect: newShapeFrame)
+      
+      self.shieldLayer?.frame = newShapeFrame
       
       self.setNeedsDisplay()
     }
@@ -92,8 +95,14 @@ class GradientView : UIView
     shapeLayer.path             = self.updatePath(rect: shapeLayer.frame)
     
     self.shapeLayer = shapeLayer
-    
     self.layer.addSublayer(shapeLayer)
+    
+    let shieldLayer = SVGLayer(pathString:"M256,102.433c46.974,34.162,100.779,47.517,143.455,52.245C388.319,257.588,332.197,353.065,256,412.763c-76.084-59.608-132.305-155.036-143.455-258.085C155.221,149.95,209.026,136.594,256,102.433 M256,50c-51.418,51.417-125.167,67-185.5,67c0,147.334,83.666,278,185.5,345c101.834-67,185.5-197.666,185.5-345C381.167,117,307.417,101.417,256,50z M365.302,179.834c-34.612-6.643-73.071-18.999-109.302-41.314c-36.23,22.315-74.689,34.671-109.302,41.314C161.676,255.86,202.592,324.588,256,373.434C309.412,324.585,350.324,255.856,365.302,179.834z")
+    
+    self.shieldLayer = shieldLayer
+    self.shieldLayer?.fillColor = UIColor.celeturPrimary.cgColor
+    
+    self.layer.addSublayer(shieldLayer)
   }
   
   func dimGradient () {

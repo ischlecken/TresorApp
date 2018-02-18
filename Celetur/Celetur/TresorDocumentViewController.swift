@@ -81,7 +81,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
       controller.setModel(payload: payloadMetaInfo.toModel(), metaInfo: payloadMetaInfo.toTresorDocumentMetaInfo())
       
       controller.navigationItem.title = "New Tresor Document"
-    } else if segue.identifier == "editTresorDocumentDocument" {
+    } else if segue.identifier == "showTresorDocumentItem" {
       let controller = segue.destination as! TresorDocumentItemViewController
       
       controller.tresorAppModel = self.tresorAppModel
@@ -258,7 +258,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
       let newIndexPath = IndexPath(row: indexPath.row-1, section: indexPath.section)
       let selectedTresorDocumentItem = self.fetchedResultsController.object(at: newIndexPath)
       
-      self.performSegue(withIdentifier: "editTresorDocumentDocument", sender: selectedTresorDocumentItem)
+      self.performSegue(withIdentifier: "showTresorDocumentItem", sender: selectedTresorDocumentItem)
     }
     
     self.tableView.deselectRow(at: indexPath, animated: true)

@@ -115,7 +115,7 @@
                         <segue destination="bU5-Rq-6eJ" kind="popoverPresentation" identifier="showEditTresor" popoverAnchorBarButtonItem="jey-Ak-XPv" id="p7i-Xw-PEd">
                             <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
                         </segue>
-                        <segue destination="lap-lW-FmK" kind="show" identifier="showTresorDocument" action="showDetailViewController:sender:" id="xWu-Q6-0NO"/>
+                        <segue destination="efj-0I-1gi" kind="showDetail" identifier="showTresorDocument" id="V2A-oz-Cl4"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rux-fX-hf1" sceneMemberID="firstResponder"/>
@@ -143,7 +143,7 @@
             <objects>
                 <tableViewController id="lap-lW-FmK" customClass="TresorDocumentViewController" customModule="Celetur" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="64" sectionHeaderHeight="18" sectionFooterHeight="18" id="2Wv-VD-coP">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="620"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" name="celeturBackground"/>
                         <connections>
@@ -153,13 +153,13 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Tresor Documents" id="2AP-hn-RXV"/>
                     <connections>
-                        <segue destination="aT7-Xd-qlb" kind="show" identifier="editNewTresorDocument" id="lxH-ll-9VI"/>
-                        <segue destination="nwC-fD-1Tb" kind="show" identifier="editTresorDocumentDocument" id="PIc-27-8ft"/>
+                        <segue destination="aT7-Xd-qlb" kind="presentation" identifier="editNewTresorDocument" id="lxH-ll-9VI"/>
+                        <segue destination="nwC-fD-1Tb" kind="show" identifier="showTresorDocumentItem" id="gjc-lp-Z2I"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jOg-tF-UOd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1448" y="-805"/>
+            <point key="canvasLocation" x="2196" y="-780"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="Cca-7Z-j1o">
@@ -222,7 +222,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SwE-RH-q9l" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-949" y="-404"/>
+            <point key="canvasLocation" x="-949" y="-330"/>
         </scene>
         <!--Tresor Log View Controller-->
         <scene sceneID="PkW-3z-Qeq">
@@ -267,7 +267,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7fO-zm-x3U" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="603" y="449"/>
+            <point key="canvasLocation" x="603" y="384"/>
         </scene>
         <!--Editor-->
         <scene sceneID="AEm-NL-I1t">
@@ -275,7 +275,7 @@
                 <viewControllerPlaceholder storyboardIdentifier="e" storyboardName="Editor" id="aT7-Xd-qlb" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ip8-Rw-mBW" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1805" y="-261"/>
+            <point key="canvasLocation" x="2579" y="-280"/>
         </scene>
         <!--Edit Tresor View Controller-->
         <scene sceneID="zko-AA-JtC">
@@ -434,7 +434,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="C4U-dc-6KT" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3122" y="-1525"/>
+            <point key="canvasLocation" x="2980" y="-1525"/>
         </scene>
         <!--Select Icon View Controller-->
         <scene sceneID="Egq-F5-AZy">
@@ -485,7 +485,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kq6-Br-MNA" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="V28-y7-eBR" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="3896" y="-1525"/>
+            <point key="canvasLocation" x="3746" y="-1525"/>
         </scene>
         <!--Settings-->
         <scene sceneID="BrZ-ps-hE1">
@@ -493,7 +493,7 @@
                 <viewControllerPlaceholder storyboardName="Settings" id="8jM-Fz-dz8" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="V7Z-mm-qii" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1140" y="-2030"/>
+            <point key="canvasLocation" x="1208" y="-2077"/>
         </scene>
         <!--Tresor Document Items-->
         <scene sceneID="K9i-ZE-8vf">
@@ -504,18 +504,18 @@
                         <viewControllerLayoutGuide type="bottom" id="duE-Ml-ofh"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="r1x-wG-R0U">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="672"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="60" estimatedRowHeight="60" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="07P-3z-MIn">
-                                <rect key="frame" x="0.0" y="120" width="414" height="552"/>
+                                <rect key="frame" x="0.0" y="140" width="414" height="596"/>
                                 <color key="backgroundColor" name="celeturBackground"/>
                                 <view key="tableFooterView" contentMode="scaleToFill" id="mao-HM-RMN">
                                     <rect key="frame" x="0.0" y="133.33333333333334" width="414" height="39"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="createts" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tjv-Tx-wf7">
-                                            <rect key="frame" x="0.0" y="11.666666666666664" width="375" height="16"/>
+                                            <rect key="frame" x="0.0" y="11.666666666666664" width="414" height="16"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
                                             <color key="textColor" white="0.5" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -554,7 +554,7 @@
                                 </connections>
                             </tableView>
                             <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eVM-e8-vgj">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="120"/>
+                                <rect key="frame" x="0.0" y="20" width="414" height="120"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Dub-ld-mGy">
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="120"/>
@@ -631,7 +631,7 @@
                     <navigationItem key="navigationItem" title="Tresor Document Items" largeTitleDisplayMode="never" id="lPY-6L-JSQ">
                         <barButtonItem key="rightBarButtonItem" systemItem="edit" id="fO0-gH-Ut3">
                             <connections>
-                                <segue destination="aT7-Xd-qlb" kind="showDetail" identifier="showEditTresorDocumentItem" id="2BQ-qo-I7c"/>
+                                <segue destination="aT7-Xd-qlb" kind="presentation" identifier="showEditTresorDocumentItem" id="2BQ-qo-I7c"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -649,7 +649,23 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="VnS-sA-x4b" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2196" y="-805"/>
+            <point key="canvasLocation" x="2980" y="-780"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="NpJ-10-mZa">
+            <objects>
+                <navigationController id="efj-0I-1gi" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Yvw-OL-xXs">
+                        <rect key="frame" x="0.0" y="20" width="414" height="96"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="lap-lW-FmK" kind="relationship" relationship="rootViewController" id="7a9-ZO-AWY"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="SeG-H0-Eby" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1448" y="-780"/>
         </scene>
     </scenes>
     <resources>
@@ -659,20 +675,8 @@
         <namedColor name="celeturBackground">
             <color red="1" green="1" blue="1" alpha="0.80000001190000003" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
-        <namedColor name="celeturBackground">
-            <color red="1" green="1" blue="1" alpha="0.80000001192092896" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="celeturBackground">
-            <color red="1" green="1" blue="1" alpha="0.80000001192092896" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
         <namedColor name="celeturPrimary">
             <color red="1" green="0.18039215689999999" blue="0.33725490200000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="celeturPrimary">
-            <color red="1" green="0.1803921568627451" blue="0.33725490196078434" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="celeturPrimary">
-            <color red="1" green="0.1803921568627451" blue="0.33725490196078434" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
     <inferredMetricsTieBreakers>

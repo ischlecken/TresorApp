@@ -143,10 +143,12 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
       switch ident {
       case "showTresorDocument":
         if let indexPath = tableView.indexPathForSelectedRow {
-          let controller = segue.destination as! TresorDocumentViewController
+          let controller = (segue.destination as! UINavigationController).topViewController as! TresorDocumentViewController
           
           controller.tresorAppModel = self.tresorAppModel
           controller.tresor = self.getObject(indexPath: indexPath)
+          controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
+          controller.navigationItem.leftItemsSupplementBackButton = true
           self.discardDetailController = false
         }
         

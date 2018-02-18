@@ -7,14 +7,8 @@ import UIKit
 import CoreData
 import CeleturKit
 
-protocol TresorDocumentViewControllerDelegate: class {
-  func documentItemSelected(documentItem:TresorDocumentItem)
-}
-
 
 class TresorDocumentViewController: UITableViewController, NSFetchedResultsControllerDelegate {
-  
-  weak var delegate : TresorDocumentViewControllerDelegate?
   
   var tresor: Tresor? {
     didSet {
@@ -87,6 +81,13 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
       controller.setModel(payload: payloadMetaInfo.toModel(), metaInfo: payloadMetaInfo.toTresorDocumentMetaInfo())
       
       controller.navigationItem.title = "New Tresor Document"
+    } else if segue.identifier == "editTresorDocumentDocument" {
+      let controller = segue.destination as! TresorDocumentItemViewController
+      
+      controller.tresorAppModel = self.tresorAppModel
+      controller.tresorDocumentItem = sender as? TresorDocumentItem
+      controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
+      controller.navigationItem.leftItemsSupplementBackButton = true
     }
   }
   
@@ -257,7 +258,7 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
       let newIndexPath = IndexPath(row: indexPath.row-1, section: indexPath.section)
       let selectedTresorDocumentItem = self.fetchedResultsController.object(at: newIndexPath)
       
-      self.delegate?.documentItemSelected(documentItem: selectedTresorDocumentItem)
+      self.performSegue(withIdentifier: "editTresorDocumentDocument", sender: selectedTresorDocumentItem)
     }
     
     self.tableView.deselectRow(at: indexPath, animated: true)

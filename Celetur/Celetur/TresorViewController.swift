@@ -7,13 +7,15 @@ import UIKit
 import CoreData
 import CeleturKit
 
-class TresorViewController: UITableViewController, NSFetchedResultsControllerDelegate {
+class TresorViewController: UITableViewController, NSFetchedResultsControllerDelegate, UISplitViewControllerDelegate {
   
   var tresorAppModel : TresorAppModel?
   
   fileprivate let dateFormatter = DateFormatter()
   fileprivate var infoViewController : InfoViewController?
   fileprivate var fetchedResultsController : NSFetchedResultsController<Tresor>?
+  
+  fileprivate var discardDetailController = true
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -145,13 +147,17 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
           
           controller.tresorAppModel = self.tresorAppModel
           controller.tresor = self.getObject(indexPath: indexPath)
-          controller.delegate = self.tresorSplitViewController
+          self.discardDetailController = false
         }
         
       case "showTresorLog":
-        let controller = segue.destination as! TresorLogViewController
-          
+        let controller = (segue.destination as! UINavigationController).topViewController as! TresorLogViewController
+        
         controller.tresorAppModel = self.tresorAppModel
+        controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
+        controller.navigationItem.leftItemsSupplementBackButton = true
+        
+        self.discardDetailController = false
         
       case "showEditTresor":
         let controller = (segue.destination as! UINavigationController).topViewController as! EditTresorViewController
@@ -371,27 +377,12 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   }
   
   
-}
-
-
-//
-// MARK: - UISplitViewControllerDelegate
-//
-extension TresorViewController: UISplitViewControllerDelegate {
+  //
+  // MARK: - UISplitViewControllerDelegate
+  //
   
-  func splitViewController(_ splitViewController: UISplitViewController,
-                           collapseSecondary secondaryViewController: UIViewController,
-                           onto primaryViewController: UIViewController) -> Bool {
-    var result = false
-    
-    if let secondaryAsNavController = secondaryViewController as? UINavigationController,
-      let topAsDetailController = secondaryAsNavController.topViewController as? TresorDocumentItemViewController {
-      
-      if topAsDetailController.tresorDocumentItem == nil {
-        // Return true to indicate that we have handled the collapse by doing nothing; the secondary controller will be discarded.
-        result = true
-      }
-    }
+  func splitViewController(_ splitViewController: UISplitViewController, collapseSecondary secondaryViewController: UIViewController, onto primaryViewController: UIViewController) -> Bool {
+    let result = self.discardDetailController
     
     celeturLogger.debug("TresorViewController.splitViewController onto primary:\(result)")
     

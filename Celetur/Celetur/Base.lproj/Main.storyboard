@@ -5,10 +5,16 @@
     </device>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Navigation items with more than one left or right bar item" minToolsVersion="7.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <array key="AmericanTypewriter.ttc">
+            <string>AmericanTypewriter-Bold</string>
+        </array>
+    </customFonts>
     <scenes>
         <!--Tresor-->
         <scene sceneID="pY4-Hu-kfo">
@@ -34,6 +40,7 @@
                     <toolbarItems/>
                     <connections>
                         <segue destination="RMx-3f-FxP" kind="relationship" relationship="masterViewController" id="BlO-5A-QYV"/>
+                        <segue destination="3Y8-Eb-yWi" kind="relationship" relationship="detailViewController" id="Qlq-Ji-iff"/>
                     </connections>
                 </splitViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cZU-Oi-B1e" sceneMemberID="firstResponder"/>
@@ -75,7 +82,7 @@
                                 </tableViewCellContentView>
                                 <color key="backgroundColor" red="0.99999600649999998" green="1" blue="1" alpha="0.7939453125" colorSpace="custom" customColorSpace="sRGB"/>
                                 <connections>
-                                    <segue destination="9bD-mh-Z4Q" kind="showDetail" identifier="showTresorLog" id="5bl-bb-02n"/>
+                                    <segue destination="byh-bG-Zwx" kind="showDetail" identifier="showTresorLog" id="ONP-2F-rcu"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -146,19 +153,83 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Tresor Documents" id="2AP-hn-RXV"/>
                     <connections>
-                        <segue destination="aT7-Xd-qlb" kind="presentation" identifier="editNewTresorDocument" id="lxH-ll-9VI"/>
+                        <segue destination="aT7-Xd-qlb" kind="show" identifier="editNewTresorDocument" id="lxH-ll-9VI"/>
+                        <segue destination="nwC-fD-1Tb" kind="show" identifier="editTresorDocumentDocument" id="PIc-27-8ft"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jOg-tF-UOd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1448" y="-805"/>
         </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="Cca-7Z-j1o">
+            <objects>
+                <navigationController id="byh-bG-Zwx" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="wOR-7T-AX4">
+                        <rect key="frame" x="0.0" y="20" width="414" height="96"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="9bD-mh-Z4Q" kind="relationship" relationship="rootViewController" id="Nvh-d5-3Ep"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Pyr-if-NZ6" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="603" y="-330"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="MeU-St-l2d">
+            <objects>
+                <viewController id="RIk-NB-Jtt" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="i62-wJ-cgl"/>
+                        <viewControllerLayoutGuide type="bottom" id="YYg-9C-oQ9"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="u58-QA-Ew1">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Celetur" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xbw-eu-sfg">
+                                <rect key="frame" x="166.33333333333334" y="353" width="82" height="31.333333333333314"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
+                                <color key="textColor" name="celeturPrimary"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" name="celeturBackground"/>
+                        <constraints>
+                            <constraint firstItem="Xbw-eu-sfg" firstAttribute="centerY" secondItem="u58-QA-Ew1" secondAttribute="centerY" id="3Zs-YE-vOy"/>
+                            <constraint firstItem="Xbw-eu-sfg" firstAttribute="centerX" secondItem="u58-QA-Ew1" secondAttribute="centerX" id="maA-08-9DP"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="lO5-Uz-TBS"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="2xt-zP-gIY" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-949" y="384"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="ywQ-fl-9f4">
+            <objects>
+                <navigationController id="3Y8-Eb-yWi" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="VGI-KC-27U">
+                        <rect key="frame" x="0.0" y="20" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="RIk-NB-Jtt" kind="relationship" relationship="rootViewController" id="t4y-Jd-Ocr"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="SwE-RH-q9l" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-949" y="-404"/>
+        </scene>
         <!--Tresor Log View Controller-->
         <scene sceneID="PkW-3z-Qeq">
             <objects>
                 <tableViewController id="9bD-mh-Z4Q" customClass="TresorLogViewController" customModule="Celetur" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" id="C4Y-ee-dr4">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="620"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" name="celeturBackground"/>
                         <prototypes>
@@ -192,18 +263,19 @@
                             <outlet property="delegate" destination="9bD-mh-Z4Q" id="AKN-sE-K5Y"/>
                         </connections>
                     </tableView>
+                    <navigationItem key="navigationItem" id="FXM-tk-LyE"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7fO-zm-x3U" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="603" y="-255"/>
+            <point key="canvasLocation" x="603" y="449"/>
         </scene>
-        <!--EditTresorDocumentItemController-->
+        <!--Editor-->
         <scene sceneID="AEm-NL-I1t">
             <objects>
-                <viewControllerPlaceholder storyboardIdentifier="e" storyboardName="Editor" referencedIdentifier="EditTresorDocumentItemController" id="aT7-Xd-qlb" sceneMemberID="viewController"/>
+                <viewControllerPlaceholder storyboardIdentifier="e" storyboardName="Editor" id="aT7-Xd-qlb" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ip8-Rw-mBW" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2196" y="-805"/>
+            <point key="canvasLocation" x="1805" y="-261"/>
         </scene>
         <!--Edit Tresor View Controller-->
         <scene sceneID="zko-AA-JtC">
@@ -421,17 +493,189 @@
                 <viewControllerPlaceholder storyboardName="Settings" id="8jM-Fz-dz8" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="V7Z-mm-qii" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="604" y="-1881"/>
+            <point key="canvasLocation" x="1140" y="-2030"/>
+        </scene>
+        <!--Tresor Document Items-->
+        <scene sceneID="K9i-ZE-8vf">
+            <objects>
+                <viewController id="nwC-fD-1Tb" customClass="TresorDocumentItemViewController" customModule="Celetur" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="YZ4-aa-QrM"/>
+                        <viewControllerLayoutGuide type="bottom" id="duE-Ml-ofh"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="r1x-wG-R0U">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="672"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="60" estimatedRowHeight="60" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="07P-3z-MIn">
+                                <rect key="frame" x="0.0" y="120" width="414" height="552"/>
+                                <color key="backgroundColor" name="celeturBackground"/>
+                                <view key="tableFooterView" contentMode="scaleToFill" id="mao-HM-RMN">
+                                    <rect key="frame" x="0.0" y="133.33333333333334" width="414" height="39"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="createts" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tjv-Tx-wf7">
+                                            <rect key="frame" x="0.0" y="11.666666666666664" width="375" height="16"/>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
+                                            <color key="textColor" white="0.5" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <color key="backgroundColor" red="0.99999600649999998" green="1" blue="1" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <constraints>
+                                        <constraint firstItem="tjv-Tx-wf7" firstAttribute="leading" secondItem="mao-HM-RMN" secondAttribute="leading" id="O69-eo-gvq"/>
+                                        <constraint firstAttribute="trailing" secondItem="tjv-Tx-wf7" secondAttribute="trailing" id="S2w-0C-yn5"/>
+                                        <constraint firstItem="tjv-Tx-wf7" firstAttribute="centerY" secondItem="mao-HM-RMN" secondAttribute="centerY" id="xjv-ne-qGV"/>
+                                    </constraints>
+                                </view>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" textLabel="h6m-p0-oG2" style="IBUITableViewCellStyleDefault" id="ulG-Vm-2f3">
+                                        <rect key="frame" x="0.0" y="55.333333333333336" width="414" height="60"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="ulG-Vm-2f3" id="J4X-yi-cNQ">
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="59.666666666666664"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="h6m-p0-oG2">
+                                                    <rect key="frame" x="15" y="0.0" width="384" height="59.666666666666664"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                                <connections>
+                                    <outlet property="dataSource" destination="nwC-fD-1Tb" id="NLW-Wx-0fn"/>
+                                    <outlet property="delegate" destination="nwC-fD-1Tb" id="nyc-Nj-8di"/>
+                                </connections>
+                            </tableView>
+                            <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eVM-e8-vgj">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="120"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Dub-ld-mGy">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="120"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <string key="text">012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789</string>
+                                        <fontDescription key="fontDescription" name="AmericanTypewriter-Bold" family="American Typewriter" pointSize="16"/>
+                                        <color key="textColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="apple-os" translatesAutoresizingMaskIntoConstraints="NO" id="nf3-EI-j3e">
+                                        <rect key="frame" x="187" y="0.0" width="40" height="60"/>
+                                        <color key="tintColor" name="celeturPrimary"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="40" id="2Wm-pB-4am"/>
+                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="40" id="Jyp-NH-E9M"/>
+                                        </constraints>
+                                    </imageView>
+                                    <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="42G-l7-NWW">
+                                        <rect key="frame" x="186.66666666666666" y="0.0" width="40" height="60"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="40" id="cH1-hP-8Vs"/>
+                                            <constraint firstAttribute="width" constant="40" id="fke-vR-saj"/>
+                                        </constraints>
+                                        <color key="color" name="celeturPrimary"/>
+                                    </activityIndicatorView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Qd9-Aq-1an">
+                                        <rect key="frame" x="0.0" y="60" width="414" height="30"/>
+                                        <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
+                                        <color key="textColor" name="celeturPrimary"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Description" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sch-m1-YxI">
+                                        <rect key="frame" x="0.0" y="90" width="414" height="30"/>
+                                        <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
+                                        <color key="textColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" name="celeturBackground"/>
+                                <constraints>
+                                    <constraint firstItem="sch-m1-YxI" firstAttribute="top" secondItem="Qd9-Aq-1an" secondAttribute="bottom" id="3hs-bF-yS1"/>
+                                    <constraint firstItem="Qd9-Aq-1an" firstAttribute="leading" secondItem="eVM-e8-vgj" secondAttribute="leading" id="9pm-O8-xnT"/>
+                                    <constraint firstAttribute="height" constant="120" id="CrJ-Ug-Nxy"/>
+                                    <constraint firstItem="42G-l7-NWW" firstAttribute="centerX" secondItem="eVM-e8-vgj" secondAttribute="centerX" id="EBU-hj-fDX"/>
+                                    <constraint firstItem="Dub-ld-mGy" firstAttribute="top" secondItem="eVM-e8-vgj" secondAttribute="top" id="EF8-Js-gHS"/>
+                                    <constraint firstAttribute="trailing" secondItem="Qd9-Aq-1an" secondAttribute="trailing" id="Evq-Oe-kgM"/>
+                                    <constraint firstItem="42G-l7-NWW" firstAttribute="height" secondItem="eVM-e8-vgj" secondAttribute="height" multiplier="1:2" priority="750" id="GBQ-Zn-2Ft"/>
+                                    <constraint firstItem="Dub-ld-mGy" firstAttribute="leading" secondItem="eVM-e8-vgj" secondAttribute="leading" id="Jyj-c9-rE6"/>
+                                    <constraint firstAttribute="bottom" secondItem="Dub-ld-mGy" secondAttribute="bottom" id="KNY-E2-WXi"/>
+                                    <constraint firstItem="nf3-EI-j3e" firstAttribute="top" secondItem="eVM-e8-vgj" secondAttribute="top" id="Mwc-TZ-aq1"/>
+                                    <constraint firstItem="sch-m1-YxI" firstAttribute="leading" secondItem="eVM-e8-vgj" secondAttribute="leading" id="Nfn-Ky-aTr"/>
+                                    <constraint firstItem="42G-l7-NWW" firstAttribute="top" secondItem="eVM-e8-vgj" secondAttribute="top" id="SiE-h0-gdB"/>
+                                    <constraint firstItem="Qd9-Aq-1an" firstAttribute="height" secondItem="eVM-e8-vgj" secondAttribute="height" multiplier="1:4" id="Vy7-DI-t7u"/>
+                                    <constraint firstAttribute="trailing" secondItem="Dub-ld-mGy" secondAttribute="trailing" id="Zuj-m8-buF"/>
+                                    <constraint firstItem="Qd9-Aq-1an" firstAttribute="top" secondItem="nf3-EI-j3e" secondAttribute="bottom" id="aQs-c8-cDs"/>
+                                    <constraint firstItem="nf3-EI-j3e" firstAttribute="centerX" secondItem="eVM-e8-vgj" secondAttribute="centerX" id="msO-Jt-LoX"/>
+                                    <constraint firstItem="sch-m1-YxI" firstAttribute="height" secondItem="eVM-e8-vgj" secondAttribute="height" multiplier="1:4" id="po2-Pp-30Z"/>
+                                    <constraint firstAttribute="trailing" secondItem="sch-m1-YxI" secondAttribute="trailing" id="r82-rh-ToU"/>
+                                    <constraint firstItem="nf3-EI-j3e" firstAttribute="height" secondItem="eVM-e8-vgj" secondAttribute="height" multiplier="1:2" priority="750" id="zpW-ol-t3Z"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="07P-3z-MIn" secondAttribute="trailing" id="7Qe-gn-5jw"/>
+                            <constraint firstAttribute="trailing" secondItem="eVM-e8-vgj" secondAttribute="trailing" id="8KF-D8-SQS"/>
+                            <constraint firstItem="07P-3z-MIn" firstAttribute="leading" secondItem="r1x-wG-R0U" secondAttribute="leading" id="DkJ-CU-6Vi"/>
+                            <constraint firstItem="eVM-e8-vgj" firstAttribute="top" secondItem="YZ4-aa-QrM" secondAttribute="bottom" id="EEp-02-CRz"/>
+                            <constraint firstItem="duE-Ml-ofh" firstAttribute="top" secondItem="07P-3z-MIn" secondAttribute="bottom" id="GNe-ER-Jzl"/>
+                            <constraint firstItem="eVM-e8-vgj" firstAttribute="leading" secondItem="r1x-wG-R0U" secondAttribute="leading" id="IjE-pw-3S2"/>
+                            <constraint firstItem="07P-3z-MIn" firstAttribute="top" secondItem="eVM-e8-vgj" secondAttribute="bottom" id="akH-mn-mfa"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Tresor Document Items" largeTitleDisplayMode="never" id="lPY-6L-JSQ">
+                        <barButtonItem key="rightBarButtonItem" systemItem="edit" id="fO0-gH-Ut3">
+                            <connections>
+                                <segue destination="aT7-Xd-qlb" kind="showDetail" identifier="showEditTresorDocumentItem" id="2BQ-qo-I7c"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="activityView" destination="42G-l7-NWW" id="Ehf-S1-chc"/>
+                        <outlet property="createtsLabel" destination="tjv-Tx-wf7" id="KNu-rU-aH0"/>
+                        <outlet property="dataLabel" destination="Dub-ld-mGy" id="Rnb-Te-KVg"/>
+                        <outlet property="descriptionView" destination="sch-m1-YxI" id="kun-GY-oZN"/>
+                        <outlet property="headerView" destination="eVM-e8-vgj" id="o4Z-wf-J0X"/>
+                        <outlet property="headerViewHeightConstraint" destination="CrJ-Ug-Nxy" id="341-d0-p9c"/>
+                        <outlet property="iconView" destination="nf3-EI-j3e" id="znB-mr-lqI"/>
+                        <outlet property="tableView" destination="07P-3z-MIn" id="T48-Ur-yNx"/>
+                        <outlet property="titleView" destination="Qd9-Aq-1an" id="Glm-qQ-GJt"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="VnS-sA-x4b" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2196" y="-805"/>
         </scene>
     </scenes>
     <resources>
         <image name="3d-view" width="32" height="32"/>
+        <image name="apple-os" width="32" height="32"/>
         <image name="setting" width="24" height="24"/>
         <namedColor name="celeturBackground">
+            <color red="1" green="1" blue="1" alpha="0.80000001190000003" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="celeturBackground">
             <color red="1" green="1" blue="1" alpha="0.80000001192092896" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="celeturBackground">
+            <color red="1" green="1" blue="1" alpha="0.80000001192092896" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="celeturPrimary">
+            <color red="1" green="0.18039215689999999" blue="0.33725490200000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="celeturPrimary">
+            <color red="1" green="0.1803921568627451" blue="0.33725490196078434" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="celeturPrimary">
             <color red="1" green="0.1803921568627451" blue="0.33725490196078434" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
+    <inferredMetricsTieBreakers>
+        <segue reference="2BQ-qo-I7c"/>
+    </inferredMetricsTieBreakers>
 </document>

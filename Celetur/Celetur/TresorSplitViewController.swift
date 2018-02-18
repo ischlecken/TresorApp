@@ -15,11 +15,7 @@ class TresorSplitViewController: UISplitViewController {
   
   var tresorAppModel : TresorAppModel?
   
-  
-  
   override func awakeFromNib() {
-    celeturLogger.debug("TresorSplitViewContainer.awakeFromNib()")
-   
     self.delegate = self.tresorViewController
   }
   
@@ -211,23 +207,3 @@ extension UIViewController {
   }
 }
 
-
-//
-// MARK: - TresorDocumentViewControllerDelegate
-//
-extension TresorSplitViewController: TresorDocumentViewControllerDelegate {
-  
-  func documentItemSelected(documentItem: TresorDocumentItem) {
-    celeturLogger.debug("documentItemSelected")
-    
-    let vc = self.tdivc
-    
-    vc.tresorAppModel = self.tresorAppModel
-    vc.tresorDocumentItem = documentItem
-    vc.navigationItem.leftBarButtonItem = self.displayModeButtonItem
-    vc.navigationItem.leftItemsSupplementBackButton = true
-    
-    self.showDetailViewController(vc.navigationController!, sender: self)
-  }
-  
-}

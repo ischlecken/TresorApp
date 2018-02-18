@@ -37,6 +37,7 @@ class TresorSplitViewController: UISplitViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
+    self.preferredDisplayMode = .allVisible
     self.view.backgroundColor = UIColor.clear
     self.tresorViewController.tresorAppModel = self.tresorAppModel
     

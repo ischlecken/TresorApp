@@ -63,5 +63,8 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+  
+  <key>NSFaceIDUsageDescription</key>
+  <string>to get the masterkey from from secure enclave</string>
 </dict>
 </plist>

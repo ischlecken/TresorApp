@@ -234,7 +234,7 @@ public class TresorModel {
   public func lastLogEvents() throws -> [TresorLog] {
     guard let context = self.getCoreDataManager()?.mainManagedObjectContext else { return [] }
     
-    let result = try TresorLog.lastLogEvents(context: context )
+    let result = try TresorLog.lastLogEvents(context: context)
     
     return result
   }

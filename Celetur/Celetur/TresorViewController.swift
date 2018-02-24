@@ -14,6 +14,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   fileprivate let dateFormatter = DateFormatter()
   fileprivate var infoViewController : InfoViewController?
   fileprivate var fetchedResultsController : NSFetchedResultsController<Tresor>?
+  fileprivate var lastTresorLog : TresorLog?
   
   fileprivate var discardDetailController = true
   
@@ -47,13 +48,22 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     
 
     self.becomeFirstResponder()
+    
+    celeturLogger.debug("TresorViewController.viewDidLoad()")
   }
   
   override func viewWillAppear(_ animated: Bool) {
+    celeturLogger.debug("TresorViewController.viewWillAppear()")
+    
     clearsSelectionOnViewWillAppear = splitViewController!.isCollapsed
     
     super.viewWillAppear(animated)
+  }
+  
+  override func viewWillDisappear(_ animated: Bool) {
+    celeturLogger.debug("TresorViewController.viewWillDisappear()")
     
+    super.viewWillDisappear(animated)
   }
   
   override var canBecomeFirstResponder: Bool {
@@ -101,7 +111,30 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   func onTresorModelReady(_ notification: Notification) {
     celeturLogger.debug("onTresorModelReady")
     
+    NotificationCenter.default.addObserver(self, selector: #selector(managedObjectContextObjectsDidSave), name: NSNotification.Name.NSManagedObjectContextDidSave, object: self.tresorAppModel?.tresorModel.getCoreDataManager()?.mainManagedObjectContext)
+    
     self.updateFetchedResultsController()
+    self.updateLastLogEvent()
+    self.tableView.reloadData()
+  }
+  
+  @objc
+  func managedObjectContextObjectsDidSave(notification: NSNotification) {
+    guard let userInfo = notification.userInfo else { return }
+    
+    if let inserts = userInfo[NSInsertedObjectsKey] as? Set<NSManagedObject>, inserts.count > 0 {
+      celeturLogger.debug("TresorViewController.inserts:\(inserts.count)")
+    }
+    
+    if let updates = userInfo[NSUpdatedObjectsKey] as? Set<NSManagedObject>, updates.count > 0 {
+      celeturLogger.debug("TresorViewController.updates:\(updates.count)")
+    }
+    
+    if let deletes = userInfo[NSDeletedObjectsKey] as? Set<NSManagedObject>, deletes.count > 0 {
+      celeturLogger.debug("TresorViewController.deletes:\(deletes.count)")
+    }
+    
+    self.updateLastLogEvent()
     self.tableView.reloadData()
   }
   
@@ -246,13 +279,9 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     cell.textLabel?.text = "Log"
     cell.detailTextLabel?.text = nil
     
-    do {
-      if let lastLogEvents = try self.tresorAppModel?.tresorModel.lastLogEvents(), lastLogEvents.count>0 {
-        cell.textLabel?.text = TresorLogDescriptor.localizededDescription(lastLogEvents[0])
-        cell.detailTextLabel?.text = TresorLogDescriptor.subtitle(lastLogEvents[0])
-      }
-    } catch {
-      celeturLogger.error("Error while retrieving last log events...",error:error)
+    if let lastLogEvent = self.lastTresorLog {
+      cell.textLabel?.text = TresorLogDescriptor.localizededDescription(lastLogEvent)
+      cell.detailTextLabel?.text = TresorLogDescriptor.subtitle(lastLogEvent)
     }
     
     return cell
@@ -329,19 +358,37 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   
   // MARK: - Fetched results controller
   
+  fileprivate func updateLastLogEvent() {
+    do {
+      self.lastTresorLog = nil
+      
+      if let lastLogEvents = try self.tresorAppModel?.tresorModel.lastLogEvents(), lastLogEvents.count>0 {
+        self.lastTresorLog = lastLogEvents[0]
+      }
+      
+    } catch {
+      celeturLogger.error("error while fetching last logevent",error:error)
+    }
+  }
+  
   fileprivate func updateFetchedResultsController() {
     do {
       try self.fetchedResultsController = (self.tresorAppModel?.tresorModel.createAndFetchTresorFetchedResultsController(delegate: self))!
     } catch {
-      celeturLogger.error("error while fetching",error:error)
+      celeturLogger.error("error while fetching tresor info",error:error)
     }
   }
   
   func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
     tableView.beginUpdates()
+    
+    celeturLogger.debug("TresorViewController.controllerWillChangeContent()")
   }
   
   func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange sectionInfo: NSFetchedResultsSectionInfo, atSectionIndex sectionIndex: Int, for type: NSFetchedResultsChangeType) {
+    
+    celeturLogger.debug("TresorViewController.controller() sectionDidChange")
+    
     switch type {
     case .insert:
       tableView.insertSections(IndexSet(integer: sectionIndex+1), with: .fade)
@@ -353,6 +400,9 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   }
   
   func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+    
+    celeturLogger.debug("TresorViewController.controller() ObjectDidChange")
+    
     switch type {
     case .insert:
       tableView.insertRows(at: [IndexPath(row:newIndexPath!.row,section:newIndexPath!.section+1)], with: .fade)
@@ -377,6 +427,8 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   
   func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
     tableView.endUpdates()
+    
+    celeturLogger.debug("TresorViewController.controllerDidChangeContent()")
   }
   
   

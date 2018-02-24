@@ -212,6 +212,7 @@ extension TresorDocumentItem {
     
       tempTresorDocument.setMetaInfo(metaInfo: metaInfo)
       tempTresorDocument.changets = Date()
+      tempTresorDocument.tresor?.changets = Date()
       
       TresorLog.createLogEntries(context: context, ckUserId: tempTresorDocument.ckuserid, entries: logEntries)
     

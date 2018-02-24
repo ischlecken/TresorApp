@@ -72,6 +72,8 @@ extension TresorDocument {
       
       TresorLog.createLogEntries(context: context, ckUserId: tresor.ckuserid, entries: logEntries)
       
+      self.tresor?.changets = Date()
+      
       celeturKitLogger.debug("create of complete tresordocument finished")
     }
   }

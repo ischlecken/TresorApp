@@ -39,7 +39,9 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
     self.tableView.register(UINib(nibName:"TresorDocumentItemCell0",bundle:nil),forCellReuseIdentifier:"tresorDocumentItemCell")
     
     self.becomeFirstResponder()
+    
   }
+  
   
   @objc
   private func refreshTable(_ sender: Any) {
@@ -334,12 +336,17 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   
   func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
     tableView.beginUpdates()
+    
+    celeturLogger.debug("TresorDocumentViewController.controllerWillChangeContent()")
   }
   
   func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>,
                   didChange sectionInfo: NSFetchedResultsSectionInfo,
                   atSectionIndex sectionIndex: Int,
                   for type: NSFetchedResultsChangeType) {
+    
+    celeturLogger.debug("TresorDocumentViewController.controller() SectionDidChange")
+    
     switch type {
     case .insert:
       tableView.insertSections(IndexSet(integer: sectionIndex), with: .fade)
@@ -355,6 +362,9 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
                   at indexPath: IndexPath?,
                   for type: NSFetchedResultsChangeType,
                   newIndexPath: IndexPath?) {
+    
+    celeturLogger.debug("TresorDocumentViewController.controller() ObjectDidChange")
+    
     switch type {
     case .insert:
       
@@ -370,8 +380,13 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
       let indexPath1 = IndexPath(row:indexPath!.row+1,section:indexPath!.section)
       
       let cell = tableView.cellForRow(at: indexPath1) as! TresorDocumentItemCell0
+      let tresorDocumentItem = (anObject as? TresorDocumentItem)!
+      configureCell(cell, withTresorDocumentItem: tresorDocumentItem)
       
-      configureCell(cell, withTresorDocumentItem: (anObject as? TresorDocumentItem)!)
+      let indexPath0 = IndexPath(row:0,section:indexPath!.section)
+      
+      let documentCell = tableView.cellForRow(at: indexPath0) as! TresorDocumentCell
+      configureCellForTresorDocument(documentCell,withTresorDocument: tresorDocumentItem.document)
       
     case .move:
       let indexPath1 = IndexPath(row:indexPath!.row+1,section:indexPath!.section)
@@ -386,6 +401,8 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   
   func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
     tableView.endUpdates()
+    
+    celeturLogger.debug("TresorDocumentViewController.controllerDidChangeContent()")
   }
   
 }

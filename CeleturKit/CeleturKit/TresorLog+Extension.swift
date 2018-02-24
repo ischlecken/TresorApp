@@ -85,6 +85,7 @@ public extension TresorLog {
     self.init(context:context)
     
     self.createts = Date()
+    self.cksyncstatus = CloudKitEntitySyncState.pending.rawValue
     self.ckuserid = ckUserId
     
     self.id = String.uuid()

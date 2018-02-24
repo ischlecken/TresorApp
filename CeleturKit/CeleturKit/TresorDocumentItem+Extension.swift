@@ -34,6 +34,7 @@ extension TresorDocumentItem {
     let ud = context.object(with: userDevice.objectID) as? TresorUserDevice
     
     self.createts = Date()
+    self.cksyncstatus = CloudKitEntitySyncState.pending.rawValue
     self.ckuserid = tresorDocument.ckuserid
     self.changets = self.createts
     self.id = String.uuid()
@@ -89,11 +90,11 @@ extension TresorDocumentItem {
       if let s = self.itemStatus {
         switch s {
         case .pending:
-          result = UIColor.blue
+          result = UIColor.darkGray
         case .encrypted:
-          result = UIColor.black
+          result = UIColor.blue
         case .shouldBeEncryptedByDevice:
-          result = UIColor.magenta
+          result = UIColor.lightGray
         case .failed:
           result = UIColor.red
         }

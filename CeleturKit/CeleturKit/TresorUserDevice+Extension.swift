@@ -15,6 +15,7 @@ extension TresorUserDevice {
     
     newUserDevice.createts = Date()
     newUserDevice.id = deviceInfo.id
+    newUserDevice.cksyncstatus = CloudKitEntitySyncState.pending.rawValue
     newUserDevice.updateCurrentUserDevice(deviceInfo:deviceInfo)
     
     do {
@@ -32,6 +33,7 @@ extension TresorUserDevice {
     
     newUserDevice.createts = Date()
     newUserDevice.id = localUserDeviceId
+    newUserDevice.cksyncstatus = CloudKitEntitySyncState.pending.rawValue
     newUserDevice.updateCurrentUserDevice(deviceInfo:deviceInfo)
     
     return newUserDevice
@@ -70,7 +72,6 @@ extension TresorUserDevice {
       } else {
         fetchRequest.predicate = NSPredicate(format: "ckuserid = nil ")
       }
-      
       
       result = try context.fetch(fetchRequest)
       

@@ -28,6 +28,7 @@ extension NSManagedObject {
     
     return entityName!.starts(with: "Tresor") &&
       attributesByName.keys.contains("ckdata") &&
+      attributesByName.keys.contains("cksyncstatus") &&
       attributesByName.keys.contains("ckuserid") &&
       attributesByName.keys.contains("id") &&
       self.value(forKey: "ckuserid") != nil
@@ -132,11 +133,7 @@ extension NSManagedObject {
     
     for (n,a) in attributesByName {
       let v = self.value(forKey: n) as? CKRecordValue
-      if n == "ckdata" {
-        continue
-      }
-      
-      if a.isTransient {
+      if n == "ckdata" || n == "cksyncstatus" || a.isTransient {
         continue
       }
       

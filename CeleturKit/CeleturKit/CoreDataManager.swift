@@ -84,6 +84,7 @@ public class CoreDataManager {
     let managedObjectContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
     
     managedObjectContext.parent = self.privateManagedObjectContext
+    //managedObjectContext.automaticallyMergesChangesFromParent = true
     
     return managedObjectContext
   }()
@@ -163,7 +164,7 @@ public class CoreDataManager {
   }
  
   fileprivate func startTimer() {
-    self.timer.schedule(deadline: .now(), repeating: .seconds(10))
+    self.timer.schedule(deadline: .now(), repeating: .seconds(15))
     self.timer.setEventHandler { [weak self] in
       self?.saveChangesToCloudKit()
     }

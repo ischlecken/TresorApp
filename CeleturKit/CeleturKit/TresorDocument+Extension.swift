@@ -29,6 +29,7 @@ extension TresorDocument {
     self.init(context: context)
     
     self.createts = Date()
+    self.cksyncstatus = CloudKitEntitySyncState.pending.rawValue
     self.changets = self.createts
     self.id = String.uuid()
     self.ckuserid = tresor.ckuserid

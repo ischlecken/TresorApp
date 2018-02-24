@@ -145,8 +145,6 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     if let f = self.fetchedResultsController {
       f.updateReadonlyInfo(ckUserId: self.tresorAppModel?.tresorModel.ckUserId)
     }
-    
-    self.tableView.reloadData()
   }
   
   @objc
@@ -156,8 +154,6 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
     if let f = self.fetchedResultsController {
       f.updateReadonlyInfo(ckUserId: self.tresorAppModel?.tresorModel.ckUserId)
     }
-    
-    self.tableView.reloadData()
   }
   
   @objc
@@ -340,6 +336,17 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   
   func configureCell(_ cell: TresorCell, withTresor tresor: Tresor) {
     cell.tresorImage.image = UIImage(named: tresor.iconname ?? "shield")
+    
+    switch tresor.cksyncstatus! {
+    case CloudKitEntitySyncState.pending.rawValue:
+      cell.cksyncstatusImage.image = UIImage(named: "ckpending")
+    case CloudKitEntitySyncState.unknown.rawValue:
+      cell.cksyncstatusImage.image = UIImage(named: "ckunknown")
+    case CloudKitEntitySyncState.failed.rawValue:
+      cell.cksyncstatusImage.image = UIImage(named: "ckfailed")
+    default:
+      cell.cksyncstatusImage.image = nil
+    }
     
     if tresor.isreadonly {
       cell.createdLabel!.textColor = UIColor.lightGray

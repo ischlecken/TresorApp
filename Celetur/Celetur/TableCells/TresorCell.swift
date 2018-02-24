@@ -11,6 +11,7 @@ class TresorCell: UITableViewCell {
   @IBOutlet weak var descriptionLabel: UILabel!
   @IBOutlet weak var createdLabel: UILabel!
   @IBOutlet weak var tresorImage: UIImageView!
+  @IBOutlet weak var cksyncstatusImage: UIImageView!
   
   override func awakeFromNib() {
     super.awakeFromNib()

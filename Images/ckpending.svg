@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+
+<path style="fill:none; 
+      stroke:#aaa; 
+      stroke-width: 1px;
+      stroke-dasharray: 1.5 0.7;
+      stroke-dashoffset: 0;"
+  
+  d="M13.679 5c2.72 0 5.681 2.016 5.607 6.365 5.49.643 4.409 
+  7.635.114 7.635h-14.508c-4.124 0-5.751-6.252-1.105-8.04-.459-2.491 
+  2.479-4.366 4.564-2.187.477-1.023 1.885-3.773 5.328-3.773m0-1c-2.418 z"/>
+  
+</svg>

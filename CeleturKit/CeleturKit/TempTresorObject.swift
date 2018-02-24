@@ -18,6 +18,7 @@ public class TempTresorObject {
     self.tresorModel = tresorModel
     self.tempManagedObjectContext = context
     self.tempTresor = tresor
+    self.tempTresor.cksyncstatus = CloudKitEntitySyncState.pending.rawValue
     self.userDevices = userDevices
     self.isNewTresor = isNewTresor
   }

@@ -8,6 +8,13 @@ import Contacts
 import CloudKit
 
 
+public enum CloudKitEntitySyncState : String {
+  case successful
+  case pending
+  case failed
+  case unknown
+}
+
 extension Notification.Name {
   public static let onTresorCloudkitChangesFetched = Notification.Name("onTresorCloudkitChangesFetched")
 }
@@ -72,7 +79,7 @@ public class CloudKitManager {
           //
           // TODO: more sophisticated error handling
           //
-          self.ckPersistenceState.flushChangedIds()
+          //self.ckPersistenceState.flushChangedIds()
         } else {
           celeturKitLogger.debug("CloudKitManager.saveChanges() modify records complete")
           if let sr=savedRecords {
@@ -109,6 +116,7 @@ public class CloudKitManager {
                 
                 if let o = obj {
                   o.setValue(r.cksystemdata(), forKey: "ckdata")
+                  o.setValue(CloudKitEntitySyncState.successful.rawValue, forKey: "cksyncstatus")
                 }
               }
               

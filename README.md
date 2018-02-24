@@ -60,4 +60,6 @@ FeldBook:TresorApp fe$ echo -n "8e96d94452f14c554b63425f4ac7566d23ee560007ceb4e3
 0000003e
 
 
+select z_pk,z_ent,datetime(zchangets+978307200,'unixepoch'),zcksyncstatus from ztresor;
+
 -->

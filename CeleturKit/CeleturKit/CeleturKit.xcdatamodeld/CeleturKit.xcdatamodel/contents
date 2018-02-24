@@ -3,6 +3,7 @@
     <entity name="Tresor" representedClassName="Tresor" syncable="YES" codeGenerationType="class">
         <attribute name="changets" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="ckdata" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="cksyncstatus" attributeType="String" syncable="YES"/>
         <attribute name="ckuserid" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="createts" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="iconname" optional="YES" attributeType="String" syncable="YES"/>
@@ -17,6 +18,7 @@
     <entity name="TresorDocument" representedClassName="TresorDocument" syncable="YES" codeGenerationType="class">
         <attribute name="changets" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="ckdata" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="cksyncstatus" attributeType="String" syncable="YES"/>
         <attribute name="ckuserid" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="createts" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="id" attributeType="String" syncable="YES"/>
@@ -28,6 +30,7 @@
     <entity name="TresorDocumentItem" representedClassName="TresorDocumentItem" syncable="YES" codeGenerationType="class">
         <attribute name="changets" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="ckdata" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="cksyncstatus" attributeType="String" syncable="YES"/>
         <attribute name="ckuserid" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="createts" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="id" attributeType="String" syncable="YES"/>
@@ -42,6 +45,7 @@
     </entity>
     <entity name="TresorLog" representedClassName="TresorLog" syncable="YES" codeGenerationType="class">
         <attribute name="ckdata" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="cksyncstatus" attributeType="String" syncable="YES"/>
         <attribute name="ckuserid" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="createts" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="devicemodel" attributeType="String" syncable="YES"/>
@@ -65,6 +69,7 @@
     <entity name="TresorUserDevice" representedClassName="TresorUserDevice" syncable="YES" codeGenerationType="class">
         <attribute name="apndevicetoken" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="ckdata" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="cksyncstatus" attributeType="String" syncable="YES"/>
         <attribute name="ckuserid" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="createts" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="devicemodel" optional="YES" attributeType="String" syncable="YES"/>
@@ -80,10 +85,10 @@
         <relationship name="tresors" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tresor" inverseName="userdevices" inverseEntity="Tresor" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Tresor" positionX="-1386" positionY="-67" width="128" height="225"/>
-        <element name="TresorDocument" positionX="-1206" positionY="-207" width="128" height="178"/>
-        <element name="TresorDocumentItem" positionX="-1017" positionY="-63" width="126" height="240"/>
-        <element name="TresorLog" positionX="-792" positionY="-54" width="128" height="345"/>
-        <element name="TresorUserDevice" positionX="-1197" positionY="198" width="128" height="270"/>
+        <element name="Tresor" positionX="-1386" positionY="-67" width="128" height="240"/>
+        <element name="TresorDocument" positionX="-1206" positionY="-207" width="128" height="195"/>
+        <element name="TresorDocumentItem" positionX="-1017" positionY="-63" width="126" height="255"/>
+        <element name="TresorLog" positionX="-792" positionY="-54" width="128" height="360"/>
+        <element name="TresorUserDevice" positionX="-1197" positionY="198" width="128" height="285"/>
     </elements>
 </model>

@@ -25,6 +25,7 @@ public extension Tresor {
     newTresor.ckuserid = ckUserId
     newTresor.iconname = "vault"
     newTresor.nonce = try Data(withRandomData: SymmetricCipherAlgorithm.aes_256.requiredBlockSize())
+    newTresor.cksyncstatus = CloudKitEntitySyncState.pending.rawValue
     
     return newTresor
   }

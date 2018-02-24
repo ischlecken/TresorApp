@@ -20,6 +20,7 @@ class TresorViewController: UITableViewController, NSFetchedResultsControllerDel
   override func viewDidLoad() {
     super.viewDidLoad()
     
+    self.navigationItem.largeTitleDisplayMode = .always
     self.refreshControl = UIRefreshControl()
     self.refreshControl?.addTarget(self, action: #selector(refreshTable(_:)), for: .valueChanged)
     

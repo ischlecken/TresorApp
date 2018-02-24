@@ -22,14 +22,14 @@ class TresorDocumentViewController: UITableViewController, NSFetchedResultsContr
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    // Do any additional setup after loading the view, typically from a nib.
-    //navigationItem.leftBarButtonItem = editButtonItem
     
-    let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(insertNewObject(_:)))
-    navigationItem.rightBarButtonItem = addButton
+    self.navigationItem.largeTitleDisplayMode = .automatic
     
     self.refreshControl = UIRefreshControl()
     self.refreshControl?.addTarget(self, action: #selector(refreshTable(_:)), for: .valueChanged)
+    
+    let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(insertNewObject(_:)))
+    self.navigationItem.rightBarButtonItem = addButton
     
     self.title = tresor?.name
     self.dateFormatter.dateStyle = DateFormatter.Style.short

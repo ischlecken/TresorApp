@@ -42,6 +42,7 @@ class TresorDocumentItemViewController: UIViewController, UITableViewDataSource,
   override func viewDidLoad() {
     super.viewDidLoad()
     
+    self.navigationItem.largeTitleDisplayMode = .automatic
     self.navigationItem.rightBarButtonItem?.isEnabled = false
     
     self.dateFormatter.dateStyle = DateFormatter.Style.short

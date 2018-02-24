@@ -42,7 +42,7 @@ class TresorSplitViewController: UISplitViewController {
     self.tresorViewController.tresorAppModel = self.tresorAppModel
     
     self.createGradientView()
-    self.createProgressView()
+    //self.createProgressView()
     
     self.completeSetup()
   }

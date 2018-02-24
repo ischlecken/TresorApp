@@ -81,7 +81,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     self.tresorAppModel.tresorModel.setCurrentDeviceAPNToken(deviceToken:deviceToken)
   }
   
-  /*
+  
   func application(_ application: UIApplication,
                    didReceiveRemoteNotification userInfo: [AnyHashable : Any],
                    fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
@@ -94,7 +94,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       completionHandler( .newData )
     }
   }
- */
+ 
   
   // MARK:- UI
   

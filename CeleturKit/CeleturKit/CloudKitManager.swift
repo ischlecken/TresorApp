@@ -315,7 +315,7 @@ public class CloudKitManager {
     let subscription = CKDatabaseSubscription(subscriptionID: subscriptionId)
     
     let notificationInfo = CKNotificationInfo()
-    //notificationInfo.alertBody = "A new notification has been posted!"
+    notificationInfo.alertBody = "Something changed Celetur Universe :-)"
     notificationInfo.shouldSendContentAvailable = true
     //notificationInfo.soundName = "default"
     
@@ -326,6 +326,7 @@ public class CloudKitManager {
     
     return operation
   }
+  
   
   
   public func createCloudKitSubscription() {

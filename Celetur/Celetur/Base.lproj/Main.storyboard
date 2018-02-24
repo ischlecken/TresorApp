@@ -165,7 +165,7 @@
         <scene sceneID="Cca-7Z-j1o">
             <objects>
                 <navigationController id="byh-bG-Zwx" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="wOR-7T-AX4">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" largeTitles="YES" id="wOR-7T-AX4">
                         <rect key="frame" x="0.0" y="20" width="414" height="96"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -628,7 +628,7 @@
                             <constraint firstItem="07P-3z-MIn" firstAttribute="top" secondItem="eVM-e8-vgj" secondAttribute="bottom" id="akH-mn-mfa"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Tresor Document Items" largeTitleDisplayMode="never" id="lPY-6L-JSQ">
+                    <navigationItem key="navigationItem" title="Tresor Document Items" id="lPY-6L-JSQ">
                         <barButtonItem key="rightBarButtonItem" systemItem="edit" id="fO0-gH-Ut3">
                             <connections>
                                 <segue destination="aT7-Xd-qlb" kind="presentation" identifier="showEditTresorDocumentItem" id="2BQ-qo-I7c"/>
@@ -655,7 +655,7 @@
         <scene sceneID="NpJ-10-mZa">
             <objects>
                 <navigationController id="efj-0I-1gi" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Yvw-OL-xXs">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" largeTitles="YES" id="Yvw-OL-xXs">
                         <rect key="frame" x="0.0" y="20" width="414" height="96"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>

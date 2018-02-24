@@ -14,6 +14,7 @@ class TresorLogViewController: UITableViewController, NSFetchedResultsController
   override func viewDidLoad() {
     super.viewDidLoad()
     
+    self.navigationItem.largeTitleDisplayMode = .always
     self.title = "Tresor Log"
     self.updateFetchedResultsController()
   }

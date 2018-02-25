@@ -141,11 +141,13 @@ public extension TresorLog {
     
     // Set the batch size to a suitable number.
     fetchRequest.fetchBatchSize = 3
+    fetchRequest.fetchLimit = 3
   
     fetchRequest.predicate = NSPredicate(format: "messagegrouporder = 0")
     
-    let sortDescriptor0 = NSSortDescriptor(key: "messagegroupts", ascending: false)
-    fetchRequest.sortDescriptors = [sortDescriptor0]
+    let sortDescriptor0 = NSSortDescriptor(key: "messagegrouporder", ascending: true)
+    let sortDescriptor1 = NSSortDescriptor(key: "messagegroupts", ascending: false)
+    fetchRequest.sortDescriptors = [sortDescriptor0,sortDescriptor1]
     
     let result = try fetchRequest.execute()
     

@@ -22,4 +22,23 @@ public extension NSManagedObjectContext {
       }
     }
   }
+  
+  public func updateReadonlyInfo(ckUserId:String?) {
+    for case let t as Tresor in self.registeredObjects {
+      t.updateReadonly(ckUserId: ckUserId)
+    }
+    
+    for o in self.registeredObjects {
+      for (n,_) in o.entity.attributesByName {
+        if n == "ckuserid" {
+          
+          if o.value(forKey: n) == nil {
+            o.setValue(CloudKitEntitySyncState.successful.rawValue, forKey: "cksyncstatus")
+          }
+          
+          break
+        }
+      }
+    }
+  }
 }

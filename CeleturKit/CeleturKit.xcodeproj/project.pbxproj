@@ -33,7 +33,6 @@
 		85E121A51F814C800002EEB4 /* UIViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85E121A41F814C800002EEB4 /* UIViewController+Extension.swift */; };
 		85E312741F6D408300EB8AD8 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85E312731F6D408300EB8AD8 /* CoreDataManager.swift */; };
 		85E312761F6D453500EB8AD8 /* CloudKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85E312751F6D453500EB8AD8 /* CloudKitManager.swift */; };
-		85E84D131FFA86D3009D9BCB /* NSFetchedResultsController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85E84D121FFA86D3009D9BCB /* NSFetchedResultsController+Extension.swift */; };
 		85E84D151FFA9BDD009D9BCB /* CoreDataManager+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85E84D141FFA9BDD009D9BCB /* CoreDataManager+Extension.swift */; };
 		85E84D171FFA9F61009D9BCB /* CloudKitModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85E84D161FFA9F61009D9BCB /* CloudKitModel.swift */; };
 		85EEE21A1F1B4E4B002CE85E /* CeleturKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85EEE2101F1B4E4B002CE85E /* CeleturKit.framework */; };
@@ -85,7 +84,6 @@
 		85E121A41F814C800002EEB4 /* UIViewController+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extension.swift"; sourceTree = "<group>"; };
 		85E312731F6D408300EB8AD8 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 		85E312751F6D453500EB8AD8 /* CloudKitManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudKitManager.swift; sourceTree = "<group>"; };
-		85E84D121FFA86D3009D9BCB /* NSFetchedResultsController+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSFetchedResultsController+Extension.swift"; sourceTree = "<group>"; };
 		85E84D141FFA9BDD009D9BCB /* CoreDataManager+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CoreDataManager+Extension.swift"; sourceTree = "<group>"; };
 		85E84D161FFA9F61009D9BCB /* CloudKitModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudKitModel.swift; sourceTree = "<group>"; };
 		85EEE2101F1B4E4B002CE85E /* CeleturKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CeleturKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -120,6 +118,38 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		85BF6FDA2042AA8000F3390E /* Framework */ = {
+			isa = PBXGroup;
+			children = (
+				85E84D161FFA9F61009D9BCB /* CloudKitModel.swift */,
+				85E312751F6D453500EB8AD8 /* CloudKitManager.swift */,
+				85F5AC471F764659003B14F9 /* CKRecord+Extension.swift */,
+				85F5AC4B1F767E12003B14F9 /* CloudKitPersistenceState.swift */,
+				85E312731F6D408300EB8AD8 /* CoreDataManager.swift */,
+				85E84D141FFA9BDD009D9BCB /* CoreDataManager+Extension.swift */,
+				85F5AC491F7656A7003B14F9 /* NSManagedObject+Extension.swift */,
+				8597390E1FAA2FDA003196B2 /* NSManagedObjectContext+Extension.swift */,
+			);
+			name = Framework;
+			sourceTree = "<group>";
+		};
+		85BF6FDB2042AACF00F3390E /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				85C5C5851F36E6C100DE7EBC /* TresorModel.swift */,
+				855587C41FA9363A003E43E6 /* PayloadModel.swift */,
+				855587C61FA93E56003E43E6 /* TempTresorObject.swift */,
+				85BADF921F6E5F3200DAC130 /* Tresor+Extension.swift */,
+				85B667CC1F92143C00621A12 /* UserInfo+Extension.swift */,
+				85B667CE1F92148E00621A12 /* DeviceInfo+Extension.swift */,
+				85BF77061F6DD8F700FA9460 /* TresorUserDevice+Extension.swift */,
+				85BADF941F6E616B00DAC130 /* TresorDocument+Extension.swift */,
+				85BF77021F6DD66700FA9460 /* TresorDocumentItem+Extension.swift */,
+				85263F67201DCB1400A5E41F /* TresorLog+Extension.swift */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
 		85C5C58F1F3778F500DE7EBC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -131,25 +161,10 @@
 		85E312791F6D491800EB8AD8 /* DataManagement */ = {
 			isa = PBXGroup;
 			children = (
-				85E84D121FFA86D3009D9BCB /* NSFetchedResultsController+Extension.swift */,
-				855587C41FA9363A003E43E6 /* PayloadModel.swift */,
-				85E312751F6D453500EB8AD8 /* CloudKitManager.swift */,
-				85F5AC4B1F767E12003B14F9 /* CloudKitPersistenceState.swift */,
-				85E312731F6D408300EB8AD8 /* CoreDataManager.swift */,
-				85E84D141FFA9BDD009D9BCB /* CoreDataManager+Extension.swift */,
-				85C5C5851F36E6C100DE7EBC /* TresorModel.swift */,
-				85E84D161FFA9F61009D9BCB /* CloudKitModel.swift */,
-				85B667CC1F92143C00621A12 /* UserInfo+Extension.swift */,
-				85B667CE1F92148E00621A12 /* DeviceInfo+Extension.swift */,
-				85BADF921F6E5F3200DAC130 /* Tresor+Extension.swift */,
-				85F5AC491F7656A7003B14F9 /* NSManagedObject+Extension.swift */,
-				85F5AC471F764659003B14F9 /* CKRecord+Extension.swift */,
-				85BF77061F6DD8F700FA9460 /* TresorUserDevice+Extension.swift */,
-				85BADF941F6E616B00DAC130 /* TresorDocument+Extension.swift */,
-				85BF77021F6DD66700FA9460 /* TresorDocumentItem+Extension.swift */,
-				85263F67201DCB1400A5E41F /* TresorLog+Extension.swift */,
-				855587C61FA93E56003E43E6 /* TempTresorObject.swift */,
-				8597390E1FAA2FDA003196B2 /* NSManagedObjectContext+Extension.swift */,
+				85EEE23C1F1B67CE002CE85E /* CeleturKit.xcdatamodeld */,
+				85A6A1031F934ABE00EBDD48 /* CeleturKitMetaInfo.xcdatamodeld */,
+				85BF6FDB2042AACF00F3390E /* Model */,
+				85BF6FDA2042AA8000F3390E /* Framework */,
 			);
 			name = DataManagement;
 			sourceTree = "<group>";
@@ -193,15 +208,13 @@
 		85EEE2121F1B4E4B002CE85E /* CeleturKit */ = {
 			isa = PBXGroup;
 			children = (
-				85A97FDE202613D10004A8F0 /* LogMessages.strings */,
 				85E3127C1F6D49BD00EB8AD8 /* Util */,
 				85E312791F6D491800EB8AD8 /* DataManagement */,
-				855462FB1F40853F00C001F6 /* SymmetricCipherOperation.swift */,
 				85EEE2141F1B4E4B002CE85E /* Info.plist */,
-				85EEE23C1F1B67CE002CE85E /* CeleturKit.xcdatamodeld */,
-				85A6A1031F934ABE00EBDD48 /* CeleturKitMetaInfo.xcdatamodeld */,
 				8517BDE41F2493FC009DB663 /* CeleturKitError.swift */,
+				855462FB1F40853F00C001F6 /* SymmetricCipherOperation.swift */,
 				85C5C58D1F37190C00DE7EBC /* TresorKeys.swift */,
+				85A97FDE202613D10004A8F0 /* LogMessages.strings */,
 			);
 			path = CeleturKit;
 			sourceTree = "<group>";
@@ -340,7 +353,6 @@
 				85BADF931F6E5F3200DAC130 /* Tresor+Extension.swift in Sources */,
 				85A6A1071F936BBB00EBDD48 /* URL+extension.swift in Sources */,
 				85C5C5861F36E6C100DE7EBC /* TresorModel.swift in Sources */,
-				85E84D131FFA86D3009D9BCB /* NSFetchedResultsController+Extension.swift in Sources */,
 				85A6A1051F934ABE00EBDD48 /* CeleturKitMetaInfo.xcdatamodeld in Sources */,
 				85797EB01FA4919800CB9D87 /* Reachability.swift in Sources */,
 				85EEE23A1F1B52DE002CE85E /* Logger.swift in Sources */,

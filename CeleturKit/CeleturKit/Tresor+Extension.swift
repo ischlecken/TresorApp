@@ -31,7 +31,7 @@ public extension Tresor {
   }
   
   
-  class func createAndFetchTresorFetchedResultsController(context: NSManagedObjectContext) throws -> NSFetchedResultsController<Tresor> {
+  class func createAndFetchTresorFetchedResultsController(context: NSManagedObjectContext,ckUserId: String?) throws -> NSFetchedResultsController<Tresor> {
     let fetchRequest: NSFetchRequest<Tresor> = Tresor.fetchRequest()
     
     // Set the batch size to a suitable number.
@@ -50,6 +50,8 @@ public extension Tresor {
     
     do {
       try aFetchedResultsController.performFetch()
+      
+      context.updateReadonlyInfo(ckUserId: ckUserId)
     } catch {
       throw CeleturKitError.creationOfFetchResultsControllerFailed(coreDataError: error as NSError)
     }
@@ -132,5 +134,11 @@ public extension Tresor {
         celeturKitLogger.error("Error while saving encryptAllDocumentItemsThatShouldBeEncryptedByDevice...",error:error)
       }
     }
+  }
+  
+  public func updateReadonly(ckUserId: String?) {
+    guard let tresorUserId = self.ckuserid else { self.isreadonly = false; return; }
+    
+    self.isreadonly =  tresorUserId != ckUserId
   }
 }

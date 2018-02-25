@@ -33,7 +33,30 @@ public class TresorModel {
   }
   
   public init() {
+    NotificationCenter.default.addObserver(self,
+                                           selector: #selector(onTresorCloudkitStatusChanged(_:)),
+                                           name: Notification.Name.onTresorCloudkitStatusChanged,
+                                           object:nil)
     
+    NotificationCenter.default.addObserver(self,
+                                           selector: #selector(onTresorCloudkitChangesFetched(_:)),
+                                           name: Notification.Name.onTresorCloudkitChangesFetched,
+                                           object:nil)
+  }
+  
+  
+  @objc
+  func onTresorCloudkitStatusChanged(_ notification: Notification) {
+    celeturKitLogger.debug("TresorModel.onTresorCloudkitStatusChanged")
+    
+    self.coreDataManager?.mainManagedObjectContext.updateReadonlyInfo(ckUserId: ckUserId)
+  }
+  
+  @objc
+  func onTresorCloudkitChangesFetched(_ notification: Notification) {
+    celeturKitLogger.debug("TresorModel.onTresorCloudkitChangesFetched")
+    
+    self.coreDataManager?.mainManagedObjectContext.updateReadonlyInfo(ckUserId: ckUserId)
   }
   
   public func getCoreDataManager() -> CoreDataManager? {
@@ -185,11 +208,7 @@ public class TresorModel {
     var result : NSFetchedResultsController<Tresor>?
     
     if let moc = self.coreDataManager?.mainManagedObjectContext {
-      result = try Tresor.createAndFetchTresorFetchedResultsController(context: moc)
-      
-      if let r = result {
-        r.updateReadonlyInfo(ckUserId: self.ckUserId)
-      }
+      result = try Tresor.createAndFetchTresorFetchedResultsController(context: moc, ckUserId: self.ckUserId)
       
       result?.delegate = delegate
     }
@@ -263,7 +282,7 @@ public class TresorModel {
       cdm.removeAllEntities(context: tempMoc, entityName: "TresorDocument")
       cdm.removeAllEntities(context: tempMoc, entityName: "Tresor")
       cdm.removeAllEntities(context: tempMoc, entityName: "TresorUserDevice")
-      cdm.removeAllEntities(context: tempMoc, entityName: "TresorAudit")
+      cdm.removeAllEntities(context: tempMoc, entityName: "TresorLog")
       
       try tempMoc.save()
       

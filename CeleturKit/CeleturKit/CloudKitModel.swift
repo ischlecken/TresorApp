@@ -95,7 +95,7 @@ public class CloudKitModel {
       
       NotificationCenter.default.post(name: .onTresorCloudkitStatusChanged, object: self)
       
-      celeturKitLogger.debug("createCloudKitManager() --success--")
+      celeturKitLogger.debug("CloudKitModel.createCloudKitManager() --success--")
     }
   }
   
@@ -109,7 +109,7 @@ public class CloudKitModel {
       NotificationCenter.default.post(name: .onTresorCloudkitStatusChanged, object: self)
     }
     
-    celeturKitLogger.debug("resetCloudKitManager()")
+    celeturKitLogger.debug("CloudKitModel.resetCloudKitManager()")
   }
   
   public func icloudAvailable() -> Bool {

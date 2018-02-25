@@ -84,6 +84,7 @@ public class CoreDataManager {
     let managedObjectContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
     
     managedObjectContext.parent = self.privateManagedObjectContext
+    
     //managedObjectContext.automaticallyMergesChangesFromParent = true
     
     return managedObjectContext
@@ -145,7 +146,7 @@ public class CoreDataManager {
         self.saveToCKIsRunning = false
       }
       
-      ckm.saveChanges(context: self.privateManagedObjectContext)
+      ckm.saveChanges(context: self.mainManagedObjectContext)
     }
   }
   

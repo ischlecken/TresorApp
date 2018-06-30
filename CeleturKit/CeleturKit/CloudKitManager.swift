@@ -279,6 +279,8 @@ public class CloudKitManager {
         celeturKitLogger.debug("An error indicating that the server is too busy to handle the zone operation.")
       case .zoneNotFound:
         celeturKitLogger.debug("An error indicating that the specified record zone does not exist on the server.")
+      case .assetNotAvailable:
+        celeturKitLogger.debug("assert not available.")
       }
     }
     
